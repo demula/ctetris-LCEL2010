@@ -22,14 +22,11 @@
  */
 
 
-#include "m5272lib.c"
-
-
 typedef struct
 {
     int nivel_dificultad;
     int jugando;
-    char texto_niveles[3];
+    char* texto_niveles[3];
 } Estado;
 
 
@@ -65,7 +62,7 @@ void menu (Estado *estado, char tecla)
         break;
         case 'A':
         {
-            estado->jugando = TRUE;
+            estado->jugando = 1;//TRUE
         }
         break;
         default:

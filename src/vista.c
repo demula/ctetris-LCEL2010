@@ -46,6 +46,7 @@ void lcd_init(void)
 */
 void imprimir_en_lcd(char* mensaje)
 {
+    LCD_inst(LIN_1LCD);
     while(*mensaje)
     {
         LCD_dato(*mensaje++);
