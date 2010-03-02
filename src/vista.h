@@ -53,8 +53,8 @@
 */
 typedef struct
 {
-    unsigned char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
-    unsigned char columna_a_refrescar;
+    int pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
+    int columna_a_refrescar;
 } Leds;
 
 

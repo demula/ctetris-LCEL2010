@@ -141,9 +141,9 @@ typedef struct
     int x;
     int y;
     int rotacion;
-    static const int x_comienzo[NUM_CLASES];
-    static const int y_comienzo[NUM_CLASES];
-    static const char ocupacion[NUM_CLASES][ANCHO_PIEZA*ALTO_PIEZA*ROTACIONES];
+    int x_comienzo[NUM_CLASES];
+    int y_comienzo[NUM_CLASES];
+    char ocupacion[NUM_CLASES][ANCHO_PIEZA*ALTO_PIEZA*ROTACIONES];
 } Pieza;
 
 

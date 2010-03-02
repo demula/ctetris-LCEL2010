@@ -254,16 +254,16 @@
 */
 char tecla_pulsada(void);
 // -------------------------------------------------------------- INTERRUPCIONES
-INLINE void habilitar_interrupciones(void);
-INLINE void deshabilitar_interrupciones(void);
-extern void timer0_inter_atendida(void);
-INLINE void timer1_inter_atendida(void);
-INLINE void timer2_inter_atendida(void);
+void habilitar_interrupciones(void);
+void deshabilitar_interrupciones(void);
+void timer0_inter_atendida(void);
+void timer1_inter_atendida(void);
+void timer2_inter_atendida(void);
 // ------------------------------------------------------------ INICIALIZACIONES
-extern void timer0_init(void);
-extern void timer1_init(void);
-extern void timer2_init(void);
-extern void interrupciones_init(void);
+void timer0_init(void);
+void timer1_init(void);
+void timer2_init(void);
+void interrupciones_init(void);
 
 
 #endif	/* _HARDWARE_CONF_H */

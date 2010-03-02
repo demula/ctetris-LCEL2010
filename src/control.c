@@ -22,12 +22,8 @@
  */
 
 
-typedef struct
-{
-    int nivel_dificultad;
-    int jugando;
-    char* texto_niveles[3];
-} Estado;
+#include "control.h"
+#include "vista.h"
 
 
 /*
@@ -45,22 +41,22 @@ void menu (Estado *estado, char tecla)
 {
     switch (tecla)
     {
-        case '1':
+        case TECLA_NIVEL_1:
         {
             estado->nivel_dificultad = 0;
         }
         break;
-        case '4':
+        case TECLA_NIVEL_2:
         {
             estado->nivel_dificultad = 1;
         }
         break;
-        case '7':
+        case TECLA_NIVEL_3:
         {
             estado->nivel_dificultad = 2;
         }
         break;
-        case 'A':
+        case TECLA_COMIENZO:
         {
             estado->jugando = 1;//TRUE
         }
@@ -82,13 +78,28 @@ void menu (Estado *estado, char tecla)
 
       *estado - Puntero a la estructura Estado que queremos inicializar.
       nivel_dificultad - int con el nivel dificultad para la partida.
-      jugando - int 0 o 1 que indica si estamos ya jugando.
 */
-void estado_init (Estado *estado, int nivel_dificultad, int jugando)
+void estado_init (Estado *estado, int nivel_dificultad)
 {
     estado->nivel_dificultad = nivel_dificultad;
-    estado->jugando = jugando;
-    estado->texto_niveles[0] = "Nivel 1";
-    estado->texto_niveles[1] = "Nivel 2";
-    estado->texto_niveles[2] = "Nivel 3";
+    estado->jugando = 0;
+    estado->texto_niveles[0] = TEXTO_NIVEL_1;
+    estado->texto_niveles[1] = TEXTO_NIVEL_2;
+    estado->texto_niveles[2] = TEXTO_NIVEL_3;
+}
+
+
+/*
+   Function: reloj_init
+   Inicializa una estructura Reloj con valores a 0.
+
+   Parameters:
+
+      *reloj - Puntero a la estructura Reloj que queremos inicializar.
+*/
+void reloj_init (Reloj *reloj)
+{
+    reloj->columna_led = 0;
+    reloj->refresco = TASA_REFRESCO;
+    reloj->nota = 0;
 }

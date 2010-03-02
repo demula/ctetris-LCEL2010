@@ -70,11 +70,11 @@ void copia_texto_ocupacion(char *destino, char origen[])
         switch (origen[posicion_origen])
         {
             case '0':
-                &destino[posicion_destino] = origen[posicion_origen];
+                destino[posicion_destino] = origen[posicion_origen];
                 posicion_destino++;
                 break;
             case '1':
-                &destino[posicion_destino] = origen[posicion_origen];
+                destino[posicion_destino] = origen[posicion_origen];
                 posicion_destino++;
                 break;
         }
@@ -92,13 +92,13 @@ void copia_texto_ocupacion(char *destino, char origen[])
 */
 void ocupacion_init(Pieza *pieza)
 {
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_O);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_I);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_T);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_L);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_J);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_S);
-    copia_texto_ocupacion(&pieza->ocupacion, OCUPACION_Z);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_O);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_I);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_T);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_L);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_J);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_S);
+    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_Z);
 }
 
 

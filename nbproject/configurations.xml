@@ -4,8 +4,15 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>src/control.h</itemPath>
+      <itemPath>src/debug.h</itemPath>
+      <itemPath>src/hardware.h</itemPath>
+      <itemPath>src/juego.h</itemPath>
       <itemPath>src/m5272.h</itemPath>
       <itemPath>src/m5272lib.h</itemPath>
+      <itemPath>src/macros.h</itemPath>
+      <itemPath>src/sonido.h</itemPath>
+      <itemPath>src/vista.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -16,10 +23,14 @@
                    projectFiles="true">
       <itemPath>src/control.c</itemPath>
       <itemPath>src/ctetris.c</itemPath>
+      <itemPath>src/debug.c</itemPath>
+      <itemPath>src/hardware.c</itemPath>
+      <itemPath>src/juego.c</itemPath>
       <itemPath>src/m5272adc-dac.c</itemPath>
       <itemPath>src/m5272gpio.c</itemPath>
       <itemPath>src/m5272lcd.c</itemPath>
       <itemPath>src/m5272lib.c</itemPath>
+      <itemPath>src/sonido.c</itemPath>
       <itemPath>src/start.asg</itemPath>
       <itemPath>src/vista.c</itemPath>
     </logicalFolder>
@@ -39,6 +50,29 @@
       </toolsSet>
       <compileType>
         <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="ColdFire" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <commandlineTool>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/m68k-elf/bin/gcc</commandlineTool>
+          <incDir>
+            <pElem>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/include</pElem>
+            <pElem>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/lib/gcc/m68k-elf/4.3.2/include</pElem>
+            <pElem>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/lib/gcc/m68k-elf/4.3.2/include-fixed</pElem>
+            <pElem>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/m68k-elf/include</pElem>
+          </incDir>
+        </cTool>
+        <linkerTool>
+          <commandlineTool>/opt/freescale/usr/local/gcc-4.3.54-newlib-1.14.54/m68k-elf/m68k-elf/bin/gcc</commandlineTool>
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>

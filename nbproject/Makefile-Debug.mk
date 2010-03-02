@@ -31,7 +31,17 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/args.o
+	${OBJECTDIR}/src/hardware.o \
+	${OBJECTDIR}/src/m5272lib.o \
+	${OBJECTDIR}/src/debug.o \
+	${OBJECTDIR}/src/sonido.o \
+	${OBJECTDIR}/src/m5272gpio.o \
+	${OBJECTDIR}/src/m5272lcd.o \
+	${OBJECTDIR}/src/control.o \
+	${OBJECTDIR}/src/vista.o \
+	${OBJECTDIR}/src/ctetris.o \
+	${OBJECTDIR}/src/m5272adc-dac.o \
+	${OBJECTDIR}/src/juego.o
 
 # C Compiler Flags
 CFLAGS=
@@ -57,10 +67,60 @@ dist/Debug/GNU-Linux-x86/ctetris: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ctetris ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/src/args.o: nbproject/Makefile-${CND_CONF}.mk src/args.c 
+${OBJECTDIR}/src/hardware.o: nbproject/Makefile-${CND_CONF}.mk src/hardware.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/args.o src/args.c
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/hardware.o src/hardware.c
+
+${OBJECTDIR}/src/m5272lib.o: nbproject/Makefile-${CND_CONF}.mk src/m5272lib.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272lib.o src/m5272lib.c
+
+${OBJECTDIR}/src/debug.o: nbproject/Makefile-${CND_CONF}.mk src/debug.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/debug.o src/debug.c
+
+${OBJECTDIR}/src/sonido.o: nbproject/Makefile-${CND_CONF}.mk src/sonido.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sonido.o src/sonido.c
+
+${OBJECTDIR}/src/m5272gpio.o: nbproject/Makefile-${CND_CONF}.mk src/m5272gpio.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272gpio.o src/m5272gpio.c
+
+${OBJECTDIR}/src/m5272lcd.o: nbproject/Makefile-${CND_CONF}.mk src/m5272lcd.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272lcd.o src/m5272lcd.c
+
+${OBJECTDIR}/src/control.o: nbproject/Makefile-${CND_CONF}.mk src/control.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/control.o src/control.c
+
+${OBJECTDIR}/src/vista.o: nbproject/Makefile-${CND_CONF}.mk src/vista.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/vista.o src/vista.c
+
+${OBJECTDIR}/src/ctetris.o: nbproject/Makefile-${CND_CONF}.mk src/ctetris.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/ctetris.o src/ctetris.c
+
+${OBJECTDIR}/src/m5272adc-dac.o: nbproject/Makefile-${CND_CONF}.mk src/m5272adc-dac.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272adc-dac.o src/m5272adc-dac.c
+
+${OBJECTDIR}/src/juego.o: nbproject/Makefile-${CND_CONF}.mk src/juego.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/juego.o src/juego.c
 
 # Subprojects
 .build-subprojects:
