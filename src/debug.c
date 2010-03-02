@@ -1,5 +1,5 @@
 /*
-   vista.c
+   debug.c
    Tetris para Motorola Coldfire 5242 sobre la plataforma de desarrollo
    ENT2004CF.
 
@@ -22,44 +22,58 @@
  */
 
 
-#include "m5272lcd.c"
+#include "m5272lib.h"
+#include "control.h"
+#include "debug.h"
+#include "hardware.h"
+#include "juego.h"
+#include "sonido.h"
+#include "vista.h"
 
 
-/*
-   Function: lcd_init
-   Inicializa el lcd.
-*/
-void lcd_init(void)
+int contador0 = 0;
+int contador1 = 1000;
+int contador2 = 2000;
+
+
+void debug(void)
 {
-    LCD_reset();	// Reseteamos el LCD
-    LCD_init();	// e inicializamos el display
+    retardo(4000);
+    _exit(0);
 }
 
 
-/*
-   Function: imprimir_en_lcd
-   Imprime una cadena de caracteres por el lcd.
-
-   Parameters:
-
-      mensaje - Cadena de caracteres  imprimir.
-*/
-void imprimir_en_lcd(char* mensaje)
+void debug_rutina_0(void)
 {
-    LCD_inst(LIN_1LCD);
-    while(*mensaje)
+    if (contador0 == 3000)
     {
-        LCD_dato(*mensaje++);
+        output("int0\n");
+        contador0 = 0;
+
     }
+    contador0++;
 }
 
 
-/*
-   Function: limpiar_lcd
-   Borrar todo lo escrito en el lcd y vuelve a poner el cursor en la 1a linea.
-*/
-void limpiar_lcd(void)
+void debug_rutina_1(void)
 {
-    LCD_inst(CLR_DISP);
-    LCD_inst(LIN_1LCD);
+    if (contador1 == 3000)
+    {
+        output("int1\n");
+        contador1 = 0;
+
+    }
+    contador1++;
+}
+
+
+void debug_rutina_2(void)
+{
+    if (contador2 == 3000)
+    {
+        output("int2\n");
+        contador2 = 0;
+
+    }
+    contador2++;
 }

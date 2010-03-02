@@ -1,5 +1,5 @@
 /*
-   vista.c
+   sonido.h
    Tetris para Motorola Coldfire 5242 sobre la plataforma de desarrollo
    ENT2004CF.
 
@@ -22,44 +22,9 @@
  */
 
 
-#include "m5272lcd.c"
+#ifndef _SONIDO_H
+#define	_SONIDO_H 
 
 
-/*
-   Function: lcd_init
-   Inicializa el lcd.
-*/
-void lcd_init(void)
-{
-    LCD_reset();	// Reseteamos el LCD
-    LCD_init();	// e inicializamos el display
-}
+#endif	/* _SONIDO_H */
 
-
-/*
-   Function: imprimir_en_lcd
-   Imprime una cadena de caracteres por el lcd.
-
-   Parameters:
-
-      mensaje - Cadena de caracteres  imprimir.
-*/
-void imprimir_en_lcd(char* mensaje)
-{
-    LCD_inst(LIN_1LCD);
-    while(*mensaje)
-    {
-        LCD_dato(*mensaje++);
-    }
-}
-
-
-/*
-   Function: limpiar_lcd
-   Borrar todo lo escrito en el lcd y vuelve a poner el cursor en la 1a linea.
-*/
-void limpiar_lcd(void)
-{
-    LCD_inst(CLR_DISP);
-    LCD_inst(LIN_1LCD);
-}

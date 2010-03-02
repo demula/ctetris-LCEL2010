@@ -1,11 +1,11 @@
 /*
-   ctetris.c
-   Tetris para Motorola Coldfire 5242 sobre la plataforma de desarrollo 
+   hardware.h
+   Configuracion del hardware par ctetris para Motorola Coldfire 5242 sobre la plataforma de desarrollo
    ENT2004CF.
-  
+
    Copyright (C) 2010 Jorge Bravo Jimenez fbravos45@gmail.com
    Copyright (C) 2010 Jesus de Mula Cano demula@gmail.com
-   
+
    License:
    Este programa es software libre; usted puede redistruirlo y/o modificarlo
    bajo los términos de la Licencia Pública General GNU, tal y como está
@@ -22,18 +22,20 @@
  */
 
 
-#include "m5272lib.c"
-#include "control.c"
-#include "vista.c"
+#ifndef _HARDWARE_CONF_H
+#define	_HARDWARE_CONF_H
 
 
-// -------------------------------------- (configuración del sistema) CONSTANTES
 /*
-   Constants: Configuración inicial del ctetris
-
-   NIVEL_DIFICULTAD_INICIAL - Nivel de dificultad con el que empieza el jugador.
-*/
-#define NIVEL_DIFICULTAD_INICIAL 0
+   Constants: Constantes varias del Motorola ColdFire 5272
+  
+   MCF_CLK - Frecuencia del reloj interno del Motorola ColdFire 5272
+   BORRA_CAP - Valor de borrado de interr. pendientes de toutn para TERn
+   BORRA_REF - Valor de borrado de interr. pendientes de toutn para TERn
+ */
+#define	MCF_CLK 66000000
+#define BORRA_CAP 0x0001
+#define BORRA_REF 0x0002
 
 
 /*
@@ -41,7 +43,7 @@
 
    NUM_FILAS - Número de filas en el teclado matricial.
    NUM_COLS - Número de columnas en el teclado matricial
-   RET_OPTOACOPLADORES - Tiempo de espera cuando excitamos una columna
+   RET_OPTOACOPLADORES - Tiempo de espera por el retardo de los optoacopladores ~50us
    RET_REBOTES - Retardo antirrebotes cuando se lee una tecla
    EXCIT - Excitación de salida bit 0
 */
@@ -137,8 +139,6 @@
    RST_0 - Habilita temporizador
    CONFIG_TIMER0 - Valor con la configuracion a escribir en el registro TMR0
    REFERENCIA_TIMER0 - Referencia para lanzar interrupciones a escribir en TRR0
-   BORRA_CAP - Valor de borrado de interr. pendientes de tout0 para TER0
-   BORRA_REF - Valor de borrado de interr. pendientes de tout0 para TER0
 
    See also:<Timers>
 */
@@ -154,9 +154,6 @@
 #define CONFIG_TIMER0 PS_0*256+CE_0*64+OM_0*32+ORI_0*16+FRR_0*8+CLK_0*2+RST_0
 #define REFERENCIA_TIMER0 (MCF_CLK)/(FREC_INT0*(PS_0+1)*(CLK_0&2?16:1))//CLK_0&2?16:1 Si CLK_0 == 10
                                                 //entonces es el reloj interno/16 sino lo dejamos a 1
-#define BORRA_CAP 0x0001
-#define BORRA_REF 0x0002
-
 
 /*
    Constants: Configuración del timer1
@@ -250,296 +247,23 @@
 #define VALOR_ICR1 0x88888888+PRIORIDAD_INT0*4096+PRIORIDAD_INT1*256+PRIORIDAD_INT2*16
 
 
-// ---------------------------------------------------------- VARIABLES GLOBALES
 /*
-   Variables: Variables globales
+   Functions: Declaracion de las funciones contenidas en hardware_conf.c
 
-   estado - Contiene todo lo referente al estado del juego.
-   relojes - Contadores varios para todos los usos que requieran temporización.
-   puerto - 
-   resultados - 
+   Funciones contenidas en hardware_conf.c para mas informacion acceder a ellas.
 */
-Estado estado;
-int contador0 = 0;
-int contador1 = 1000;
-int contador2 = 2000;
-//Relojes relojes;
-//Puerto puerto;
-//Resultados resultados;
-
-
+char tecla_pulsada(void);
 // -------------------------------------------------------------- INTERRUPCIONES
-/*
-   Function: timer0_inter_atendida
-
-   Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
-   se atiende una interrupcion de timer 0.
-*/
-void timer0_inter_atendida(void)
-{
-    mbar_writeShort(MCFSIM_TER0, BORRA_REF);
-}
-
-
-/*
-   Function: timer1_inter_atendida
-
-   Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
-   se atiende una interrupcion de timer 1.
-*/
-void timer1_inter_atendida(void)
-{
-    mbar_writeShort(MCFSIM_TER1, BORRA_REF);
-}
+INLINE void habilitar_interrupciones(void);
+INLINE void deshabilitar_interrupciones(void);
+extern void timer0_inter_atendida(void);
+INLINE void timer1_inter_atendida(void);
+INLINE void timer2_inter_atendida(void);
+// ------------------------------------------------------------ INICIALIZACIONES
+extern void timer0_init(void);
+extern void timer1_init(void);
+extern void timer2_init(void);
+extern void interrupciones_init(void);
 
 
-/*
-   Function: timer2_inter_atendida
-
-   Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
-   se atiende una interrupcion de timer 2.
-*/
-void timer2_inter_atendida(void)
-{
-    mbar_writeShort(MCFSIM_TER2, BORRA_REF);
-}
-
-
-// --------------------------------------------------------- ATENCION DE RUTINAS
-/*
-   Function: tecla_pulsada
-
-   Explora el teclado matricial y devuelve la tecla pulsada.
-
-   Posible mejora (pag 25 del enunciado):
-   Si únicamente se emplea las teclas ‘1’, ‘4’ , ‘7’ y ‘A’, que están conectadas
-   a la misma columna y un mismo terminal de salida (el bit 0 del puerto de
-   salida), es posible no realizar el barrido, sino excitar esa columna (en la
-   inicialización del objeto Tecla) y leer el puerto de entrada (conectado a las
-   filas del teclado matricial como se muestra en la Figura 2) para ver si
-   alguna de esas teclas ha sido pulsada. Se debe registrar la tecla pulsada y
-   el instante de tiempo de la pulsación.
-
-   Credits:
-   Teclado_GNU.c
-   Autores Juan Manuel Montero, Rubén San Segundo y Javier Guillén Álvarez.
-*/
-char tecla_pulsada(void)
-{
-    BYTE fila, columna, fila_mask;
-    static char teclas[NUM_FILAS][NUM_COLS] = {{"123C"},
-                                               {"456D"},
-                                               {"789E"},
-                                               {"A0BF"}};
-    while(TRUE)
-    {
-        for(columna = NUM_COLS - 1; columna >= 0; columna--)
-        {   //Excitamos una columna
-            set_puertoS(EXCIT << columna);//Se envía la excitación de columna
-            retardo(RET_OPTOACOPLADORES);//Esperamos respuesta de optoacopladores
-
-            for(fila = NUM_COLS - 1; fila >= 0; fila--)
-            {   // Exploramos las filas en busca de respuesta
-                fila_mask = EXCIT << fila;//Máscara para leer el bit de la fila actual
-                if(lee_puertoE() & fila_mask)//Si encuentra tecla pulsada
-                {
-                    while(lee_puertoE() & fila_mask);//Esperamos a que se suelte
-                    retardo(RET_REBOTES);//Retardo antirrebotes
-                    return teclas[fila][columna];//Devolvemos la tecla pulsada
-                }
-            }//Siguiente columna
-        }// Exploración finalizada sin encontrar una tecla pulsada
-    }//Reiniciamos exploración
-}
-
-
-/*
-   Functions: Rutinas de atención
-   
-   Definición de rutinas de atención a las interrupciones del sistema.
-   Es necesario definirlas aunque estén vacías.
-*/
-void rutina_int1(void){}
-void rutina_int2(void){}
-void rutina_int3(void){}
-void rutina_int4(void){}
-void rutina_tout3(void){}
-
-
-
-void rutina_tout0(void)
-{
-    timer0_inter_atendida();
-    if (contador0 == 3000)
-    {
-        output("int0\n");
-        contador0 = 0;
-        
-    }
-    contador0++;
-}
-
-
-void rutina_tout1(void)
-{
-    timer1_inter_atendida();
-    if (contador1 == 3000)
-    {
-        output("int1\n");
-        contador1 = 0;
-        
-    }
-    contador1++;
-
-}
-
-
-void rutina_tout2(void)
-{
-    timer2_inter_atendida();
-    if (contador2 == 3000)
-    {
-        output("int2\n");
-        contador2 = 0;
-
-    }
-    contador2++;
-}
-
-
-// -------------------------------------------------------------- INICIALIZACION
-// -------------------------------------------------------------------- software
-/*
-   Function: software_init
-   
-   Función que inicializa todos los objetos/variables del software.
-   Definida en start.asg
-*/
-void software_init(void)
-{
-    output("Bienvenido a ColdtrixTM:\nElija nivel de juego\n");
-    estado_init(&estado, NIVEL_DIFICULTAD_INICIAL, 0);
-}
-
-
-// -------------------------------------------------------------------- hardware
-
-
-
-/*
-   Function: timer0_init
-
-   Inicializa el temporizador 0 con los valores definidos en su configuracion de
-   constantes.
-
-   See also:<Configuración del timer0><CONFIG_TIMER0><REFERENCIA_TIMER0>
- */
-void timer0_init(void)
-{
-    mbar_writeShort(MCFSIM_TMR0, CONFIG_TIMER0);
-    mbar_writeShort(MCFSIM_TCN0, 0x0000);// Ponemos a 0 el contador del TIMER0
-    mbar_writeShort(MCFSIM_TRR0, REFERENCIA_TIMER0);
-}
-
-
-/*
-   Function: timer1_init
-
-   Inicializa el temporizador 0 con los valores definidos en su configuracion de
-   constantes.
-
-   See also:<Configuración del timer1><CONFIG_TIMER1><REFERENCIA_TIMER1>
- */
-void timer1_init(void)
-{
-    mbar_writeShort(MCFSIM_TMR1, CONFIG_TIMER1);
-    mbar_writeShort(MCFSIM_TCN1, 0x0000);// Ponemos a 0 el contador del TIMER0
-    mbar_writeShort(MCFSIM_TRR1, REFERENCIA_TIMER1);
-}
-
-
-/*
-   Function: timer1_init
-
-   Inicializa el temporizador 0 con los valores definidos en su configuracion de
-   constantes.
-
-   See also:<Configuración del timer1><CONFIG_TIMER1><REFERENCIA_TIMER1>
- */
-void timer2_init(void)
-{
-    mbar_writeShort(MCFSIM_TMR2, CONFIG_TIMER2);
-    mbar_writeShort(MCFSIM_TCN2, 0x0000);// Ponemos a 0 el contador del TIMER0
-    mbar_writeShort(MCFSIM_TRR2, REFERENCIA_TIMER2);
-}
-
-
-/*
-   Function: interrupciones_init
-
-   Inicializa la tabla de vectores de atencion a rutinas
- */
-void interrupciones_init(void)
-{
-    mbar_writeByte(MCFSIM_PIVR,V_BASE);// Fija comienzo de vectores de interrupción en V_BASE.
-    ACCESO_A_MEMORIA_LONG(DIR_VTMR0)= (ULONG)_prep_TOUT0;// Escribimos la dirección de la función para TMR0
-    ACCESO_A_MEMORIA_LONG(DIR_VTMR1)= (ULONG)_prep_TOUT1;// Escribimos la dirección de la función para TMR1
-    ACCESO_A_MEMORIA_LONG(DIR_VTMR2)= (ULONG)_prep_TOUT2;// Escribimos la dirección de la función para TMR1
-    mbar_writeLong(MCFSIM_ICR1, VALOR_ICR1);// Mascara de interrupciones y nivel de prioridades
-}
-
-
-/*
-   Function: hardware_init
-   
-   Función que inicializa las interrupciones y los puertos.
-   Definida en start.asg
-*/
-void hardware_init(void)
-{
-    interrupciones_init();//Inicializa el vector en general, ninguna esta activa
-    lcd_init();
-    timer0_init();
-    timer1_init();
-    timer2_init();
-}
-
-
-// ----------------------------------------------------------------- global init
-/*
-   Function: __init
-   
-   Función por defecto de inicialización del sistema.
-*/
-void __init(void)
-{
-    software_init();
-    hardware_init();
-}
-
-
-// ------------------------------------------------------ BUCLE PRINCIPAL (MAIN)
-/*
-   Function: bucleMain
-   
-   Bucle principal del programa.
-*/
-void bucleMain(void)
-{
-    while (TRUE)
-    {
-        if (estado.jugando==FALSE)
-        {
-            char tecla = tecla_pulsada();
-            menu(&estado, tecla);
-            imprimir_en_lcd(estado.texto_niveles[estado.nivel_dificultad]);
-        }
-        else
-        {
-            limpiar_lcd();
-            imprimir_en_lcd("Jugando...");
-            retardo(1000);
-            _exit(0);
-        }
-    }
-}
+#endif	/* _HARDWARE_CONF_H */
