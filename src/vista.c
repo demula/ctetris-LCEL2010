@@ -22,22 +22,20 @@
  */
 
 
-#include "m5272lcd.c"
-#include "m5272gpio.c"
 #include "vista.h"
 
 
 // ------------------------------------------------------------------------- LCD
+
 /*
    Function: lcd_init
    Inicializa el lcd.
-*/
+ */
 void lcd_init(void)
 {
-    LCD_reset();	// Reseteamos el LCD
-    LCD_init();	// e inicializamos el display
+    LCD_reset(); // Reseteamos el LCD
+    LCD_init(); // e inicializamos el display
 }
-
 
 /*
    Function: imprimir_en_lcd
@@ -46,21 +44,20 @@ void lcd_init(void)
    Parameters:
 
       mensaje - Cadena de caracteres  imprimir.
-*/
+ */
 void imprimir_en_lcd(char* mensaje)
 {
     LCD_inst(LIN_1LCD);
-    while(*mensaje)
+    while (*mensaje)
     {
         LCD_dato(*mensaje++);
     }
 }
 
-
 /*
    Function: limpiar_lcd
    Borrar todo lo escrito en el lcd y vuelve a poner el cursor en la 1a linea.
-*/
+ */
 void limpiar_lcd(void)
 {
     LCD_inst(CLR_DISP);
@@ -69,6 +66,7 @@ void limpiar_lcd(void)
 
 
 // ------------------------------------------------------------------------ LEDS
+
 /*
    Function: leds_init
  
@@ -76,14 +74,14 @@ void limpiar_lcd(void)
 
    Parameters:
 
-      *leds - Puntero a estructura leds que queremos inicializar.
-*/
-void leds_init (Leds *leds)
+ *leds - Puntero a estructura leds que queremos inicializar.
+ */
+void leds_init(Leds *leds)
 {
     int x, y;
-    for (x=0; x<NUM_COLUMNAS_LED; x++)
+    for (x = 0; x < NUM_COLUMNAS_LED; x++)
     {
-        for (y=0; y<NUM_FILAS_LED; y++)
+        for (y = 0; y < NUM_FILAS_LED; y++)
         {
             leds->pantalla[x][y] = 0;
         }
@@ -93,57 +91,40 @@ void leds_init (Leds *leds)
 
 
 /*
-   Function: paso_de_fila_a_int
-   
-   Coniverte una fila de leds dada (array de 0 y 1) a un entero para usar en el
-   puerto de salida a la hora de imprimir los leds en la pantalla.
-  
+   Function: ocupacion_pieza
+
+   Devuelve la informacion de la columna indicada de leds con los datos de una
+   pieza dada para su posterior suma con la salida de leds iluminados.
+
    Parameters:
 
-      fila[] - Array con los datos de una fila de leds.
+      pieza - Puntero a la pieza que quermos pintar.
+      columna - Numero de la columna que queremos iluminar
 
    Returns:
 
       Un entero para pasar al puerto de salida.
  */
-int paso_de_fila_a_int(char fila[])
+int ocupacion_pieza (int x, int y, Pieza *pieza)
 {
-    int salida = 0;
-    int y;
-    int activo = 1;
-    for (y=0; y<NUM_FILAS_LED; y++)
+    if ((x < pieza->x) || (y < pieza->y))
     {
-        salida += (activo*fila[y])<< y;
-    }
-    return salida;
-}
-
-
-/*
-   Function: mux_columna
-   
-   Coniverte el numero de columna en la columna de salida que queremos iluminar
-   teniendo en cuenta que la esquina superior izquierda es la coordenada (0,0)
-   Ej:(con 4 columnas) columna 3 => 0b0001
-  
-   Parameters:
-
-      columna - Numero de la columna a iluminar.
-
-   Returns:
-
-      Un entero para pasar al puerto de salida.
- */
-int mux_columna(int columna)
-{
-    int salida = 1;
-    if (columna >= NUM_COLUMNAS_LED)
-    {
-        output("Columna fuera del rango de la configuracion actual.");
         return 0;
     }
-    salida = salida << (NUM_COLUMNAS_LED - 1 - columna);//el -1 es por que comenzamos a contar por 0
-    return salida;
+    if ((x >= pieza->x+ANCHO_PIEZA) || (y >= pieza->y+ALTO_PIEZA))
+    {
+        return 0;
+    }
+    char salida;
+    int x_temp = x - pieza->x;//Posicion del cursor dentro de la pieza
+    int y_temp = y - pieza->y;
+    int posicion_en_forma = (pieza->rotacion*ANCHO_PIEZA*ALTO_PIEZA)+(y_temp*ANCHO_PIEZA)+x_temp;
+    salida = pieza->forma[pieza->clase][posicion_en_forma];
+    if ( '1' == salida)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 
@@ -162,28 +143,20 @@ int mux_columna(int columna)
 
       Un entero para pasar al puerto de salida.
  */
-int pintar_pieza(Pieza *pieza, int columna)
+void pintar_pieza_sobre_leds(Leds *leds, Pieza *pieza, int columna, char *fila_leds[])
 {
-
-}
-
-
-/*
-   Function: refrescar_columna_leds
-
-   Ilumina la columna de leds con los datos de fila dados.
-  
-   Parameters:
-
-      salida_fila - Entero con los datos de una fila de leds.
-      columna - Numero de la columna que queremos iluminar
- */
-void refrescar_columna_leds(int salida_fila, int columna)
-{
-    int salida = 0;
-    salida = mux_columna(columna) << NUM_FILAS_LED; //Para 4x8 es como *2^8
-    salida += salida_fila;
-    set16_puertoS(salida);
+    int posicion;
+    for (posicion = 0; posicion < NUM_FILAS_LED; posicion++)
+    {
+        if ((leds->pantalla[columna][posicion] == 1) || (ocupacion_pieza(columna, posicion, pieza) == 1))
+        {
+            fila_leds[posicion] = '1';
+        }
+        else
+        {
+            fila_leds[posicion] = '0';
+        }
+    }
 }
 
 
@@ -195,15 +168,16 @@ void refrescar_columna_leds(int salida_fila, int columna)
    columna_a_refrescar en el struct leds.
 
    Parameters:
-  
+
+      puerto - Puntero a la estructura de manejo de puertoł
       leds - Entero con los datos de una fila de leds.
       columna - Numero de la columna que queremos iluminar
  */
-void refrescar_leds(Leds *leds, Pieza *pieza)
+void refrescar_leds(Puerto *puerto, Leds *leds, Pieza *pieza)
 {
-    int salida = 0;
-    salida = paso_de_fila_a_int(leds->pantalla[leds->columna_a_refrescar]);
-    refrescar_columna_leds(salida, leds->columna_a_refrescar);
+    char fila_leds[NUM_FILAS_LED];
+    pintar_pieza_sobre_leds(leds, pieza, leds->columna_a_refrescar, &fila_leds[]);
+    puerto_excita_columna(puerto, leds->columna_a_refrescar, fila_leds);
     leds->columna_a_refrescar++;
     if (leds->columna_a_refrescar == NUM_COLUMNAS_LED)
     {

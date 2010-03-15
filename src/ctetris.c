@@ -22,7 +22,7 @@
  */
 
 #include "m5272lib.h"
-#include "hardware.c"
+#include "hardware.c"//control.h
 #include "juego.c"
 #include "sonido.c"
 #include "vista.c"//juego.h &.c m5272lcd.c m5272gpio.c
@@ -35,7 +35,7 @@
 /*
    Constants: Configuración inicial del ctetris
 
- * DEBUG - Modo debug para pruebas de funcionamiento
+   DEBUG - Modo debug para pruebas de funcionamiento
    NIVEL_DIFICULTAD_INICIAL - Nivel de dificultad con el que empieza el jugador.
 */
 #define DEBUG 1
@@ -152,7 +152,7 @@ void hardware_init(void)
 
 /*
    Function: __init
-   
+  
    Función por defecto de inicialización global del sistema.
 */
 void __init(void)

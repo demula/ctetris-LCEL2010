@@ -27,6 +27,8 @@
 
 
 #include "juego.h"
+#include "control.h"
+#include "m5272lcd.c"
 
 
 /*
@@ -53,8 +55,8 @@
 */
 typedef struct
 {
-    int pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
-    int columna_a_refrescar;
+    char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
+    char columna_a_refrescar;
 } Leds;
 
 
@@ -76,7 +78,7 @@ void limpiar_lcd(void);
    Funciones contenidas en vista.c para mas informacion acceder a ellas.
 */
 void leds_init(Leds *leds);
-void refrescar_leds(Leds *leds, Pieza *pieza);
+void refrescar_leds(Puerto *puerto, Leds *leds, Pieza *pieza);
 
 
 #endif	/* _VISTA_H */

@@ -25,6 +25,7 @@
 #ifndef _HARDWARE_CONF_H
 #define	_HARDWARE_CONF_H
 
+#include "control.h"
 
 /*
    Constants: Constantes varias del Motorola ColdFire 5272
@@ -45,13 +46,11 @@
    NUM_COLS - Número de columnas en el teclado matricial
    RET_OPTOACOPLADORES - Tiempo de espera por el retardo de los optoacopladores ~50us
    RET_REBOTES - Retardo antirrebotes cuando se lee una tecla
-   EXCIT - Excitación de salida bit 0
 */
-#define NUM_FILAS 4
-#define NUM_COLS 4
+#define NUM_FILAS_TECLADO 4
+#define NUM_COLS_TECLADO 4
 #define RET_OPTOACOPLADORES 1150
 #define RET_REBOTES 1150
-#define EXCIT 1
 
 
 /*
@@ -252,7 +251,7 @@
 
    Funciones contenidas en hardware_conf.c para mas informacion acceder a ellas.
 */
-char tecla_pulsada(void);
+char tecla_pulsada(Puerto *puerto);
 // -------------------------------------------------------------- INTERRUPCIONES
 void habilitar_interrupciones(void);
 void deshabilitar_interrupciones(void);

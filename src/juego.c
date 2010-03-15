@@ -23,7 +23,6 @@
 
 
 #include "juego.h"
-#include "hardware.h"
 
 
 /*
@@ -48,7 +47,7 @@ void set_coordenadas(Pieza *pieza, int x, int y)
 
 
 /*
-   Function: copia_texto_ocupacion
+   Function: copia_texto_forma
 
    Copia caracteres de una cadena a otra.
 
@@ -61,7 +60,7 @@ void set_coordenadas(Pieza *pieza, int x, int y)
       *destino - Puntero a la cadena que queremos copiar los carecteres de origen.
       origen - Cadena de caracteres que queremos copiar.
 */
-void copia_texto_ocupacion(char *destino, char origen[])
+void copia_texto_forma(char *destino, char origen[])
 {
     int posicion_origen;
     int posicion_destino = 0;
@@ -84,21 +83,21 @@ void copia_texto_ocupacion(char *destino, char origen[])
 
 
 /*
-   Function: copia_texto_ocupacion
+   Function: forma_init
 
    Parameters:
 
       *pieza - Puntero a la estructura Pieza que queremos inicializar.
 */
-void ocupacion_init(Pieza *pieza)
+void forma_init(Pieza *pieza)
 {
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_O);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_I);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_T);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_L);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_J);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_S);
-    copia_texto_ocupacion(*pieza->ocupacion, OCUPACION_Z);
+    copia_texto_forma(*pieza->forma, FORMA_O);
+    copia_texto_forma(*pieza->forma, FORMA_I);
+    copia_texto_forma(*pieza->forma, FORMA_T);
+    copia_texto_forma(*pieza->forma, FORMA_L);
+    copia_texto_forma(*pieza->forma, FORMA_J);
+    copia_texto_forma(*pieza->forma, FORMA_S);
+    copia_texto_forma(*pieza->forma, FORMA_Z);
 }
 
 
@@ -143,6 +142,6 @@ void pieza_init(Pieza *pieza)
     pieza->rotacion  = 0;
     pieza->x  = O_X;
     pieza->y = O_Y;
-    ocupacion_init(pieza);
+    forma_init(pieza);
     posiciones_comienzo_init(pieza);
 }

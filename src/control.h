@@ -35,12 +35,12 @@
    TEXTO_NIVEL_2 - Texto para elegir el nivel 2
    TEXTO_NIVEL_3 - Texto para elegir el nivel 3
    NUM_NIVELES_MENU - Numero de niveles elegibles en el menu (ojo funcion menu())
-*/
+ */
 #define TEXTO_BIENVENIDA "ELije nivel:"
 #define TEXTO_NIVEL_1 "Nivel 1"
 #define TEXTO_NIVEL_2 "Nivel 2"
 #define TEXTO_NIVEL_3 "Nivel 3"
-#define NUM_NIVELES_MENU 3
+#define NUM_ITEMS_MENU 3
 
 
 /*
@@ -50,12 +50,34 @@
    TECLA_NIVEL_1 - Valor de la tecla del teclao matricial para nivel 1
    TECLA_NIVEL_2 - Valor de la tecla del teclao matricial para nivel 2
    TECLA_NIVEL_3 - Valor de la tecla del teclao matricial para nivel 3
-*/
+ */
 #define TECLA_COMIENZO 'A'
 #define TECLA_NIVEL_1 '1'
 #define TECLA_NIVEL_2 '4'
 #define TECLA_NIVEL_3 '7'
 
+
+/*
+   Constants: Constantes de uso para el puerto de salida
+
+   EXCITACION - Valor de excitacion de un bit de salida
+   POS_TECLADO - Posicion del bit menos significativo del teclado
+   POS_COLUMNA - Posicion del bit menos significativo de la salida a las columnas
+   POS_FILA - Posicion del bit menos significativo de la salida a las filas
+   MASCARA_TECLADO - Mascara para asegurarse que solo se tocan los bits de 
+                        salida asociados al teclado (mascara AND y luego sumado)
+   MASCARA_COLUMNA_LEDS - Mascara para asegurarse que solo se tocan los bits de 
+                        salida asociados a la columna de leds (mascara AND...)
+   MASCARA_FILA_LEDS - Mascara para asegurarse que solo se tocan los bits de 
+                        salida asociados a la fila de leds (mascara AND...)
+ */
+#define EXCITACION 0x0001
+#define POS_TECLADO 0
+#define POS_COLUMNA 4
+#define POS_FILA 8
+#define MASCARA_TECLADO 0xFFF0
+#define MASCARA_COLUMNA_LEDS 0xFF0F
+#define MASCARA_FILA_LEDS 0x00FF
 
 /*
    Struct: Estado del juego
@@ -64,16 +86,30 @@
    su comienzo.
 
    nivel_dificultad - Numero de filas en la matriz de leds.
-   jugando - Numero de columnas en la matriz de leds.
-   texto_niveles - Numero de columnas en la matriz de leds.
-*/
+   jugando - Indica si se esta jugando (1) o en los menus(0).
+   texto_menu - Numero de columnas en la matriz de leds.
+ */
 typedef struct
 {
     int nivel_dificultad;
-    int jugando;
-    char* texto_niveles[NUM_NIVELES_MENU];
+    char jugando;
+    char* texto_menu[NUM_ITEMS_MENU];
 } Estado;
 
+/*
+   Struct: Relojes del juego
+
+   Contiene todos que se usan en el juego.
+
+   columna_led - Tiempo de refresco por columna MENOS tiempo que lleva escitada 
+                la columna en ms.
+   nota - Cuenta atras de tiempo que lleva sonando una nota.
+ */
+typedef struct
+{
+    int columna_led;
+    int nota;
+} Reloj;
 
 /*
    Struct: Relojes del juego
@@ -83,23 +119,24 @@ typedef struct
    columna_led - Tiempo que lleva escitada la columna en ms.
    refresco - Tiempo de refresco que queremos en la pantalla lcd.
    nota - Tiempo que lleva una nota sonando.
-*/
+ */
 typedef struct
 {
-    int columna_led;
-    int refresco;
-    int nota;
-} Reloj;
+    short int situacion_puerto;
+} Puerto;
 
 
 /*
    Functions: Declaracion de las funciones contenidas en control.c
 
    Funciones contenidas en control.c para mas informacion acceder a ellas.
-*/
-void menu (Estado *estado, char tecla);
-void estado_init (Estado *estado, int nivel_dificultad);
-void reloj_init (Reloj *reloj);
+ */
+void menu(Estado *estado, char tecla);
+void estado_init(Estado *estado, int nivel_dificultad);
+void reloj_init(Reloj *reloj);
+void puerto_init(Puerto *puerto);
+void puerto_excita_columna(Puerto *puerto, char columna, char* fila_leds);
+void puerto_excita_teclado(Puerto *puerto, char columna);
 
 
 #endif	/* _CONTROL_H */

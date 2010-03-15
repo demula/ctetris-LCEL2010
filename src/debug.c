@@ -32,7 +32,7 @@
 
 
 int contador0 = 0;
-int contador1 = 1000;
+int contador1 = 0;
 int contador2 = 2000;
 
 
@@ -57,7 +57,7 @@ void debug_rutina_0(void)
 
 void debug_rutina_1(void)
 {
-    if (contador1 == 3000)
+    if (contador1 == 5)
     {
         output("int1\n");
         contador1 = 0;
