@@ -26,7 +26,6 @@
 #include "m5272lib.h"
 #include "hardware.h"
 
-
 /*
    Function: tecla_pulsada
 
@@ -52,7 +51,8 @@ char tecla_pulsada(Puerto *puerto)
         {"123C"},
         {"456D"},
         {"789E"},
-        {"A0BF"}};
+        {"A0BF"}
+    };
     while (TRUE)
     {
         for (columna = 0; columna < NUM_COLS_TECLADO; columna++)

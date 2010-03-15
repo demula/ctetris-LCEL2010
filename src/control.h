@@ -25,6 +25,21 @@
 #ifndef _CONTROL_H
 #define	_CONTROL_H
 
+#include "juego.h"
+#include "m5272lcd.c"
+
+
+/*
+   Constants: Configuración de la matriz de leds
+
+   NUM_FILAS_LED - Numero de filas en la matriz de leds.
+   NUM_COLUMNAS_LED - Numero de columnas en la matriz de leds.
+   TASA_REFRESCO - Cada cuanto se refresca la pantalla led en Hz
+ */
+#define NUM_FILAS_LED 8
+#define NUM_COLUMNAS_LED 4
+#define TASA_REFRESCO 20 // TODO: hay que cambiarla para que coincida con las specs de la practica
+
 
 /*
    Constants: Textos de los menus del juego
@@ -79,6 +94,7 @@
 #define MASCARA_COLUMNA_LEDS 0xFF0F
 #define MASCARA_FILA_LEDS 0x00FF
 
+
 /*
    Struct: Estado del juego
   
@@ -96,6 +112,7 @@ typedef struct
     char* texto_menu[NUM_ITEMS_MENU];
 } Estado;
 
+
 /*
    Struct: Relojes del juego
 
@@ -110,6 +127,7 @@ typedef struct
     int columna_led;
     int nota;
 } Reloj;
+
 
 /*
    Struct: Relojes del juego
@@ -127,16 +145,38 @@ typedef struct
 
 
 /*
+   Struct: Leds de la pantalla de juego
+
+   Estructura con la informacion de lo que se debe mostrar en la pantalla de
+   leds. Contiene la informacion de que led debe estar encendido (menos la pieza
+   en juego) y de la siguiente columna a refrescar.
+
+   pantalla - Matriz con la informacion de los leds encencidos.
+   columna_a_refrescar - Siguiente columna a refrescar.
+ */
+typedef struct
+{
+    char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
+    char columna_a_refrescar;
+} Leds;
+
+
+/*
    Functions: Declaracion de las funciones contenidas en control.c
 
    Funciones contenidas en control.c para mas informacion acceder a ellas.
  */
-void menu(Estado *estado, char tecla);
-void estado_init(Estado *estado, int nivel_dificultad);
+void menu(Estado *estado, Juego *juego, char tecla);
+void estado_init(Estado *estado);
 void reloj_init(Reloj *reloj);
 void puerto_init(Puerto *puerto);
 void puerto_excita_columna(Puerto *puerto, char columna, char* fila_leds);
 void puerto_excita_teclado(Puerto *puerto, char columna);
+void lcd_init(void);
+void lcd_imprimir(char* mensaje);
+void lcd_limpiar(void);
+void leds_init(Leds *leds);
+void leds_refrescar(Puerto *puerto, Leds *leds, Pieza *pieza);
 
 
 #endif	/* _CONTROL_H */

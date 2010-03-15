@@ -25,7 +25,6 @@
 #ifndef _JUEGO_H
 #define	_JUEGO_H
 
-#include "control.h"
 
 /*
    Constants: Configuración del hardware del teclado
@@ -41,7 +40,7 @@
    PIEZA_J - Numero identificador para el switch de la pieza J
    PIEZA_S - Numero identificador para el switch de la pieza S
    PIEZA_Z - Numero identificador para el switch de la pieza Z
-*/
+ */
 #define ANCHO_PIEZA 4
 #define ALTO_PIEZA 4
 #define ROTACIONES 4
@@ -78,7 +77,7 @@
    OCUPACION_J - Leds de ocupacion de la pieza J.
    OCUPACION_S - Leds de ocupacion de la pieza S.
    OCUPACION_Z - Leds de ocupacion de la pieza Z.
-*/
+ */
 #define FORMA_O "1100,1100,0000,0000;1100,1100,0000,0000;1100,1100,0000,0000;1100,1100,0000,0000;"
 #define FORMA_I "0100,0100,0100,0100;0000,1111,0000,0000;0100,0100,0100,0100;0000,1111,0000,0000;"
 #define FORMA_T "0100,0110,0100,0000;0100,1110,0000,0000;0100,1100,0100,0000;0000,1110,0100,0000;"
@@ -105,7 +104,7 @@
    S_Y - Coordenada y inicial de la pieza S.
    Z_X - Coordenada x inicial de la pieza Z.
    Z_Y - Coordenada y inicial de la pieza Z.
-*/
+ */
 #define O_X 1
 #define O_Y -2
 #define I_X 0
@@ -121,7 +120,6 @@
 #define Z_X 0
 #define Z_Y 0
 
-
 /*
    Struct: Pieza del juego
 
@@ -134,7 +132,7 @@
    y - Poscicion vertical.
    rotacion - rotacion en la que esta la pieza.
    ocupacion - leds que ocupan las piezas.
-*/
+ */
 typedef struct
 {
     char clase;
@@ -143,17 +141,43 @@ typedef struct
     int rotacion;
     int x_comienzo[NUM_CLASES];
     int y_comienzo[NUM_CLASES];
-    char forma[NUM_CLASES][ANCHO_PIEZA*ALTO_PIEZA*ROTACIONES];
+    char forma[NUM_CLASES][ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES];
 } Pieza;
+
+
+/*
+   Struct: Juego
+
+   Contiene la informacion de la pieza activa del juego. Nos valdra para saber
+   su localizacion en la pantalla, los leds que ocupa teniendo en cuenta su
+   rotacion.
+
+   nivel_dificultad - Nivel de dificultad al que esta el juego.
+   clase_pieza_siguiente - Identificacion del tipo de la pieza siguiente en el juego.
+   x - Posicion horizontal.
+   y - Poscicion vertical.
+   rotacion - rotacion en la que esta la pieza.
+   ocupacion - leds que ocupan las piezas.
+ */
+typedef struct
+{
+    int nivel_dificultad;
+    char clase_pieza_siguiente;
+    Pieza pieza_actual;
+} Juego;
 
 
 /*
    Functions: Declaracion de las funciones contenidas en juego.c
 
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
-*/
+ */
 void set_coordenadas(Pieza *pieza, int x, int y);
+int pieza_get_x(Pieza *pieza);
+int pieza_get_y(Pieza *pieza);
 void pieza_init(Pieza *pieza);
+void juego_init(Juego *juego, int nivel_dificultad);
+int juego_tiempo_caida_pieza (Juego *juego);
 
 
 #endif	/* _JUEGO_H */

@@ -1,26 +1,26 @@
 //------------------------------------------------------------------------------
 // m5272gpio.c
 //
-//   Funciones del módulo de entrada salida de propósito general de la
+//   Funciones del mï¿½dulo de entrada salida de propï¿½sito general de la
 //   plataforma de desarrollo ENT2004CF
 //
-// Actualizada por: Javier Guillén Álvarez
+// Actualizada por: Javier Guillï¿½n ï¿½lvarez
 //------------------------------------------------------------------------------
 #ifndef __M5272GPIO_C__
 #define __M5272GPIO_C__
 
 #include "m5272.h"
-#include "m5272lib.c"
+#include "m5272lib.h"
 
-UWORD puertoS; // Contendrá una copia del valor del puerto S para posibilitar su lectura
+UWORD puertoS; // Contendrï¿½ una copia del valor del puerto S para posibilitar su lectura
 
 //-------------------------------------------------------------
 // void set_puertoS_H (UBYTE valor)
 //
-// Descripción:
+// Descripciï¿½n:
 //   Escribe en el byte alto del puerto de salida el valor
 //
-// Autor: Javier Guillén Álvarez
+// Autor: Javier Guillï¿½n ï¿½lvarez
 //-------------------------------------------------------------
 void set_puertoS_H (UBYTE valor)
 {
@@ -34,13 +34,13 @@ void set_puertoS_H (UBYTE valor)
 //-------------------------------------------------------------
 // void set_puertoS (UBYTE valor)
 //
-// Descripción:
+// Descripciï¿½n:
 //   Escribe en el byte bajo del puerto de salida
 //
-// Autor: Javier Guillén Álvarez
+// Autor: Javier Guillï¿½n ï¿½lvarez
 //-------------------------------------------------------------
 // ALIAS para mantener compatibilidad con versiones anteriores
-// de la librería.
+// de la librerï¿½a.
 #define set_puertoS_L(valor) set_puertoS(valor)
 
 void set_puertoS (UBYTE valor)
@@ -56,7 +56,7 @@ void set_puertoS (UBYTE valor)
 // void set_puertoS_L (UBYTE valor)
 //
 // Alias de 'set_puertoS(UBYTE valor)' para mantener compatibilidad
-// con versiones anteriores de la librería.
+// con versiones anteriores de la librerï¿½a.
 //-------------------------------------------------------------------
 
 void set16_puertoS (UWORD valor)
@@ -70,7 +70,7 @@ void set16_puertoS (UWORD valor)
 //------------------------------------------
 // UWORD lee16_puertoE (void)
 //
-// Descripción:
+// Descripciï¿½n:
 //   Lee los 16 bits del puerto de entrada
 //------------------------------------------
 UWORD lee16_puertoE (void)
@@ -81,7 +81,7 @@ UWORD lee16_puertoE (void)
 //-------------------------------------------
 // UBYTE lee_puertoE (void)
 //
-// Descripción:
+// Descripciï¿½n:
 //   Lee el byte bajo del puerto de entrada
 //-------------------------------------------
 UBYTE lee_puertoE (void)
@@ -92,9 +92,9 @@ UBYTE lee_puertoE (void)
 //-------------------------------------------------
 // void gpio_setup(void)
 // 
-// Descripción:
-//  Configuración del módulo de entrada/salida de 
-//   propósito general del M5272 (GPIO) 
+// Descripciï¿½n:
+//  Configuraciï¿½n del mï¿½dulo de entrada/salida de 
+//   propï¿½sito general del M5272 (GPIO) 
 //
 //-------------------------------------------------
 void gpio_setup(void)
@@ -106,7 +106,7 @@ void gpio_setup(void)
   // Configuracion del puerto B
   // El puerto B comparte los pines Ethernet y la primera UART
   mbar_writeLong(MCFSIM_PBCNT, 0x55554155); 
-  mbar_writeShort(MCFSIM_PBDDR, 0x0000); 	// Sólo afecta a PB5 y PB6 (in)
+  mbar_writeShort(MCFSIM_PBDDR, 0x0000); 	// Sï¿½lo afecta a PB5 y PB6 (in)
 }
 
 //----------------------------------------------------
@@ -145,8 +145,8 @@ void set_puerto0 (UBYTE valor)
 //--------------------------------------------------------
 // void set_led(UWORD valor)
 //
-// Descripción:
-//   Presenta un valor en los LEDs de información de la
+// Descripciï¿½n:
+//   Presenta un valor en los LEDs de informaciï¿½n de la
 //   placa Antares. 
 //
 // Por ejemplo: set_led(0x07)
@@ -155,12 +155,12 @@ void set_puerto0 (UBYTE valor)
 //     |----------|----------|------------|------------|
 //     |    ON    |    ON    |     ON     |     OFF    | 
 // 
-// Autor: Alberto Quintana Ocaña
+// Autor: Alberto Quintana Ocaï¿½a
 //--------------------------------------------------------
 void set_led(UWORD valor)
 {
   UWORD puerto1_valor;	// Valor del puerto IO 1
-  UWORD mascara;	// Máscara con el valor de los LEDs
+  UWORD mascara;	// Mï¿½scara con el valor de los LEDs
 			// en las posiciones del puerto 1
   puerto1_valor=(UWORD) (mbar_readLong(MCFSIM_PADAT)>>16);
   mascara=0x0000;

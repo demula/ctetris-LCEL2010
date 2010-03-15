@@ -24,7 +24,7 @@
 
 #include "juego.h"
 
-
+// ----------------------------------------------------------------------- PIEZA
 /*
    Function: nueva_pieza
 
@@ -38,11 +38,21 @@
    Returns:
 
       Pieza colocada en coordenadas de inicio superiores al marco de la pantalla.
-*/
-void set_coordenadas(Pieza *pieza, int x, int y)
+ */
+void pieza_set_posicion(Pieza *pieza, int x, int y)
 {
     pieza->x = x;
     pieza->y = y;
+}
+
+
+int pieza_get_x(Pieza *pieza)
+{
+    return 0;
+}
+int pieza_get_y(Pieza *pieza)
+{
+    return 0;
 }
 
 
@@ -57,14 +67,14 @@ void set_coordenadas(Pieza *pieza, int x, int y)
 
    Parameters:
 
-      *destino - Puntero a la cadena que queremos copiar los carecteres de origen.
+ *destino - Puntero a la cadena que queremos copiar los carecteres de origen.
       origen - Cadena de caracteres que queremos copiar.
-*/
+ */
 void copia_texto_forma(char *destino, char origen[])
 {
     int posicion_origen;
     int posicion_destino = 0;
-    for (posicion_origen=0; posicion_origen<ANCHO_PIEZA*ALTO_PIEZA*ROTACIONES-ALTO_PIEZA*ROTACIONES; posicion_origen++)
+    for (posicion_origen = 0; posicion_origen < ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES - ALTO_PIEZA * ROTACIONES; posicion_origen++)
     {
         switch (origen[posicion_origen])
         {
@@ -87,8 +97,8 @@ void copia_texto_forma(char *destino, char origen[])
 
    Parameters:
 
-      *pieza - Puntero a la estructura Pieza que queremos inicializar.
-*/
+ *pieza - Puntero a la estructura Pieza que queremos inicializar.
+ */
 void forma_init(Pieza *pieza)
 {
     copia_texto_forma(*pieza->forma, FORMA_O);
@@ -106,8 +116,8 @@ void forma_init(Pieza *pieza)
 
    Parameters:
 
-      *pieza - Puntero a la estructura Pieza que queremos inicializar.
-*/
+ *pieza - Puntero a la estructura Pieza que queremos inicializar.
+ */
 void posiciones_comienzo_init(Pieza *pieza)
 {
     pieza->x_comienzo[PIEZA_O] = O_X;
@@ -126,7 +136,6 @@ void posiciones_comienzo_init(Pieza *pieza)
     pieza->y_comienzo[PIEZA_Z] = Z_Y;
 }
 
-
 /*
    Function: pieza_init
  
@@ -134,14 +143,63 @@ void posiciones_comienzo_init(Pieza *pieza)
 
    Parameters:
 
-      *pieza - Puntero a la estructura Pieza que queremos inicializar.
-*/
+ *pieza - Puntero a la estructura Pieza que queremos inicializar.
+ */
 void pieza_init(Pieza *pieza)
 {
     pieza->clase = PIEZA_O; //Notice the equal to and the comma
-    pieza->rotacion  = 0;
-    pieza->x  = O_X;
+    pieza->rotacion = 0;
+    pieza->x = O_X;
     pieza->y = O_Y;
     forma_init(pieza);
     posiciones_comienzo_init(pieza);
+}
+
+
+// ----------------------------------------------------------------------- JUEGO
+/*
+ JUEGO —
+ *
+ *el nivel, la pieza actual, la pieza siguiente, el tiempo
+máximo de permanencia de una pieza en una determinada línea,
+
+ *
+– init
+– mover
+– rotar
+– colision
+– tiempo_caida_pieza
+*/
+
+
+/*
+   Function: juego_init
+
+   Inicializa una estructura juego.
+
+   Parameters:
+
+   *juego - Puntero a la estructura Juego que queremos inicializar.
+   nivel_dificultad - Dificultad inicial del juego antes de ser elegida.
+ */
+void juego_init(Juego *juego, int nivel_dificultad)
+{
+    juego->nivel_dificultad = nivel_dificultad;
+    juego->clase_pieza_siguiente = PIEZA_I;
+    pieza_init(&juego->pieza_actual);
+}
+
+
+/*
+   Function: juego_tiempo_caida_pieza
+
+   Devuelve el tiempo de caida de la pieza dependiendo del nivel actual.
+
+   Parameters:
+
+   *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
+ */
+int juego_tiempo_caida_pieza (Juego *juego)
+{
+    return 0;
 }

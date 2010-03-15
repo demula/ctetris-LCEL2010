@@ -22,12 +22,9 @@
  */
 
 #include "m5272lib.h"
-#include "hardware.c"//control.h
-#include "juego.c"
-#include "sonido.c"
-#include "vista.c"//juego.h &.c m5272lcd.c m5272gpio.c
-#include "control.c"// &.c vista.h
-#include "debug.c"//TODAS
+#include "hardware.h" //-->>control.h-->>juego.h
+//#include "sonido.h"
+#include "debug.h"
 
 
 
@@ -37,7 +34,7 @@
 
    DEBUG - Modo debug para pruebas de funcionamiento
    NIVEL_DIFICULTAD_INICIAL - Nivel de dificultad con el que empieza el jugador.
-*/
+ */
 #define DEBUG 1
 #define NIVEL_DIFICULTAD_INICIAL 0
 
@@ -52,65 +49,94 @@
    pieza - Informacion de la pieza que esta en juego
    melodia - Informacion de la melodia y de la nota que actualmente esta sonando
    resultados - lineas completadas y puntos obtenidos
-*/
+ */
 Estado estado;
 Reloj reloj;
 Leds leds;
-Pieza pieza;
+Puerto puerto;
+Juego juego;
 //Melodia melodia;
 //Resultados resultados;
 
 
 // --------------------------------------------------------- RUTINAS DE ATENCION
+
 /*
    Functions: Rutinas de atención
    
    Definición de rutinas de atención a las interrupciones del sistema.
    Es necesario definirlas aunque estén vacías.
-*/
-void rutina_int1(void){}
-void rutina_int2(void){}
-void rutina_int3(void){}
-void rutina_int4(void){}
-void rutina_tout3(void){}
+ */
+void rutina_int1(void)
+{
+}
 
+void rutina_int2(void)
+{
+}
 
+void rutina_int3(void)
+{
+}
+
+void rutina_int4(void)
+{
+}
+
+void rutina_tout3(void)
+{
+}
+
+/*
+   Function: rutina_tout0
+
+   Rutina de atencion para la generacion de una onda cuadrada a la frecuencia de
+   la nota que queremos. (Tiene maxima prioridad en el sistema -- 6)
+ */
 void rutina_tout0(void)
 {
     timer0_inter_atendida();
     if (DEBUG)
     {
         debug_rutina_0();
-    }
-    else
+    } else
     {
 
     }
 }
 
+/*
+   Function: rutina_tout1
 
+   Rutina de atencion que se encarga de la actualizacion de la fisica del juego.
+   Consiste en la caida de la pieza y actualizaciones del juego como juego
+   perdido o linea completada. (Segunda en prioridad en el sistema -- 5)
+ */
 void rutina_tout1(void)
 {
     timer1_inter_atendida();
     if (DEBUG)
     {
         debug_rutina_1();
-    }
-    else
+    } else
     {
 
     }
 }
 
+/*
+   Function: rutina_tout2
 
+   Rutina de atencion para el pintando y refresco de la pantalla de leds. (Tiene
+   la minima prioridad en el sistema -- 4)
+ */
 void rutina_tout2(void)
 {
     timer2_inter_atendida();
     if (DEBUG)
     {
         debug_rutina_2();
-    }
-    else
+    } else
     {
 
     }
@@ -118,28 +144,29 @@ void rutina_tout2(void)
 
 
 // -------------------------------------------------------------- INICIALIZACION
+
 /*
    Function: software_init
    
    Función que inicializa todos los objetos/variables del software.
    Definida en start.asg
-*/
+ */
 void software_init(void)
 {
     output("Bienvenido a ColdtrixTM:\nElija nivel de juego\n");
-    estado_init(&estado, NIVEL_DIFICULTAD_INICIAL);
+    estado_init(&estado);
+    puerto_init(&puerto);
     reloj_init(&reloj);
     leds_init(&leds);
-    pieza_init(&pieza);
+    juego_init(&juego, NIVEL_DIFICULTAD_INICIAL);
 }
-
 
 /*
    Function: hardware_init
    
    Función que inicializa las interrupciones y los puertos.
    Definida en start.asg
-*/
+ */
 void hardware_init(void)
 {
     interrupciones_init();
@@ -149,12 +176,11 @@ void hardware_init(void)
     timer2_init();
 }
 
-
 /*
    Function: __init
   
    Función por defecto de inicialización global del sistema.
-*/
+ */
 void __init(void)
 {
     software_init();
@@ -163,33 +189,32 @@ void __init(void)
 
 
 // ------------------------------------------------------ BUCLE PRINCIPAL (MAIN)
+
 /*
    Function: bucleMain
    
    Bucle principal del programa.
-*/
+ */
 void bucleMain(void)
 {
-    if(DEBUG)
+    if (DEBUG)
     {
         output("MODO DEBUG");
         debug();
-    }
-    else
+    } else
     {
         while (TRUE)
         {
-            if (estado.jugando==FALSE)
+            if (estado.jugando == FALSE)
             {
                 char tecla;
                 imprimir_en_lcd(TEXTO_BIENVENIDA);
                 retardo(1000);
-                imprimir_en_lcd(estado.texto_niveles[estado.nivel_dificultad]);
-                tecla = tecla_pulsada();
-                menu(&estado, tecla);
-                imprimir_en_lcd(estado.texto_niveles[estado.nivel_dificultad]);
-            }
-            else
+                imprimir_en_lcd(estado.texto_menu[juego.nivel_dificultad]);
+                tecla = tecla_pulsada(&puerto);
+                menu(&estado, &juego, tecla);
+                imprimir_en_lcd(estado.texto_menu[juego.nivel_dificultad]);
+            } else
             {
                 limpiar_lcd();
                 imprimir_en_lcd("Jugando...");

@@ -46,7 +46,7 @@
    NUM_COLS - Número de columnas en el teclado matricial
    RET_OPTOACOPLADORES - Tiempo de espera por el retardo de los optoacopladores ~50us
    RET_REBOTES - Retardo antirrebotes cuando se lee una tecla
-*/
+ */
 #define NUM_FILAS_TECLADO 4
 #define NUM_COLS_TECLADO 4
 #define RET_OPTOACOPLADORES 1150
@@ -63,7 +63,7 @@
    DIR_VTMR0 - Dirección del vector de TMR0
    DIR_VTMR1 - Dirección del vector de TMR1
    DIR_VTMR2 - Dirección del vector de TMR2
-*/
+ */
 #define V_BASE 0x40 //Posicion tipica de la interrupciones de usuario
 #define DIR_VTMR0 4*(V_BASE+5)
 #define DIR_VTMR1 4*(V_BASE+6)
@@ -140,7 +140,7 @@
    REFERENCIA_TIMER0 - Referencia para lanzar interrupciones a escribir en TRR0
 
    See also:<Timers>
-*/
+ */
 #define FREC_INT0 1000
 #define PRIORIDAD_INT0 6
 #define PS_0 0x4F
@@ -152,7 +152,7 @@
 #define RST_0 1
 #define CONFIG_TIMER0 PS_0*256+CE_0*64+OM_0*32+ORI_0*16+FRR_0*8+CLK_0*2+RST_0
 #define REFERENCIA_TIMER0 (MCF_CLK)/(FREC_INT0*(PS_0+1)*(CLK_0&2?16:1))//CLK_0&2?16:1 Si CLK_0 == 10
-                                                //entonces es el reloj interno/16 sino lo dejamos a 1
+//entonces es el reloj interno/16 sino lo dejamos a 1
 
 /*
    Constants: Configuración del timer1
@@ -182,7 +182,7 @@
    REFERENCIA_TIMER1 - Referencia para lanzar interrupciones a escribir en TRR1
 
    See also:<Timers>
-*/
+ */
 #define FREC_INT1 1000
 #define PRIORIDAD_INT1 5
 #define PS_1 0x4F
@@ -224,7 +224,7 @@
    REFERENCIA_TIMER2 - Referencia para lanzar interrupciones a escribir en TRR2
 
    See also:<Timers>
-*/
+ */
 #define FREC_INT2 1000
 #define PRIORIDAD_INT2 4
 #define PS_2 0x4F
@@ -242,7 +242,7 @@
    Constants: Configuración de las interrupciones
 
    VALOR_ICR1 - Valor inicial de registro de interrupciones ICR1
-*/
+ */
 #define VALOR_ICR1 0x88888888+PRIORIDAD_INT0*4096+PRIORIDAD_INT1*256+PRIORIDAD_INT2*16
 
 
@@ -250,7 +250,7 @@
    Functions: Declaracion de las funciones contenidas en hardware_conf.c
 
    Funciones contenidas en hardware_conf.c para mas informacion acceder a ellas.
-*/
+ */
 char tecla_pulsada(Puerto *puerto);
 // -------------------------------------------------------------- INTERRUPCIONES
 void habilitar_interrupciones(void);
