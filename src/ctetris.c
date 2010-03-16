@@ -21,22 +21,9 @@
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
  */
 
-#include "m5272lib.h"
-#include "hardware.h" //-->>control.h-->>juego.h
-//#include "sonido.h"
-#include "debug.h"
+#include "m5272lib.c"
+#include "hardware.c" //-->>control.h-->>juego.h
 
-
-
-// --------------------------------------------------- CONFIGURACION DEL CTETRIS
-/*
-   Constants: Configuración inicial del ctetris
-
-   DEBUG - Modo debug para pruebas de funcionamiento
-   NIVEL_DIFICULTAD_INICIAL - Nivel de dificultad con el que empieza el jugador.
- */
-#define DEBUG 1
-#define NIVEL_DIFICULTAD_INICIAL 0
 
 
 // ---------------------------------------------------------- VARIABLES GLOBALES
@@ -55,6 +42,8 @@ Reloj reloj;
 Leds leds;
 Puerto puerto;
 Juego juego;
+int contador = 0;
+int columna = 0;
 //Melodia melodia;
 //Resultados resultados;
 
@@ -96,13 +85,6 @@ void rutina_tout3(void)
 void rutina_tout0(void)
 {
     timer0_inter_atendida();
-    if (DEBUG)
-    {
-        debug_rutina_0();
-    } else
-    {
-
-    }
 }
 
 /*
@@ -115,13 +97,16 @@ void rutina_tout0(void)
 void rutina_tout1(void)
 {
     timer1_inter_atendida();
-    if (DEBUG)
+    contador++;
+    if (contador == 1000)
     {
-        debug_rutina_1();
-    } else
-    {
-
+        output("inter\n");
+        puerto_excita_columna(&puerto, columna, 0xAA);
+        columna++;
+        if (columna == 4){columna = 0;}
+        contador = 0;
     }
+    
 }
 
 /*
@@ -133,13 +118,6 @@ void rutina_tout1(void)
 void rutina_tout2(void)
 {
     timer2_inter_atendida();
-    if (DEBUG)
-    {
-        debug_rutina_2();
-    } else
-    {
-
-    }
 }
 
 
@@ -153,12 +131,11 @@ void rutina_tout2(void)
  */
 void software_init(void)
 {
-    output("Bienvenido a ColdtrixTM:\nElija nivel de juego\n");
     estado_init(&estado);
     puerto_init(&puerto);
     reloj_init(&reloj);
     leds_init(&leds);
-    juego_init(&juego, NIVEL_DIFICULTAD_INICIAL);
+    juego_init(&juego);
 }
 
 /*
@@ -197,30 +174,20 @@ void __init(void)
  */
 void bucleMain(void)
 {
-    if (DEBUG)
+    output(TEXTO_BIENVENIDA);
+    output(TEXTO_NIVELES_POSIBLES);
+    while (TRUE)
     {
-        output("MODO DEBUG");
-        debug();
-    } else
-    {
-        while (TRUE)
+        if (estado.jugando == FALSE)
         {
-            if (estado.jugando == FALSE)
-            {
-                char tecla;
-                lcd_imprimir(TEXTO_BIENVENIDA);
-                retardo(1000);
-                lcd_imprimir(estado.texto_menu[juego.nivel_dificultad]);
-                tecla = tecla_pulsada(&puerto);
-                menu(&estado, &juego, tecla);
-                lcd_imprimir(estado.texto_menu[juego.nivel_dificultad]);
-            } else
-            {
-                char tecla = tecla_pulsada(&puerto);
-                lcd_limpiar();
-                lcd_imprimir("Jugando...");
-                juego_tecla_pulsada(&leds, &juego, tecla);
-            }
+            char tecla;
+            tecla = tecla_pulsada(&puerto);
+            menu(&estado, &juego, tecla);
+        } else
+        {
+            _exit(0);
+            //char tecla = tecla_pulsada(&puerto);
+            //juego_tecla_pulsada(&leds, &juego, tecla);
         }
     }
 }

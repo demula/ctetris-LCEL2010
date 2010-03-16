@@ -81,11 +81,11 @@ void rellena_array_forma(char forma[NUM_CLASES][ROTACIONES][ANCHO_PIEZA][ALTO_PI
         switch (origen[posicion_origen])
         {
             case '0':
-                forma[clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 0;
+                forma[(int)clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 0;
                 posicion_destino_x++;
                 break;
             case '1':
-                forma[clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 1;
+                forma[(int)clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 1;
                 posicion_destino_x++;
                 break;
             case ',':
@@ -190,9 +190,9 @@ máximo de permanencia de una pieza en una determinada línea,
  *juego - Puntero a la estructura Juego que queremos inicializar.
    nivel_dificultad - Dificultad inicial del juego antes de ser elegida.
  */
-void juego_init(Juego *juego, int nivel_dificultad)
+void juego_init(Juego *juego)
 {
-    juego->nivel_dificultad = nivel_dificultad;
+    juego->nivel_dificultad = -1;
     juego->clase_pieza_siguiente = PIEZA_I;
     pieza_init(&juego->pieza_actual);
 }
@@ -210,13 +210,13 @@ int juego_tiempo_caida_pieza(Juego *juego)
 {
     switch (juego->nivel_dificultad)
     {
-        case 0: return 0;
+        case -1: return 0;
             break;
-        case 1: return VELOCIDAD_NIVEL_1;
+        case 0: return VELOCIDAD_NIVEL_1;
             break;
-        case 2: return VELOCIDAD_NIVEL_2;
+        case 1: return VELOCIDAD_NIVEL_2;
             break;
-        case 3: return VELOCIDAD_NIVEL_3;
+        case 2: return VELOCIDAD_NIVEL_3;
             break;
     }
     return -1;
@@ -275,7 +275,7 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
         for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
         {
             leds_ocupacion = leds_get_posicion(leds, x_temp + x_pos, y_temp + y_pos);
-            pieza_ocupacion = juego->pieza_actual.forma[juego->pieza_actual.clase][rotacion][x_temp][y_temp];
+            pieza_ocupacion = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][rotacion][x_temp][y_temp];
             if ((leds_ocupacion == 1) && (pieza_ocupacion == 1))
             {
                 return 1;
@@ -304,7 +304,7 @@ void juego_fijar_pieza(Leds *leds, Juego *juego)
     {
         for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
         {
-            pieza_ocupacion = juego->pieza_actual.forma[juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
+            pieza_ocupacion = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
             if (pieza_ocupacion == 1)
             {
                 leds->pantalla[juego->pieza_actual.x + x_temp][juego->pieza_actual.y + y_temp] = 1;

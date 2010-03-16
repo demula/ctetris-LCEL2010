@@ -33,12 +33,10 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/src/hardware.o \
 	${OBJECTDIR}/src/m5272lib.o \
-	${OBJECTDIR}/src/debug.o \
 	${OBJECTDIR}/src/sonido.o \
 	${OBJECTDIR}/src/m5272gpio.o \
 	${OBJECTDIR}/src/m5272lcd.o \
 	${OBJECTDIR}/src/control.o \
-	${OBJECTDIR}/src/vista.o \
 	${OBJECTDIR}/src/ctetris.o \
 	${OBJECTDIR}/src/m5272adc-dac.o \
 	${OBJECTDIR}/src/juego.o
@@ -77,11 +75,6 @@ ${OBJECTDIR}/src/m5272lib.o: nbproject/Makefile-${CND_CONF}.mk src/m5272lib.c
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272lib.o src/m5272lib.c
 
-${OBJECTDIR}/src/debug.o: nbproject/Makefile-${CND_CONF}.mk src/debug.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/debug.o src/debug.c
-
 ${OBJECTDIR}/src/sonido.o: nbproject/Makefile-${CND_CONF}.mk src/sonido.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -101,11 +94,6 @@ ${OBJECTDIR}/src/control.o: nbproject/Makefile-${CND_CONF}.mk src/control.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/control.o src/control.c
-
-${OBJECTDIR}/src/vista.o: nbproject/Makefile-${CND_CONF}.mk src/vista.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/vista.o src/vista.c
 
 ${OBJECTDIR}/src/ctetris.o: nbproject/Makefile-${CND_CONF}.mk src/ctetris.c 
 	${MKDIR} -p ${OBJECTDIR}/src

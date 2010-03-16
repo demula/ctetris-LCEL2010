@@ -5,14 +5,12 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>src/control.h</itemPath>
-      <itemPath>src/debug.h</itemPath>
       <itemPath>src/hardware.h</itemPath>
       <itemPath>src/juego.h</itemPath>
       <itemPath>src/m5272.h</itemPath>
       <itemPath>src/m5272lib.h</itemPath>
       <itemPath>src/macros.h</itemPath>
       <itemPath>src/sonido.h</itemPath>
-      <itemPath>src/vista.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -23,7 +21,6 @@
                    projectFiles="true">
       <itemPath>src/control.c</itemPath>
       <itemPath>src/ctetris.c</itemPath>
-      <itemPath>src/debug.c</itemPath>
       <itemPath>src/hardware.c</itemPath>
       <itemPath>src/juego.c</itemPath>
       <itemPath>src/m5272adc-dac.c</itemPath>
@@ -32,7 +29,6 @@
       <itemPath>src/m5272lib.c</itemPath>
       <itemPath>src/sonido.c</itemPath>
       <itemPath>src/start.asg</itemPath>
-      <itemPath>src/vista.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

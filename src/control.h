@@ -25,20 +25,8 @@
 #ifndef _CONTROL_H
 #define	_CONTROL_H
 
-#include "juego.h"
+#include "juego.c"
 #include "m5272lcd.c"
-
-
-/*
-   Constants: Configuración de la matriz de leds
-
-   NUM_FILAS_LED - Numero de filas en la matriz de leds.
-   NUM_COLUMNAS_LED - Numero de columnas en la matriz de leds.
-   TASA_REFRESCO - Cada cuanto se refresca la pantalla led en Hz
- */
-#define NUM_FILAS_LED 8
-#define NUM_COLUMNAS_LED 4
-#define TASA_REFRESCO 20 // TODO: hay que cambiarla para que coincida con las specs de la practica
 
 
 /*
@@ -51,10 +39,15 @@
    TEXTO_NIVEL_3 - Texto para elegir el nivel 3
    NUM_NIVELES_MENU - Numero de niveles elegibles en el menu (ojo funcion menu())
  */
-#define TEXTO_BIENVENIDA "ELije nivel:"
-#define TEXTO_NIVEL_1 "Nivel 1"
-#define TEXTO_NIVEL_2 "Nivel 2"
-#define TEXTO_NIVEL_3 "Nivel 3"
+#define TEXTO_BIENVENIDA "Bienvenido a ColdtrixTM:\n"
+#define TEXTO_NIVEL_1 "Facil"
+#define TEXTO_NIVEL_2 "Medio"
+#define TEXTO_NIVEL_3 "Dificil"
+#define TEXTO_NIVELES_POSIBLES "Por favor pulse: (1) Facil, (4) Medio, (7) Dificil\n"
+#define TEXTO_NIVEL_SELECCIONADO "Nivel seleccionado: "
+#define TEXTO_COMENZAR_JUEGO ". Pulse A para comenzar la partida...\n"
+#define TEXTO_TECLA_ERRONEA "Tecla no valida"
+#define TEXTO_NO_NIVEL "No ha seleccionado ningun nivel.\n"
 #define NUM_ITEMS_MENU 3
 
 
@@ -152,13 +145,13 @@ void menu(Estado *estado, Juego *juego, char tecla);
 void estado_init(Estado *estado);
 void reloj_init(Reloj *reloj);
 void puerto_init(Puerto *puerto);
-void puerto_excita_columna(Puerto *puerto, char columna, char* fila_leds);
+void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds);
 void puerto_excita_teclado(Puerto *puerto, char columna);
 void lcd_init(void);
 void lcd_imprimir(char* mensaje);
 void lcd_limpiar(void);
 void leds_init(Leds *leds);
-void leds_refrescar(Puerto *puerto, Leds *leds, Pieza *pieza);
+void leds_refrescar(Puerto *puerto, Leds *leds, Juego *juego);
 
 
 #endif	/* _CONTROL_H */

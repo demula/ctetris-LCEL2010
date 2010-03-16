@@ -67,7 +67,7 @@ char tecla_pulsada(Puerto *puerto)
                 {
                     while (lee_puertoE() & fila_mask); //Esperamos a que se suelte
                     retardo(RET_REBOTES); //Retardo antirrebotes
-                    return teclas[fila][columna]; //Devolvemos la tecla pulsada
+                    return teclas[(int)fila][(int)columna]; //Devolvemos la tecla pulsada
                 }
             }//Siguiente columna
         }// Exploración finalizada sin encontrar una tecla pulsada

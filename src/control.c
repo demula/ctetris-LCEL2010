@@ -24,7 +24,6 @@
 
 #include "control.h"
 
-
 /*
    Function: menu
 
@@ -42,27 +41,44 @@ void menu(Estado *estado, Juego *juego, char tecla)
     {
         case TECLA_NIVEL_1:
         {
-            juego->nivel_dificultad = 1;
+            juego->nivel_dificultad = 0;
+            output(TEXTO_NIVEL_SELECCIONADO);
+            output(TEXTO_NIVEL_1);
+            output(TEXTO_COMENZAR_JUEGO);
         }
             break;
         case TECLA_NIVEL_2:
         {
-            juego->nivel_dificultad = 2;
+            juego->nivel_dificultad = 1;
+            output(TEXTO_NIVEL_SELECCIONADO);
+            output(TEXTO_NIVEL_2);
+            output(TEXTO_COMENZAR_JUEGO);
         }
             break;
         case TECLA_NIVEL_3:
         {
-            juego->nivel_dificultad = 3;
+            juego->nivel_dificultad = 2;
+            output(TEXTO_NIVEL_SELECCIONADO);
+            output(TEXTO_NIVEL_3);
+            output(TEXTO_COMENZAR_JUEGO);
         }
             break;
         case TECLA_COMIENZO:
-        {
-            estado->jugando = 1; //TRUE
+        {   if (juego->nivel_dificultad == -1)
+            {
+            output(TEXTO_NO_NIVEL);
+            output(TEXTO_NIVELES_POSIBLES);
+            }
+            else
+            {
+                estado->jugando = 1; //TRUE
+            }
         }
             break;
         default:
         {
-
+            output(TEXTO_TECLA_ERRONEA);
+            output(TEXTO_COMENZAR_JUEGO);
         }
             break;
     }
@@ -134,7 +150,7 @@ void leds_init(Leds *leds)
 }
 
 /*
-   Function: ocupacion_pieza    TODO: !!!! Arreglar
+   Function: ocupacion_pieza
 
    Devuelve la informacion de la columna indicada de leds con los datos de una
    pieza dada para su posterior suma con la salida de leds iluminados.
@@ -143,27 +159,28 @@ void leds_init(Leds *leds)
 
       pieza - Puntero a la pieza que quermos pintar.
       columna - Numero de la columna que queremos iluminar
+ *juego - Puntero a la estructura Juego que contiene la pieza actual.
 
    Returns:
 
       Un entero para pasar al puerto de salida.
  */
-int ocupacion_pieza(int x, int y, Pieza *pieza)
+int ocupacion_pieza(int x, int y, Juego *juego)
 {
-    if ((x < pieza->x) || (y < pieza->y))
-    {
-        return 0;
-    }
-    if ((x >= pieza->x + ANCHO_PIEZA) || (y >= pieza->y + ALTO_PIEZA))
-    {
-        return 0;
-    }
     char salida;
-    int x_temp = x - pieza->x; //Posicion del cursor dentro de la pieza
-    int y_temp = y - pieza->y;
-    int posicion_en_forma = (pieza->rotacion * ANCHO_PIEZA * ALTO_PIEZA)+(y_temp * ANCHO_PIEZA) + x_temp;
-    salida = pieza->forma[pieza->clase][posicion_en_forma];
-    if ('1' == salida)
+    int x_temp, y_temp;
+    if ((x < juego->pieza_actual.x) || (y < juego->pieza_actual.y))
+    {
+        return 0;
+    }
+    if ((x >= juego->pieza_actual.x + ANCHO_PIEZA) || (y >= juego->pieza_actual.y + ALTO_PIEZA))
+    {
+        return 0;
+    }
+    x_temp = x - juego->pieza_actual.x; //Posicion del cursor dentro de la pieza
+    y_temp = y - juego->pieza_actual.y;
+    salida = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
+    if (1 == salida)
     {
         return 1;
     }
@@ -185,18 +202,15 @@ int ocupacion_pieza(int x, int y, Pieza *pieza)
 
       Un entero para pasar al puerto de salida.
  */
-void pintar_pieza_sobre_leds(Leds *leds, Pieza *pieza, int columna, char *fila_leds)
+void pintar_pieza_sobre_leds(Leds *leds, Juego *juego, int columna, int fila_leds)
 {
     int posicion;
     for (posicion = 0; posicion < NUM_FILAS_LED; posicion++)
     {
-        if ((leds->pantalla[columna][posicion] == 1) || (ocupacion_pieza(columna, posicion, pieza) == 1))
+        if ((leds->pantalla[columna][posicion] == 1) || (ocupacion_pieza(columna, posicion, juego) == 1))
         {
-            fila_leds[posicion] = '1';
-        } else
-        {
-            fila_leds[posicion] = '0';
-        }
+            fila_leds += EXCITACION << posicion;
+        }    
     }
 }
 
@@ -213,10 +227,10 @@ void pintar_pieza_sobre_leds(Leds *leds, Pieza *pieza, int columna, char *fila_l
       leds - Entero con los datos de una fila de leds.
       columna - Numero de la columna que queremos iluminar
  */
-void leds_refrescar(Puerto *puerto, Leds *leds, Pieza *pieza)
+void leds_refrescar(Puerto *puerto, Leds *leds, Juego *juego)
 {
-    char fila_leds[NUM_FILAS_LED];
-    pintar_pieza_sobre_leds(leds, pieza, leds->columna_a_refrescar, fila_leds);
+    int fila_leds;
+    pintar_pieza_sobre_leds(leds, juego, leds->columna_a_refrescar, fila_leds);
     puerto_excita_columna(puerto, leds->columna_a_refrescar, fila_leds);
     leds->columna_a_refrescar++;
     if (leds->columna_a_refrescar == NUM_COLUMNAS_LED)
@@ -224,7 +238,6 @@ void leds_refrescar(Puerto *puerto, Leds *leds, Pieza *pieza)
         leds->columna_a_refrescar = 0;
     }
 }
-
 
 /*
    Function: estado_init
@@ -268,6 +281,7 @@ void reloj_init(Reloj *reloj)
 void puerto_init(Puerto *puerto)
 {
     puerto->situacion_puerto = 0;
+    set16_puertoS(0x0000);
 }
 
 /*
@@ -299,19 +313,11 @@ int columna_a_puerto(char columna)
 
       fila_leds - String con la informacion de los leds que se vana encender.
  */
-int fila_a_puerto(char* fila_leds)
+int fila_a_puerto(int fila_leds)
 {
-    int posicion;
     int salida = 0;
-    for (posicion = 0; posicion < NUM_FILAS_LED; posicion++)
-    {
-        if (fila_leds[posicion] == '1')
-        {
-            salida += EXCITACION << posicion;
-        }
-    }
-    salida = !salida; //Para encender los leds tienen que estar a nivel bajo en fila
-    salida = salida << POS_FILA;
+    //fila_leds = !fila_leds; //Para encender los leds tienen que estar a nivel bajo en fila
+    salida = fila_leds << POS_FILA;
     return salida;
 }
 
@@ -326,23 +332,35 @@ int fila_a_puerto(char* fila_leds)
       columna - Columna que queremos excitar.
       fila_leds - Informacion de los leds encendidos de dicha columna.
  */
-void puerto_excita_columna(Puerto *puerto, char columna, char* fila_leds)
+void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds)
 {
     //Colocamos la columna en su posicion correspondiente en el puerto de salida
-    int columna_en_puerto = 0;
+/*    int columna_en_puerto = 0;
+    int fila_en_puerto = 0;
+
     columna_en_puerto = columna_a_puerto(columna);
-    columna_en_puerto = MASCARA_COLUMNA_LEDS & columna_en_puerto; //aplica mascara
-    puerto->situacion_puerto = puerto->situacion_puerto & !MASCARA_COLUMNA_LEDS; //limpia puerto en columnas
+    columna_en_puerto = !MASCARA_COLUMNA_LEDS & columna_en_puerto; //aplica mascara
+    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS; //limpia puerto en columnas
     puerto->situacion_puerto += columna_en_puerto;
 
     //Colocamos la fila en su posicion correspondiente en el puerto de salida
-    int fila_en_puerto = 0;
     fila_en_puerto = fila_a_puerto(fila_leds);
-    fila_en_puerto = MASCARA_FILA_LEDS & fila_en_puerto;
-    puerto->situacion_puerto = puerto->situacion_puerto & !MASCARA_FILA_LEDS;
+    fila_en_puerto = !MASCARA_FILA_LEDS & fila_en_puerto;
+    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_FILA_LEDS;
     puerto->situacion_puerto += fila_en_puerto;
+*/
+    //int columna_en_puerto = 0;
+    int fila_en_puerto = 0;
 
-    set_puertoS(puerto->situacion_puerto);
+    //columna_en_puerto = columna_a_puerto(columna);
+    //puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS;
+    //puerto->situacion_puerto += columna_en_puerto ;
+
+    fila_en_puerto = fila_a_puerto(fila_leds);
+    //fila_en_puerto = 0xAA00;
+    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_FILA_LEDS;
+    puerto->situacion_puerto += fila_en_puerto;
+    set16_puertoS(puerto->situacion_puerto);
 }
 
 /*
@@ -358,10 +376,10 @@ void puerto_excita_columna(Puerto *puerto, char columna, char* fila_leds)
  */
 void puerto_excita_teclado(Puerto *puerto, char columna_teclado)
 {
-    puerto->situacion_puerto = puerto->situacion_puerto & !MASCARA_TECLADO;
+    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_TECLADO;
     puerto->situacion_puerto += columna_teclado;
 
-    set_puertoS(puerto->situacion_puerto);
+    set16_puertoS(puerto->situacion_puerto);
 }
 
 

@@ -25,7 +25,7 @@
 #ifndef _HARDWARE_CONF_H
 #define	_HARDWARE_CONF_H
 
-#include "control.h"
+#include "control.c"
 
 /*
    Constants: Constantes varias del Motorola ColdFire 5272

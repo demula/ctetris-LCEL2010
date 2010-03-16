@@ -157,11 +157,11 @@
 
    NUM_FILAS_LED - Numero de filas en la matriz de leds.
    NUM_COLUMNAS_LED - Numero de columnas en la matriz de leds.
-   TASA_REFRESCO - Cada cuanto se refresca la pantalla led en Hz
+   TASA_REFRESCO - Tiempo que permance encendida cada columna de leds.
  */
 #define NUM_FILAS_LED 8
 #define NUM_COLUMNAS_LED 4
-#define TASA_REFRESCO 20 // TODO: hay que cambiarla para que coincida con las specs de la practica
+#define TASA_REFRESCO 5
 
 /*
    Constants: Configuración de la velocidad de caida de las piezas segun nivel
@@ -244,7 +244,7 @@ typedef struct
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
  */
 void pieza_init(Pieza *pieza);
-void juego_init(Juego *juego, int nivel_dificultad);
+void juego_init(Juego *juego);
 int juego_tiempo_caida_pieza(Juego *juego);
 
 
