@@ -208,18 +208,18 @@ void bucleMain(void)
             if (estado.jugando == FALSE)
             {
                 char tecla;
-                imprimir_en_lcd(TEXTO_BIENVENIDA);
+                lcd_imprimir(TEXTO_BIENVENIDA);
                 retardo(1000);
-                imprimir_en_lcd(estado.texto_menu[juego.nivel_dificultad]);
+                lcd_imprimir(estado.texto_menu[juego.nivel_dificultad]);
                 tecla = tecla_pulsada(&puerto);
                 menu(&estado, &juego, tecla);
-                imprimir_en_lcd(estado.texto_menu[juego.nivel_dificultad]);
+                lcd_imprimir(estado.texto_menu[juego.nivel_dificultad]);
             } else
             {
-                limpiar_lcd();
-                imprimir_en_lcd("Jugando...");
-                retardo(1000);
-                _exit(0);
+                char tecla = tecla_pulsada(&puerto);
+                lcd_limpiar();
+                lcd_imprimir("Jugando...");
+                juego_tecla_pulsada(&leds, &juego, tecla);
             }
         }
     }

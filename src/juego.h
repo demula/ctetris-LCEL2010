@@ -27,6 +27,38 @@
 
 
 /*
+   Constants: Valor de las teclas en el juego
+
+   TECLA_ROTAR - Valor de la tecla del teclado matricial para rotar la pieza activa
+   TECLA_IZQUIERDA - Valor de la tecla del teclado matricial para mover izquierda
+   TECLA_ABAJO - Valor de la tecla del teclado matricial para mover abajo
+   TECLA_DERECHA - Valor de la tecla del teclado matricial para mover derecha
+   TECLA_ARRIBA - Valor de la tecla del teclado matricial para mover arriba
+   TECLA_SALIDA - Valor de la tecla del teclado matricial para salir del programa
+ */
+#define TECLA_ROTAR 'A'
+#define TECLA_IZQUIERDA '1'
+#define TECLA_ABAJO '4'
+#define TECLA_DERECHA '7'
+#define TECLA_ARRIBA '5' //Para pruebas
+#define TECLA_SALIDA '3' //Para pruebas
+
+
+/*
+   Constants: Valor de las direciones en el juego (por legibilidad)
+
+   ARRIBA - Valor del swicth como arriba
+   IZQUIERDA - Valor del swicth como izquierda
+   ABAJO - Valor del swicth como abajo
+   DERECHA - Valor del swicth como derecha
+ */
+#define ARRIBA 'U'
+#define IZQUIERDA 'L'
+#define ABAJO 'D'
+#define DERECHA 'R'
+
+
+/*
    Constants: Configuración del hardware del teclado
 
    ANCHO_PIEZA - Altura en casillas que ocupa.
@@ -121,6 +153,46 @@
 #define Z_Y 0
 
 /*
+   Constants: Configuración de la matriz de leds
+
+   NUM_FILAS_LED - Numero de filas en la matriz de leds.
+   NUM_COLUMNAS_LED - Numero de columnas en la matriz de leds.
+   TASA_REFRESCO - Cada cuanto se refresca la pantalla led en Hz
+ */
+#define NUM_FILAS_LED 8
+#define NUM_COLUMNAS_LED 4
+#define TASA_REFRESCO 20 // TODO: hay que cambiarla para que coincida con las specs de la practica
+
+/*
+   Constants: Configuración de la velocidad de caida de las piezas segun nivel
+
+   VELOCIDAD_NIVEL_1 - Velocidad de caida en ms de cada paso en la pantalla a nv1
+   VELOCIDAD_NIVEL_2 - Velocidad de caida en ms de cada paso en la pantalla a nv2
+   VELOCIDAD_NIVEL_3 - Velocidad de caida en ms de cada paso en la pantalla a nv3
+ */
+#define VELOCIDAD_NIVEL_1 1000
+#define VELOCIDAD_NIVEL_2 500
+#define VELOCIDAD_NIVEL_3 250
+
+/*
+   Struct: Leds de la pantalla de juego
+
+   Estructura con la informacion de lo que se debe mostrar en la pantalla de
+   leds. Contiene la informacion de que led debe estar encendido (menos la pieza
+   en juego) y de la siguiente columna a refrescar.
+
+   Movida a juego.h para evitar importacion recursiva.
+
+   pantalla - Matriz con la informacion de los leds encencidos.
+   columna_a_refrescar - Siguiente columna a refrescar.
+ */
+typedef struct
+{
+    char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
+    char columna_a_refrescar;
+} Leds;
+
+/*
    Struct: Pieza del juego
 
    Contiene la informacion de la pieza activa del juego. Nos valdra para saber
@@ -141,9 +213,8 @@ typedef struct
     int rotacion;
     int x_comienzo[NUM_CLASES];
     int y_comienzo[NUM_CLASES];
-    char forma[NUM_CLASES][ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES];
+    char forma[NUM_CLASES][ROTACIONES][ANCHO_PIEZA][ALTO_PIEZA];
 } Pieza;
-
 
 /*
    Struct: Juego
@@ -172,12 +243,9 @@ typedef struct
 
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
  */
-void set_coordenadas(Pieza *pieza, int x, int y);
-int pieza_get_x(Pieza *pieza);
-int pieza_get_y(Pieza *pieza);
 void pieza_init(Pieza *pieza);
 void juego_init(Juego *juego, int nivel_dificultad);
-int juego_tiempo_caida_pieza (Juego *juego);
+int juego_tiempo_caida_pieza(Juego *juego);
 
 
 #endif	/* _JUEGO_H */

@@ -107,7 +107,6 @@
  */
 typedef struct
 {
-    int nivel_dificultad;
     char jugando;
     char* texto_menu[NUM_ITEMS_MENU];
 } Estado;
@@ -142,23 +141,6 @@ typedef struct
 {
     short int situacion_puerto;
 } Puerto;
-
-
-/*
-   Struct: Leds de la pantalla de juego
-
-   Estructura con la informacion de lo que se debe mostrar en la pantalla de
-   leds. Contiene la informacion de que led debe estar encendido (menos la pieza
-   en juego) y de la siguiente columna a refrescar.
-
-   pantalla - Matriz con la informacion de los leds encencidos.
-   columna_a_refrescar - Siguiente columna a refrescar.
- */
-typedef struct
-{
-    char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
-    char columna_a_refrescar;
-} Leds;
 
 
 /*

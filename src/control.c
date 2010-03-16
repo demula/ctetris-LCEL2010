@@ -42,17 +42,17 @@ void menu(Estado *estado, Juego *juego, char tecla)
     {
         case TECLA_NIVEL_1:
         {
-            juego->nivel_dificultad = 0;
+            juego->nivel_dificultad = 1;
         }
             break;
         case TECLA_NIVEL_2:
         {
-            juego->nivel_dificultad = 1;
+            juego->nivel_dificultad = 2;
         }
             break;
         case TECLA_NIVEL_3:
         {
-            juego->nivel_dificultad = 2;
+            juego->nivel_dificultad = 3;
         }
             break;
         case TECLA_COMIENZO:
@@ -134,7 +134,7 @@ void leds_init(Leds *leds)
 }
 
 /*
-   Function: ocupacion_pieza
+   Function: ocupacion_pieza    TODO: !!!! Arreglar
 
    Devuelve la informacion de la columna indicada de leds con los datos de una
    pieza dada para su posterior suma con la salida de leds iluminados.

@@ -25,6 +25,7 @@
 #include "juego.h"
 
 // ----------------------------------------------------------------------- PIEZA
+
 /*
    Function: nueva_pieza
 
@@ -45,16 +46,15 @@ void pieza_set_posicion(Pieza *pieza, int x, int y)
     pieza->y = y;
 }
 
-
 int pieza_get_x(Pieza *pieza)
 {
-    return 0;
-}
-int pieza_get_y(Pieza *pieza)
-{
-    return 0;
+    return pieza->x;
 }
 
+int pieza_get_y(Pieza *pieza)
+{
+    return pieza->y;
+}
 
 /*
    Function: copia_texto_forma
@@ -70,27 +70,37 @@ int pieza_get_y(Pieza *pieza)
  *destino - Puntero a la cadena que queremos copiar los carecteres de origen.
       origen - Cadena de caracteres que queremos copiar.
  */
-void copia_texto_forma(char *destino, char origen[])
+void rellena_array_forma(char forma[NUM_CLASES][ROTACIONES][ANCHO_PIEZA][ALTO_PIEZA], char origen[], char clase)
 {
     int posicion_origen;
-    int posicion_destino = 0;
+    int posicion_destino_x = 0;
+    int posicion_destino_y = 0;
+    int posicion_destino_rotacion = 0;
     for (posicion_origen = 0; posicion_origen < ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES - ALTO_PIEZA * ROTACIONES; posicion_origen++)
     {
         switch (origen[posicion_origen])
         {
             case '0':
-                destino[posicion_destino] = origen[posicion_origen];
-                posicion_destino++;
+                forma[clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 0;
+                posicion_destino_x++;
                 break;
             case '1':
-                destino[posicion_destino] = origen[posicion_origen];
-                posicion_destino++;
+                forma[clase][posicion_destino_rotacion][posicion_destino_x][posicion_destino_y] = 1;
+                posicion_destino_x++;
+                break;
+            case ',':
+                posicion_destino_x = 0;
+                posicion_destino_y++;
+                break;
+            case ';':
+                posicion_destino_x = 0;
+                posicion_destino_y = 0;
+                posicion_destino_rotacion++;
                 break;
         }
     }
 
 }
-
 
 /*
    Function: forma_init
@@ -101,15 +111,14 @@ void copia_texto_forma(char *destino, char origen[])
  */
 void forma_init(Pieza *pieza)
 {
-    copia_texto_forma(*pieza->forma, FORMA_O);
-    copia_texto_forma(*pieza->forma, FORMA_I);
-    copia_texto_forma(*pieza->forma, FORMA_T);
-    copia_texto_forma(*pieza->forma, FORMA_L);
-    copia_texto_forma(*pieza->forma, FORMA_J);
-    copia_texto_forma(*pieza->forma, FORMA_S);
-    copia_texto_forma(*pieza->forma, FORMA_Z);
+    rellena_array_forma(pieza->forma, FORMA_O, PIEZA_O);
+    rellena_array_forma(pieza->forma, FORMA_I, PIEZA_I);
+    rellena_array_forma(pieza->forma, FORMA_T, PIEZA_T);
+    rellena_array_forma(pieza->forma, FORMA_L, PIEZA_L);
+    rellena_array_forma(pieza->forma, FORMA_J, PIEZA_J);
+    rellena_array_forma(pieza->forma, FORMA_S, PIEZA_S);
+    rellena_array_forma(pieza->forma, FORMA_Z, PIEZA_Z);
 }
-
 
 /*
    Function: posiciones_comienzo_init
@@ -169,8 +178,7 @@ máximo de permanencia de una pieza en una determinada línea,
 – rotar
 – colision
 – tiempo_caida_pieza
-*/
-
+ */
 
 /*
    Function: juego_init
@@ -179,7 +187,7 @@ máximo de permanencia de una pieza en una determinada línea,
 
    Parameters:
 
-   *juego - Puntero a la estructura Juego que queremos inicializar.
+ *juego - Puntero a la estructura Juego que queremos inicializar.
    nivel_dificultad - Dificultad inicial del juego antes de ser elegida.
  */
 void juego_init(Juego *juego, int nivel_dificultad)
@@ -189,7 +197,6 @@ void juego_init(Juego *juego, int nivel_dificultad)
     pieza_init(&juego->pieza_actual);
 }
 
-
 /*
    Function: juego_tiempo_caida_pieza
 
@@ -197,9 +204,245 @@ void juego_init(Juego *juego, int nivel_dificultad)
 
    Parameters:
 
-   *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
+ *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
  */
-int juego_tiempo_caida_pieza (Juego *juego)
+int juego_tiempo_caida_pieza(Juego *juego)
 {
+    switch (juego->nivel_dificultad)
+    {
+        case 0: return 0;
+            break;
+        case 1: return VELOCIDAD_NIVEL_1;
+            break;
+        case 2: return VELOCIDAD_NIVEL_2;
+            break;
+        case 3: return VELOCIDAD_NIVEL_3;
+            break;
+    }
+    return -1;
+}
+
+/*
+   Function: leds_get_posicion
+
+   Devuelve si la posicion de la pantalla esta ocupada o no. Si se le pide una
+   posicion fuera de la pantalla devolvera que esta ocupada a no ser que sea por
+   parte superior donde aparecen las piezas.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds de donde accedemos a la pantalla.
+   x - Posicion x que queremos
+   y - Posicion y que queremos
+ */
+char leds_get_posicion(Leds *leds, int x, int y)
+{
+    if ((x < 0) || (x >= NUM_COLUMNAS_LED))
+    {
+        return 1;
+    } else if (y >= NUM_FILAS_LED)
+    {
+        return 1;
+    } else if (y < 0)
+    {
+        return 0;
+    } else
+    {
+        return leds->pantalla[x][y];
+    }
+}
+
+/*
+   Function: juego_colision
+
+   Devuelve 0 si no hay colisiones dado la posicion siguiente de la pieza y los
+   leds de pantalla ocupados (Se ignora la posicion actual de la pieza).
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+   x_pos - Posicion x de la pieza donde queremos hacer la deteccion de colision.
+   y_pos - Posicion y de la pieza donde queremos hacer la deteccion de colision.
+   rotacion - Rotacion de la pieza donde queremos hacer la deteccion de colision.
+ */
+int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
+{
+    int x_temp, y_temp;
+    char leds_ocupacion, pieza_ocupacion;
+    for (y_temp = 0; y_temp < ALTO_PIEZA; y_temp++)
+    {
+        for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
+        {
+            leds_ocupacion = leds_get_posicion(leds, x_temp + x_pos, y_temp + y_pos);
+            pieza_ocupacion = juego->pieza_actual.forma[juego->pieza_actual.clase][rotacion][x_temp][y_temp];
+            if ((leds_ocupacion == 1) && (pieza_ocupacion == 1))
+            {
+                return 1;
+            }
+        }
+    }
     return 0;
+}
+
+/*
+   Function: juego_fijar_pieza
+
+   Copia la pieza actual en su posicion a la pantalla de leds. NO TIENE EN CUENTA
+   SI HAY LEDS OCUPADOS.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+void juego_fijar_pieza(Leds *leds, Juego *juego)
+{
+    int x_temp, y_temp;
+    char pieza_ocupacion;
+    for (y_temp = 0; y_temp < ALTO_PIEZA; y_temp++)
+    {
+        for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
+        {
+            pieza_ocupacion = juego->pieza_actual.forma[juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
+            if (pieza_ocupacion == 1)
+            {
+                leds->pantalla[juego->pieza_actual.x + x_temp][juego->pieza_actual.y + y_temp] = 1;
+            }
+        }
+    }
+}
+
+/*
+   Function: juego_mover_pieza
+
+   Mueve la pieza activa en la direccion indicada teniendo en cuenta si hay 
+   colisiones. En caso de colision no hace nada.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds para acceder a las colisiones.
+ *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
+   direccion - Caracter con la direccion en la que queremos mover la pieza.
+ */
+void juego_mover_pieza(Leds *leds, Juego *juego, char direccion)
+{
+    int x, y;
+    x = pieza_get_x(&juego->pieza_actual);
+    y = pieza_get_y(&juego->pieza_actual);
+
+    switch (direccion)
+    {
+        case IZQUIERDA:
+        {
+            int hay_colision = juego_colision(leds, juego, juego->pieza_actual.rotacion, x - 1, y);
+            if (!hay_colision)
+            {
+                juego->pieza_actual.x = x - 1;
+            }
+            break;
+        }
+        case ARRIBA:
+        {
+            int hay_colision = juego_colision(leds, juego, juego->pieza_actual.rotacion, x, y - 1);
+            if (!hay_colision)
+            {
+                juego->pieza_actual.y = y - 1;
+            }
+            break;
+        }
+        case ABAJO:
+        {
+            int hay_colision = juego_colision(leds, juego, juego->pieza_actual.rotacion, x, y + 1);
+            if (!hay_colision)
+            {
+                juego->pieza_actual.y = y + 1;
+            }
+            break;
+        }
+        case DERECHA:
+        {
+            int hay_colision = juego_colision(leds, juego, juego->pieza_actual.rotacion, x + 1, y);
+            if (!hay_colision)
+            {
+                juego->pieza_actual.x = x + 1;
+            }
+            break;
+        }
+    }
+}
+
+/*
+   Function: juego_rotar_pieza
+
+   Rota la pieza activa teniendo en cuenta si hay colisiones. En caso de
+   colision no hace nada.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds para acceder a las colisiones.
+ *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
+ */
+void juego_rotar_pieza(Leds *leds, Juego *juego)
+{
+    int hay_colision = juego_colision(
+        leds,
+        juego,
+        juego->pieza_actual.rotacion + 1,
+        pieza_get_x(&juego->pieza_actual),
+        pieza_get_y(&juego->pieza_actual)
+        );
+    if (!hay_colision)
+    {
+        juego->pieza_actual.rotacion++;
+    }
+}
+
+/*
+   Function: juego_rotar_pieza
+
+   Rota la pieza activa teniendo en cuenta si hay colisiones. En caso de
+   colision no hace nada.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds para acceder a las colisiones.
+ *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
+ * tecla - Tecla pulsada en el teclado matricial
+ */
+void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla)
+{
+    switch (tecla)
+    {
+        case TECLA_ROTAR:
+        {
+            juego_rotar_pieza(leds, juego);
+            break;
+        }
+        case TECLA_IZQUIERDA:
+        {
+            juego_mover_pieza(leds, juego, IZQUIERDA);
+            break;
+        }
+        case TECLA_ABAJO:
+        {
+            juego_mover_pieza(leds, juego, ABAJO);
+            break;
+        }
+        case TECLA_DERECHA:
+        {
+            juego_mover_pieza(leds, juego, DERECHA);
+            break;
+        }
+        case TECLA_ARRIBA:
+        {
+            juego_mover_pieza(leds, juego, ARRIBA);
+            break;
+        }
+        case TECLA_SALIDA:
+        {
+            //_exit(0);
+            break;
+        }
+    }
 }
