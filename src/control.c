@@ -295,9 +295,9 @@ void puerto_init(Puerto *puerto)
 
       columna - valor numerico de la columna de leds que queremos excitar
  */
-int columna_a_puerto(char columna)
+short int columna_a_puerto(char columna)
 {
-    int salida = 0;
+    short int salida = 0;
     salida = EXCITACION << columna;
     salida = salida << POS_COLUMNA;
     return salida;
@@ -313,10 +313,11 @@ int columna_a_puerto(char columna)
 
       fila_leds - String con la informacion de los leds que se vana encender.
  */
-int fila_a_puerto(int fila_leds)
+short int fila_a_puerto(short int fila_leds)
 {
-    int salida = 0;
-    //fila_leds = !fila_leds; //Para encender los leds tienen que estar a nivel bajo en fila
+    short int salida = 0;
+    //Para encender los leds tienen que estar a nivel bajo en fila
+    fila_leds = ~fila_leds; //El operador ~ es negacion BIT A BIT (! no vale)
     salida = fila_leds << POS_FILA;
     return salida;
 }
@@ -334,30 +335,22 @@ int fila_a_puerto(int fila_leds)
  */
 void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds)
 {
-    //Colocamos la columna en su posicion correspondiente en el puerto de salida
-/*    int columna_en_puerto = 0;
-    int fila_en_puerto = 0;
+    short int columna_en_puerto = 0;
+    short int fila_en_puerto = 0;
 
+    //Colocamos la columna en su posicion correspondiente en el puerto de salida
     columna_en_puerto = columna_a_puerto(columna);
-    columna_en_puerto = !MASCARA_COLUMNA_LEDS & columna_en_puerto; //aplica mascara
-    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS; //limpia puerto en columnas
-    puerto->situacion_puerto += columna_en_puerto;
+    //Limpiamos todos lo bits que no debe usar la columna (por seguridad ya que luego SUMAMOS)
+    columna_en_puerto = ~MASCARA_COLUMNA_LEDS & columna_en_puerto;
+    //Ponemos los bits pertencientes a la columna a 0
+    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS;
+    puerto->situacion_puerto += columna_en_puerto ;
 
     //Colocamos la fila en su posicion correspondiente en el puerto de salida
     fila_en_puerto = fila_a_puerto(fila_leds);
-    fila_en_puerto = !MASCARA_FILA_LEDS & fila_en_puerto;
-    puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_FILA_LEDS;
-    puerto->situacion_puerto += fila_en_puerto;
-*/
-    //int columna_en_puerto = 0;
-    int fila_en_puerto = 0;
-
-    //columna_en_puerto = columna_a_puerto(columna);
-    //puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS;
-    //puerto->situacion_puerto += columna_en_puerto ;
-
-    fila_en_puerto = fila_a_puerto(fila_leds);
-    //fila_en_puerto = 0xAA00;
+    //Limpiamos todos lo bits que no debe usar la fila (por seguridad ya que luego SUMAMOS)
+    fila_en_puerto = ~MASCARA_FILA_LEDS & fila_en_puerto;
+    //Ponemos los bits pertencientes a la fila a 0
     puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_FILA_LEDS;
     puerto->situacion_puerto += fila_en_puerto;
     set16_puertoS(puerto->situacion_puerto);
