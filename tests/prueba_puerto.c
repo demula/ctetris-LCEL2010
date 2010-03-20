@@ -31,7 +31,7 @@
 /* Declaramos las funciones usadas de las libs del Coldfire para que se queje */
 void set16_puertoS(unsigned short int valor){}
 void output(char string[]){}
-#include "../ctetris/src/control.c"
+#include "../src/control.c"
 
 
 // ------------------------------------------------------------ SETUPS & RESULTS

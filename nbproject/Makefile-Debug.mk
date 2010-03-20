@@ -31,15 +31,20 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/tests/prueba_pieza.o \
 	${OBJECTDIR}/src/hardware.o \
 	${OBJECTDIR}/src/m5272lib.o \
+	${OBJECTDIR}/tests/prueba_puerto.o \
+	${OBJECTDIR}/tests/prueba_leds.o \
+	${OBJECTDIR}/tests/prueba_juego.o \
 	${OBJECTDIR}/src/sonido.o \
 	${OBJECTDIR}/src/m5272gpio.o \
 	${OBJECTDIR}/src/m5272lcd.o \
 	${OBJECTDIR}/src/control.o \
 	${OBJECTDIR}/src/ctetris.o \
 	${OBJECTDIR}/src/m5272adc-dac.o \
-	${OBJECTDIR}/src/juego.o
+	${OBJECTDIR}/src/juego.o \
+	${OBJECTDIR}/tests/prueba_general.o
 
 # C Compiler Flags
 CFLAGS=
@@ -65,6 +70,11 @@ dist/Debug/GNU-Linux-x86/ctetris: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ctetris ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/tests/prueba_pieza.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_pieza.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_pieza.o tests/prueba_pieza.c
+
 ${OBJECTDIR}/src/hardware.o: nbproject/Makefile-${CND_CONF}.mk src/hardware.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -74,6 +84,21 @@ ${OBJECTDIR}/src/m5272lib.o: nbproject/Makefile-${CND_CONF}.mk src/m5272lib.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/m5272lib.o src/m5272lib.c
+
+${OBJECTDIR}/tests/prueba_puerto.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_puerto.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_puerto.o tests/prueba_puerto.c
+
+${OBJECTDIR}/tests/prueba_leds.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_leds.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_leds.o tests/prueba_leds.c
+
+${OBJECTDIR}/tests/prueba_juego.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_juego.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_juego.o tests/prueba_juego.c
 
 ${OBJECTDIR}/src/sonido.o: nbproject/Makefile-${CND_CONF}.mk src/sonido.c 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -109,6 +134,11 @@ ${OBJECTDIR}/src/juego.o: nbproject/Makefile-${CND_CONF}.mk src/juego.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/juego.o src/juego.c
+
+${OBJECTDIR}/tests/prueba_general.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_general.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_general.o tests/prueba_general.c
 
 # Subprojects
 .build-subprojects:
