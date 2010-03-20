@@ -118,6 +118,7 @@ typedef struct
 {
     int columna_led;
     int nota;
+    int caida_pieza;
 } Reloj;
 
 
@@ -150,8 +151,6 @@ void puerto_excita_teclado(Puerto *puerto, char columna);
 void lcd_init(void);
 void lcd_imprimir(char* mensaje);
 void lcd_limpiar(void);
-void leds_init(Leds *leds);
-void leds_refrescar(Puerto *puerto, Leds *leds, Juego *juego);
 
 
 #endif	/* _CONTROL_H */

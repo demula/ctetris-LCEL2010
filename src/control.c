@@ -90,12 +90,12 @@ void menu(Estado *estado, Juego *juego, char tecla)
 /*
    Function: lcd_init
    Inicializa el lcd.
- */
+ *//*
 void lcd_init(void)
 {
     LCD_reset(); // Reseteamos el LCD
     LCD_init(); // e inicializamos el display
-}
+}*/
 
 /*
    Function: imprimir_en_lcd
@@ -104,7 +104,7 @@ void lcd_init(void)
    Parameters:
 
       mensaje - Cadena de caracteres  imprimir.
- */
+ *//*
 void lcd_imprimir(char* mensaje)
 {
     LCD_inst(LIN_1LCD);
@@ -112,108 +112,20 @@ void lcd_imprimir(char* mensaje)
     {
         LCD_dato(*mensaje++);
     }
-}
+}*/
 
 /*
    Function: limpiar_lcd
    Borrar todo lo escrito en el lcd y vuelve a poner el cursor en la 1a linea.
- */
+ *//*
 void lcd_limpiar(void)
 {
     LCD_inst(CLR_DISP);
     LCD_inst(LIN_1LCD);
-}
+}*/
 
 
 // ------------------------------------------------------------------------ LEDS
-
-/*
-   Function: leds_init
-
-   Inicializa una estructura Leds con lo valores por defecto (0).
-
-   Parameters:
-
- *leds - Puntero a estructura leds que queremos inicializar.
- */
-void leds_init(Leds *leds)
-{
-    int x, y;
-    for (x = 0; x < NUM_COLUMNAS_LED; x++)
-    {
-        for (y = 0; y < NUM_FILAS_LED; y++)
-        {
-            leds->pantalla[x][y] = 0;
-        }
-    }
-    leds->columna_a_refrescar = 0;
-}
-
-/*
-   Function: ocupacion_pieza
-
-   Devuelve la informacion de la columna indicada de leds con los datos de una
-   pieza dada para su posterior suma con la salida de leds iluminados.
-
-   Parameters:
-
-      pieza - Puntero a la pieza que quermos pintar.
-      columna - Numero de la columna que queremos iluminar
- *juego - Puntero a la estructura Juego que contiene la pieza actual.
-
-   Returns:
-
-      Un entero para pasar al puerto de salida.
- */
-int ocupacion_pieza(int x, int y, Juego *juego)
-{
-    char salida;
-    int x_temp, y_temp;
-    if ((x < juego->pieza_actual.x) || (y < juego->pieza_actual.y))
-    {
-        return 0;
-    }
-    if ((x >= juego->pieza_actual.x + ANCHO_PIEZA) || (y >= juego->pieza_actual.y + ALTO_PIEZA))
-    {
-        return 0;
-    }
-    x_temp = x - juego->pieza_actual.x; //Posicion del cursor dentro de la pieza
-    y_temp = y - juego->pieza_actual.y;
-    salida = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
-    if (1 == salida)
-    {
-        return 1;
-    }
-    return 0;
-}
-
-/*
-   Function: pintar_pieza
-
-   Devuelve la informacion de la columna indicada de leds con los datos de una
-   pieza dada para su posterior suma con la salida de leds iluminados.
-
-   Parameters:
-
-      pieza - Puntero a la pieza que quermos pintar.
-      columna - Numero de la columna que queremos iluminar
-
-   Returns:
-
-      Un entero para pasar al puerto de salida.
- */
-void pintar_pieza_sobre_leds(Leds *leds, Juego *juego, int columna, int fila_leds)
-{
-    int posicion;
-    for (posicion = 0; posicion < NUM_FILAS_LED; posicion++)
-    {
-        if ((leds->pantalla[columna][posicion] == 1) || (ocupacion_pieza(columna, posicion, juego) == 1))
-        {
-            fila_leds += EXCITACION << posicion;
-        }    
-    }
-}
-
 /*
    Function: refrescar_leds
 
@@ -227,18 +139,21 @@ void pintar_pieza_sobre_leds(Leds *leds, Juego *juego, int columna, int fila_led
       leds - Entero con los datos de una fila de leds.
       columna - Numero de la columna que queremos iluminar
  */
-void leds_refrescar(Puerto *puerto, Leds *leds, Juego *juego)
+void leds_refrescar(Puerto *puerto, Leds *leds)
 {
+    static char columna_a_refrescar = 0;
     int fila_leds;
-    pintar_pieza_sobre_leds(leds, juego, leds->columna_a_refrescar, fila_leds);
-    puerto_excita_columna(puerto, leds->columna_a_refrescar, fila_leds);
-    leds->columna_a_refrescar++;
-    if (leds->columna_a_refrescar == NUM_COLUMNAS_LED)
+    leds_fila_a_int(leds, columna_a_refrescar, &fila_leds);
+    puerto_excita_columna(puerto, columna_a_refrescar, fila_leds);
+    columna_a_refrescar++;
+    if (columna_a_refrescar == NUM_COLUMNAS_LED)
     {
-        leds->columna_a_refrescar = 0;
+        columna_a_refrescar = 0;
     }
 }
 
+
+// ---------------------------------------------------------------------- ESTADO
 /*
    Function: estado_init
    Inicializa una estructura Estado con lo valores que se le dan.
@@ -256,6 +171,7 @@ void estado_init(Estado *estado)
     estado->texto_menu[2] = TEXTO_NIVEL_3;
 }
 
+// ----------------------------------------------------------------------- RELOJ
 /*
    Function: reloj_init
    Inicializa una estructura Reloj con valores a 0.
@@ -268,8 +184,11 @@ void reloj_init(Reloj *reloj)
 {
     reloj->columna_led = TASA_REFRESCO; //Dependiendo de la rutina de atencion puede que lo iniciemos a 0
     reloj->nota = 0;
+    reloj->caida_pieza = 0;
 }
 
+
+// ---------------------------------------------------------------------- PUERTO
 /*
    Function: puerto_init
    Inicializa una estructura Puerto con valores a 0.

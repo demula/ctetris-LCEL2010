@@ -140,17 +140,17 @@
 #define O_X 1
 #define O_Y -2
 #define I_X 0
-#define I_Y 0
+#define I_Y -4
 #define T_X 0
-#define T_Y -1
+#define T_Y -3
 #define L_X 0
-#define L_Y -1
+#define L_Y -3
 #define J_X 1
-#define J_Y 0
+#define J_Y -3
 #define S_X 0
-#define S_Y 0
+#define S_Y -2
 #define Z_X 0
-#define Z_Y 0
+#define Z_Y -2
 
 /*
    Constants: Configuración de la matriz de leds
@@ -189,7 +189,6 @@
 typedef struct
 {
     char pantalla[NUM_COLUMNAS_LED][NUM_FILAS_LED];
-    char columna_a_refrescar;
 } Leds;
 
 /*
@@ -243,8 +242,10 @@ typedef struct
 
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
  */
-void pieza_init(Pieza *pieza);
+void leds_init(Leds *leds);
+void leds_fila_a_int(Leds *leds, int columna, int *fila_leds);
 void juego_init(Juego *juego);
+void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla);
 int juego_tiempo_caida_pieza(Juego *juego);
 
 

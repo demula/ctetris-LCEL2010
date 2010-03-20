@@ -24,8 +24,8 @@
 
 #include "juego.h"
 
-// ----------------------------------------------------------------------- PIEZA
 
+// ----------------------------------------------------------------------- PIEZA
 /*
    Function: nueva_pieza
 
@@ -76,7 +76,7 @@ void rellena_array_forma(char forma[NUM_CLASES][ROTACIONES][ANCHO_PIEZA][ALTO_PI
     int posicion_destino_x = 0;
     int posicion_destino_y = 0;
     int posicion_destino_rotacion = 0;
-    for (posicion_origen = 0; posicion_origen < ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES - ALTO_PIEZA * ROTACIONES; posicion_origen++)
+    for (posicion_origen = 0; posicion_origen < ANCHO_PIEZA * ALTO_PIEZA * ROTACIONES + ALTO_PIEZA * ROTACIONES; posicion_origen++)
     {
         switch (origen[posicion_origen])
         {
@@ -165,14 +165,197 @@ void pieza_init(Pieza *pieza)
 }
 
 
+// ------------------------------------------------------------------------ LEDS
+/*
+   Function: leds_init
+
+   Inicializa una estructura Leds con lo valores por defecto (0).(Ahora mismo es
+   como leds_borra_pantalla pero en el caso de añadir una variable mas a la
+   estructura esto cambiaria)
+
+   Parameters:
+
+ *leds - Puntero a estructura leds que queremos inicializar.
+ */
+void leds_init(Leds *leds)
+{
+    int x, y;
+    for (x = 0; x < NUM_COLUMNAS_LED; x++)
+    {
+        for (y = 0; y < NUM_FILAS_LED; y++)
+        {
+            leds->pantalla[x][y] = 0;
+        }
+    }
+}
+
+/*
+   Function: leds_borrar_pantalla
+
+   Borra la pantalla.
+
+   Parameters:
+
+ *leds - Puntero a estructura leds que queremos inicializar.
+ */
+void leds_borrar_pantalla(Leds *leds)
+{
+    int x, y;
+    for (x = 0; x < NUM_COLUMNAS_LED; x++)
+    {
+        for (y = 0; y < NUM_FILAS_LED; y++)
+        {
+            leds->pantalla[x][y] = 0;
+        }
+    }
+}
+
+/*
+   Function: leds_fila_a_int
+
+   Traduce la columna del array a un entero que se le entregara al puerto para
+   excitar la columna de leds correspondiente y la escribe en fila_leds.
+
+   Parameters:
+
+      *leds - Puntero a la pantalla de leds que vamos a usar.
+      columna - Numero de la columna que queremos iluminar
+      fila_leds - Entero donde se guardara la traduccion
+ */
+void leds_fila_a_int(Leds *leds, int columna, int *fila_leds)
+{
+    int posicion;
+    *fila_leds = 0;
+    for (posicion =  0; posicion < NUM_FILAS_LED; posicion++)
+    {
+        if (leds->pantalla[columna][posicion] == 1)
+        {
+            *fila_leds += 1 << (NUM_FILAS_LED - 1 - posicion);
+        }
+    }
+}
+
+/*
+   Function: leds_get_posicion
+
+   Devuelve si la posicion de la pantalla esta ocupada o no. Si se le pide una
+   posicion fuera de la pantalla devolvera que esta ocupada a no ser que sea por
+   parte superior donde aparecen las piezas.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds de donde accedemos a la pantalla.
+   x - Posicion x que queremos
+   y - Posicion y que queremos
+ */
+char leds_get_posicion(Leds *leds, int x, int y)
+{
+    if ((x < 0) || (x >= NUM_COLUMNAS_LED))
+    {
+        return 1;
+    } else if (y >= NUM_FILAS_LED)
+    {
+        return 1;
+    } else if (y < 0)
+    {
+        return 0;
+    } else
+    {
+        return leds->pantalla[x][y];
+    }
+}
+
+/*
+   Function: leds_set_posicion
+
+   Escribe los leds teniendo en cuenta el tamaño de la pantalla.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds de donde accedemos a la pantalla.
+   x - Posicion x que queremos
+   y - Posicion y que queremos
+   valor - Valor a escribir en la posicion
+ */
+void leds_set_posicion(Leds *leds, int x, int y, int valor)
+{
+    if ((x < 0) || (x >= NUM_COLUMNAS_LED)){}
+    else if (y >= NUM_FILAS_LED){}
+    else if (y < 0){}
+    else
+    {
+        leds->pantalla[x][y] = valor;
+    }
+}
+
+/*
+   Function: leds_pintar_pieza
+
+   Copia la pieza actual en su posicion a la pantalla de leds. NO TIENE EN CUENTA
+   SI HAY LEDS OCUPADOS.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+void leds_pintar_pieza(Leds *leds, Juego *juego)
+{
+    int x_temp, y_temp;
+    char pieza_ocupacion;
+    for (y_temp = 0; y_temp < ALTO_PIEZA; y_temp++)
+    {
+        for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
+        {
+            pieza_ocupacion = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
+            if (pieza_ocupacion == 1)
+            {
+                leds_set_posicion(leds,juego->pieza_actual.x + x_temp, juego->pieza_actual.y + y_temp,1);
+            }
+        }
+    }
+}
+
+
+/*
+   Function: leds_borrar_pieza
+
+   DES-Copia la pieza actual en su posicion a la pantalla de leds. NO TIENE EN CUENTA
+   SI HAY LEDS OCUPADOS.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+void leds_borrar_pieza(Leds *leds, Juego *juego)
+{
+    int x_temp, y_temp;
+    char pieza_ocupacion;
+    for (y_temp = 0; y_temp < ALTO_PIEZA; y_temp++)
+    {
+        for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
+        {
+            pieza_ocupacion = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
+            if (pieza_ocupacion == 1)
+            {
+                leds->pantalla[juego->pieza_actual.x + x_temp][juego->pieza_actual.y + y_temp] = 0;
+            }
+        }
+    }
+}
+
+void leds_borrar_filas_completadas(Leds *leds, Juego *juego) //y actualizar area
+{
+
+}
+
+
 // ----------------------------------------------------------------------- JUEGO
 /*
- JUEGO —
- *
- *el nivel, la pieza actual, la pieza siguiente, el tiempo
-máximo de permanencia de una pieza en una determinada línea,
+ JUEGO — el nivel, la pieza actual, la pieza siguiente, el tiempo máximo de
+ permanencia de una pieza en una determinada línea,
 
- *
 – init
 – mover
 – rotar
@@ -223,36 +406,6 @@ int juego_tiempo_caida_pieza(Juego *juego)
 }
 
 /*
-   Function: leds_get_posicion
-
-   Devuelve si la posicion de la pantalla esta ocupada o no. Si se le pide una
-   posicion fuera de la pantalla devolvera que esta ocupada a no ser que sea por
-   parte superior donde aparecen las piezas.
-
-   Parameters:
-
- *leds - Puntero a la estructura Leds de donde accedemos a la pantalla.
-   x - Posicion x que queremos
-   y - Posicion y que queremos
- */
-char leds_get_posicion(Leds *leds, int x, int y)
-{
-    if ((x < 0) || (x >= NUM_COLUMNAS_LED))
-    {
-        return 1;
-    } else if (y >= NUM_FILAS_LED)
-    {
-        return 1;
-    } else if (y < 0)
-    {
-        return 0;
-    } else
-    {
-        return leds->pantalla[x][y];
-    }
-}
-
-/*
    Function: juego_colision
 
    Devuelve 0 si no hay colisiones dado la posicion siguiente de la pieza y los
@@ -285,33 +438,6 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
     return 0;
 }
 
-/*
-   Function: juego_fijar_pieza
-
-   Copia la pieza actual en su posicion a la pantalla de leds. NO TIENE EN CUENTA
-   SI HAY LEDS OCUPADOS.
-
-   Parameters:
-
- *leds - Puntero a la estructura Leds que contiene la pantalla.
- *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
- */
-void juego_fijar_pieza(Leds *leds, Juego *juego)
-{
-    int x_temp, y_temp;
-    char pieza_ocupacion;
-    for (y_temp = 0; y_temp < ALTO_PIEZA; y_temp++)
-    {
-        for (x_temp = 0; x_temp < ANCHO_PIEZA; x_temp++)
-        {
-            pieza_ocupacion = juego->pieza_actual.forma[(int)juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
-            if (pieza_ocupacion == 1)
-            {
-                leds->pantalla[juego->pieza_actual.x + x_temp][juego->pieza_actual.y + y_temp] = 1;
-            }
-        }
-    }
-}
 
 /*
    Function: juego_mover_pieza
@@ -416,27 +542,37 @@ void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla)
     {
         case TECLA_ROTAR:
         {
+            leds_borrar_pieza(leds, juego);
             juego_rotar_pieza(leds, juego);
+            leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_IZQUIERDA:
         {
+            leds_borrar_pieza(leds, juego);
             juego_mover_pieza(leds, juego, IZQUIERDA);
+            leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_ABAJO:
         {
+            leds_borrar_pieza(leds, juego);
             juego_mover_pieza(leds, juego, ABAJO);
+            leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_DERECHA:
         {
+            leds_borrar_pieza(leds, juego);
             juego_mover_pieza(leds, juego, DERECHA);
+            leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_ARRIBA:
         {
+            leds_borrar_pieza(leds, juego);
             juego_mover_pieza(leds, juego, ARRIBA);
+            leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_SALIDA:
@@ -446,3 +582,5 @@ void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla)
         }
     }
 }
+
+
