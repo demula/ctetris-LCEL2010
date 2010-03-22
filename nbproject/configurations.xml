@@ -21,7 +21,6 @@
                    projectFiles="true">
       <logicalFolder name="f1" displayName="tests" projectFiles="true">
         <itemPath>tests/README</itemPath>
-        <itemPath>tests/prueba_general.c</itemPath>
         <itemPath>tests/prueba_juego.c</itemPath>
         <itemPath>tests/prueba_leds.c</itemPath>
         <itemPath>tests/prueba_pieza.c</itemPath>

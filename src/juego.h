@@ -246,6 +246,7 @@ void leds_init(Leds *leds);
 void leds_fila_a_int(Leds *leds, int columna, int *fila_leds);
 void juego_init(Juego *juego);
 void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla);
+void juego_caida_timeout(Leds *leds, Juego *juego, int tiempo_caida);
 int juego_tiempo_caida_pieza(Juego *juego);
 
 

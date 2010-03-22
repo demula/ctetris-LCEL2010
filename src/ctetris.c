@@ -42,8 +42,6 @@ Reloj reloj;
 Leds leds;
 Puerto puerto;
 Juego juego;
-int contador = 0;
-int columna = 0;
 //Melodia melodia;
 //Resultados resultados;
 
@@ -97,16 +95,6 @@ void rutina_tout0(void)
 void rutina_tout1(void)
 {
     timer1_inter_atendida();
-    contador++;
-    if (contador == 1000)
-    {
-        output("inter\n");
-        puerto_excita_columna(&puerto, columna, 0xAA);
-        columna++;
-        if (columna == 4){columna = 0;}
-        contador = 0;
-    }
-    
 }
 
 /*
@@ -118,6 +106,8 @@ void rutina_tout1(void)
 void rutina_tout2(void)
 {
     timer2_inter_atendida();
+    leds_refrescar(&puerto, &leds);
+    juego_caida_timeout(&leds, &juego, juego_tiempo_caida_pieza(&juego));
 }
 
 
@@ -147,7 +137,7 @@ void software_init(void)
 void hardware_init(void)
 {
     interrupciones_init();
-    lcd_init();
+    //lcd_init();
     timer0_init();
     timer1_init();
     timer2_init();
@@ -180,11 +170,15 @@ void bucleMain(void)
     {
         if (estado.jugando == FALSE)
         {
-            char tecla;
-            tecla = tecla_pulsada(&puerto);
+            char tecla = tecla_pulsada(&puerto);
             menu(&estado, &juego, tecla);
         } else
         {
+            //Pruebas para Hito 2
+            juego_mover_pieza(&leds,&juego,DERECHA);
+            juego_mover_pieza(&leds,&juego,ABAJO);
+            juego_mover_pieza(&leds,&juego,ABAJO);
+            retardo(4000);
             _exit(0);
             //char tecla = tecla_pulsada(&puerto);
             //juego_tecla_pulsada(&leds, &juego, tecla);

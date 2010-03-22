@@ -43,8 +43,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/control.o \
 	${OBJECTDIR}/src/ctetris.o \
 	${OBJECTDIR}/src/m5272adc-dac.o \
-	${OBJECTDIR}/src/juego.o \
-	${OBJECTDIR}/tests/prueba_general.o
+	${OBJECTDIR}/src/juego.o
 
 # C Compiler Flags
 CFLAGS=
@@ -134,11 +133,6 @@ ${OBJECTDIR}/src/juego.o: nbproject/Makefile-${CND_CONF}.mk src/juego.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/juego.o src/juego.c
-
-${OBJECTDIR}/tests/prueba_general.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_general.c 
-	${MKDIR} -p ${OBJECTDIR}/tests
-	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_general.o tests/prueba_general.c
 
 # Subprojects
 .build-subprojects:

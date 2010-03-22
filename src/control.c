@@ -137,18 +137,24 @@ void lcd_limpiar(void)
 
       puerto - Puntero a la estructura de manejo de puertoł
       leds - Entero con los datos de una fila de leds.
-      columna - Numero de la columna que queremos iluminar
+      tasa_resfresco - Tasa de refresco por columna en ms
  */
 void leds_refrescar(Puerto *puerto, Leds *leds)
 {
     static char columna_a_refrescar = 0;
+    static int contador_resfresco = 0;
     int fila_leds;
-    leds_fila_a_int(leds, columna_a_refrescar, &fila_leds);
-    puerto_excita_columna(puerto, columna_a_refrescar, fila_leds);
-    columna_a_refrescar++;
-    if (columna_a_refrescar == NUM_COLUMNAS_LED)
+    contador_resfresco++;
+    if (contador_resfresco == TASA_REFRESCO)
     {
-        columna_a_refrescar = 0;
+        contador_resfresco = 0;
+        columna_a_refrescar++;
+        leds_fila_a_int(leds, columna_a_refrescar, &fila_leds);
+        puerto_excita_columna(puerto, columna_a_refrescar, fila_leds);
+        if (columna_a_refrescar == NUM_COLUMNAS_LED)
+        {
+            columna_a_refrescar = 0;
+        }
     }
 }
 
@@ -182,9 +188,7 @@ void estado_init(Estado *estado)
  */
 void reloj_init(Reloj *reloj)
 {
-    reloj->columna_led = TASA_REFRESCO; //Dependiendo de la rutina de atencion puede que lo iniciemos a 0
     reloj->nota = 0;
-    reloj->caida_pieza = 0;
 }
 
 
