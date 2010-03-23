@@ -22,7 +22,7 @@
  */
 
 #include "m5272lib.c"
-#include "hardware.c" //-->>control.h-->>juego.h
+#include "control.c" //-->>control.h -->>juego.c -->>juego.h -->>hardware.c
 
 
 
@@ -106,8 +106,11 @@ void rutina_tout1(void)
 void rutina_tout2(void)
 {
     timer2_inter_atendida();
-    leds_refrescar(&puerto, &leds);
-    juego_caida_timeout(&leds, &juego, juego_tiempo_caida_pieza(&juego));
+    if (estado.jugando == TRUE)
+    {
+        leds_refrescar(&puerto, &leds);
+        juego_caida_timeout(&leds, &juego, juego_tiempo_caida_pieza(&juego));
+    }
 }
 
 
@@ -164,24 +167,19 @@ void __init(void)
  */
 void bucleMain(void)
 {
+    static char tecla;
     output(TEXTO_BIENVENIDA);
     output(TEXTO_NIVELES_POSIBLES);
     while (TRUE)
     {
         if (estado.jugando == FALSE)
         {
-            char tecla = tecla_pulsada(&puerto);
+            tecla = tecla_pulsada(&puerto);
             menu(&estado, &juego, tecla);
         } else
         {
-            //Pruebas para Hito 2
-            juego_mover_pieza(&leds,&juego,DERECHA);
-            juego_mover_pieza(&leds,&juego,ABAJO);
-            juego_mover_pieza(&leds,&juego,ABAJO);
-            retardo(4000);
-            _exit(0);
-            //char tecla = tecla_pulsada(&puerto);
-            //juego_tecla_pulsada(&leds, &juego, tecla);
+            tecla = tecla_pulsada(&puerto);
+            juego_tecla_pulsada(&leds, &juego, tecla);
         }
     }
 }

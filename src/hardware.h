@@ -25,7 +25,6 @@
 #ifndef _HARDWARE_CONF_H
 #define	_HARDWARE_CONF_H
 
-#include "control.c"
 
 /*
    Constants: Constantes varias del Motorola ColdFire 5272
@@ -251,7 +250,6 @@
 
    Funciones contenidas en hardware_conf.c para mas informacion acceder a ellas.
  */
-char tecla_pulsada(Puerto *puerto);
 // -------------------------------------------------------------- INTERRUPCIONES
 void habilitar_interrupciones(void);
 void deshabilitar_interrupciones(void);

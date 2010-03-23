@@ -47,7 +47,7 @@ typedef enum {LCD_CHAR = 0x40, LCD_INST = 0x00} LCD_TIPO;
 //------------------------------------------------------
 void LCD_write(UWORD dato, LCD_TIPO tipo)
 {
-  UWORD salida;
+  //UWORD salida;
   if(tipo == LCD_CHAR){
     dato = dato << 8;				// El dato debe estar en los 8 bits m�s significativos
   }

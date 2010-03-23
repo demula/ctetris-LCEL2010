@@ -25,6 +25,8 @@
 #ifndef _JUEGO_H
 #define	_JUEGO_H
 
+#include "hardware.c"
+
 
 /*
    Constants: Valor de las teclas en el juego
@@ -161,7 +163,7 @@
  */
 #define NUM_FILAS_LED 8
 #define NUM_COLUMNAS_LED 4
-#define TASA_REFRESCO 5
+#define TASA_REFRESCO 10
 
 /*
    Constants: Configuración de la velocidad de caida de las piezas segun nivel
@@ -171,8 +173,8 @@
    VELOCIDAD_NIVEL_3 - Velocidad de caida en ms de cada paso en la pantalla a nv3
  */
 #define VELOCIDAD_NIVEL_1 1000
-#define VELOCIDAD_NIVEL_2 500
-#define VELOCIDAD_NIVEL_3 250
+#define VELOCIDAD_NIVEL_2 800
+#define VELOCIDAD_NIVEL_3 600
 
 /*
    Struct: Leds de la pantalla de juego

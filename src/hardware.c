@@ -26,54 +26,6 @@
 #include "m5272lib.h"
 #include "hardware.h"
 
-/*
-   Function: tecla_pulsada
-
-   Explora el teclado matricial y devuelve la tecla pulsada.
-
-   Posible mejora (pag 25 del enunciado):
-   Si únicamente se emplea las teclas ‘1’, ‘4’ , ‘7’ y ‘A’, que están conectadas
-   a la misma columna y un mismo terminal de salida (el bit 0 del puerto de
-   salida), es posible no realizar el barrido, sino excitar esa columna (en la
-   inicialización del objeto Tecla) y leer el puerto de entrada (conectado a las
-   filas del teclado matricial como se muestra en la Figura 2) para ver si
-   alguna de esas teclas ha sido pulsada. Se debe registrar la tecla pulsada y
-   el instante de tiempo de la pulsación.
-
-   Credits:
-   Teclado_GNU.c
-   Autores Juan Manuel Montero, Rubén San Segundo y Javier Guillén Álvarez.
- */
-char tecla_pulsada(Puerto *puerto)
-{
-    char fila, columna, fila_mask;
-    static char teclas[NUM_FILAS_TECLADO][NUM_COLS_TECLADO] = {
-        {"123C"},
-        {"456D"},
-        {"789E"},
-        {"A0BF"}
-    };
-    while (TRUE)
-    {
-        for (columna = 0; columna < NUM_COLS_TECLADO; columna++)
-        { //Excitamos una columna
-            puerto_excita_teclado(puerto, EXCITACION << columna); //Se envía la excitación de columna    TODO: comprobar que funciona bien
-            retardo(RET_OPTOACOPLADORES); //Esperamos respuesta de optoacopladores
-
-            for (fila = 0; fila < NUM_FILAS_TECLADO; fila++)
-            { // Exploramos las filas en busca de respuesta
-                fila_mask = EXCITACION << fila; //Máscara para leer el bit de la fila actual   TODO: comprobar que funciona bien
-                if (lee_puertoE() & fila_mask)//Si encuentra tecla pulsada
-                {
-                    while (lee_puertoE() & fila_mask); //Esperamos a que se suelte
-                    retardo(RET_REBOTES); //Retardo antirrebotes
-                    return teclas[(int)fila][(int)columna]; //Devolvemos la tecla pulsada
-                }
-            }//Siguiente columna
-        }// Exploración finalizada sin encontrar una tecla pulsada
-    }//Reiniciamos exploración
-}
-
 
 // -------------------------------------------------------------- INTERRUPCIONES
 

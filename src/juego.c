@@ -355,6 +355,9 @@ void leds_borrar_pieza(Leds *leds, Juego *juego)
     }
 }
 
+
+
+
 void leds_borrar_filas_completadas(Leds *leds, Juego *juego) //y actualizar area
 {
 
@@ -403,33 +406,11 @@ void juego_init(Juego *juego)
  */
 void juego_siguiente_pieza(Juego *juego)
 {
-    char siguiente_pieza = juego->pieza_actual.clase
+    char siguiente_pieza = juego->pieza_actual.clase;
     siguiente_pieza++;
     if (siguiente_pieza == NUM_CLASES) siguiente_pieza = 0;
-    juego->pieza_actual.clase = siguiente_pieza;
+    juego->clase_pieza_siguiente = siguiente_pieza;
 }
-
-
-/*
-   Function: juego_nueva_pieza
-
-   Pinta la pieza antigua en la pantalla, coloca la nueva en posicion de salida y
-   calcula la siguiente pieza.
-
-   Parameters:
-
- *leds - Puntero a la estructura Leds para pintar la pieza con la que se estaba jugando.
- *juego - Puntero a la estructura Juego de donde accedemos a las piezas.
- */
-void juego_nueva_pieza(Leds *leds, Juego *juego)
-{
-    leds_pintar_pieza(leds,juego);
-    juego->pieza_actual.clase = juego->clase_pieza_siguiente;
-    juego->pieza_actual.x = juego->pieza_actual.x_comienzo[(int)juego->pieza_actual.clase];
-    juego->pieza_actual.y = juego->pieza_actual.y_comienzo[(int)juego->pieza_actual.clase];
-    juego_siguiente_pieza(juego);
-}
-
 
 /*
    Function: juego_tiempo_caida_pieza
@@ -456,27 +437,6 @@ int juego_tiempo_caida_pieza(Juego *juego)
     return -1;
 }
 
-/*
-   Function: juego_caida_timeout
-
-   Gestiona la caida automatica de la pieza
-
-   Parameters:
-
- *leds - Puntero a la estructura Leds que contiene la pantalla.
- *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
-    tiempo_caida - Tiempo en milisegundos que tarda en caer la pieza una unidad.
- */
-void juego_caida_timeout(Leds *leds, Juego *juego, int tiempo_caida)
-{
-    static int contador = 0;
-    contador++;
-    if (contador == tiempo_caida)
-    {
-        contador = 0;
-        juego_mover_pieza(leds, juego, ABAJO);
-    }
-}
 
 /*
    Function: juego_colision
@@ -510,6 +470,27 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
     }
     return 0;
 }
+
+/*
+   Function: juego_nueva_pieza
+
+   Pinta la pieza antigua en la pantalla, coloca la nueva en posicion de salida y
+   calcula la siguiente pieza.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds para pintar la pieza con la que se estaba jugando.
+ *juego - Puntero a la estructura Juego de donde accedemos a las piezas.
+ */
+void juego_nueva_pieza(Leds *leds, Juego *juego)
+{
+    leds_pintar_pieza(leds,juego);
+    juego->pieza_actual.clase = juego->clase_pieza_siguiente;
+    juego->pieza_actual.x = juego->pieza_actual.x_comienzo[(int)juego->pieza_actual.clase];
+    juego->pieza_actual.y = juego->pieza_actual.y_comienzo[(int)juego->pieza_actual.clase];
+    juego_siguiente_pieza(juego);
+}
+
 
 /*
    Function: juego_mover_pieza
@@ -600,6 +581,34 @@ void juego_rotar_pieza(Leds *leds, Juego *juego)
         juego->pieza_actual.rotacion++;
     }
 }
+
+
+/*
+   Function: juego_caida_timeout
+
+   Gestiona la caida automatica de la pieza
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+    tiempo_caida - Tiempo en milisegundos que tarda en caer la pieza una unidad.
+ */
+void juego_caida_timeout(Leds *leds, Juego *juego, int tiempo_caida)
+{
+    static int contador = 0;
+    contador++;
+    if (contador == tiempo_caida)
+    {
+        contador = 0;
+        leds_borrar_pieza(leds, juego);
+        juego_mover_pieza(leds, juego, ABAJO);
+        leds_pintar_pieza(leds, juego);
+
+    }
+}
+
+
 
 /*
    Function: juego_rotar_pieza
