@@ -164,6 +164,7 @@
 #define NUM_FILAS_LED 8
 #define NUM_COLUMNAS_LED 4
 #define TASA_REFRESCO 10
+#define DEATH_LINE -1
 
 /*
    Constants: Configuración de la velocidad de caida de las piezas segun nivel

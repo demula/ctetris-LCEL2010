@@ -349,18 +349,106 @@ void leds_borrar_pieza(Leds *leds, Juego *juego)
             pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x_temp][y_temp];
             if (pieza_ocupacion == 1)
             {
-                leds->pantalla[juego->pieza_actual.x + x_temp][juego->pieza_actual.y + y_temp] = 0;
+                leds_set_posicion(leds, juego->pieza_actual.x + x_temp, juego->pieza_actual.y + y_temp, 0);
             }
         }
     }
 }
 
+/*
+   Function: leds_actualiza_area_superior
 
+   Corre un numero_filas dado todas las filas superiores desde la fila_comienzo(incluida).
 
+   Parameters:
 
-void leds_borrar_filas_completadas(Leds *leds, Juego *juego) //y actualizar area
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+void leds_actualiza_area_superior(Leds *leds, int fila_comienzo, int numero_filas)
 {
+    int x, y;
+    char valor_led;
 
+    //Cortamos y pegamos la parte superior
+    for (y = fila_comienzo; y > DEATH_LINE; y--)
+    {
+        for (x = 0; x < NUM_COLUMNAS_LED; x++)
+        {
+            valor_led = leds_get_posicion(leds, x, y - numero_filas);
+            leds_set_posicion(leds, x, y, valor_led);
+        }
+    }
+
+    //Borramos el cacho superior de pantalla que falta con ceros
+    for (y = 0; y < numero_filas; y++)
+    {
+        for (x = 0; x < NUM_COLUMNAS_LED; x++)
+        {
+            leds_set_posicion(leds, x, y, 0);
+        }
+    }
+
+
+
+}
+
+/*
+   Function: leds_fila_completa
+
+   Devuelve 1 si la fila esta totalmente completa, 0 en caso contrario.
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+int leds_fila_completa(Leds *leds, int fila)
+{
+    int x;
+    char valor_led;
+    for (x = 0; x < NUM_COLUMNAS_LED; x++)
+    {
+        valor_led = leds_get_posicion(leds, x, fila);
+        if (valor_led == 0)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+/*
+   Function: leds_borrar_filas_completadas
+
+   Borra todas la filas que se hayan podido completar y baja las superiores
+
+   Parameters:
+
+ *leds - Puntero a la estructura Leds que contiene la pantalla.
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+void leds_borrar_filas_completadas(Leds *leds, Juego *juego)
+{
+    int fila;
+    int numero_filas, fila_comienzo, fila_completa;
+    numero_filas = 0;
+
+    for (fila = juego->pieza_actual.y; fila < ALTO_PIEZA + juego->pieza_actual.y; fila++)
+    {
+        fila_completa = leds_fila_completa(leds, fila);
+        if (fila_completa)
+        {
+            if (!numero_filas)
+            {
+                fila_comienzo = fila;
+            }
+            numero_filas++;
+        }
+    }
+
+    leds_actualiza_area_superior(leds, fila_comienzo, numero_filas);
 }
 
 
@@ -392,7 +480,6 @@ void juego_init(Juego *juego)
     juego->clase_pieza_siguiente = PIEZA_I;
     pieza_init(&juego->pieza_actual);
 }
-
 
 /*
    Function: juego_siguiente_pieza
@@ -437,7 +524,6 @@ int juego_tiempo_caida_pieza(Juego *juego)
     return -1;
 }
 
-
 /*
    Function: juego_colision
 
@@ -472,6 +558,32 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
 }
 
 /*
+   Function: juego_game_over
+
+   Devuelve 0 si la pieza actual no tiene ninguna parte por encima de la pantalla.
+
+   Parameters:
+
+ *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
+ */
+int juego_game_over(Juego *juego)
+{
+    int x;
+    char pieza_ocupacion;
+
+    for (x = 0; x < ANCHO_PIEZA; x++)
+    {
+        pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x][DEATH_LINE];
+        if (pieza_ocupacion == 1)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/*
    Function: juego_nueva_pieza
 
    Pinta la pieza antigua en la pantalla, coloca la nueva en posicion de salida y
@@ -482,15 +594,13 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
  *leds - Puntero a la estructura Leds para pintar la pieza con la que se estaba jugando.
  *juego - Puntero a la estructura Juego de donde accedemos a las piezas.
  */
-void juego_nueva_pieza(Leds *leds, Juego *juego)
+void juego_nueva_pieza(Juego *juego)
 {
-    leds_pintar_pieza(leds,juego);
     juego->pieza_actual.clase = juego->clase_pieza_siguiente;
-    juego->pieza_actual.x = juego->pieza_actual.x_comienzo[(int)juego->pieza_actual.clase];
-    juego->pieza_actual.y = juego->pieza_actual.y_comienzo[(int)juego->pieza_actual.clase];
+    juego->pieza_actual.x = juego->pieza_actual.x_comienzo[(int) juego->pieza_actual.clase];
+    juego->pieza_actual.y = juego->pieza_actual.y_comienzo[(int) juego->pieza_actual.clase];
     juego_siguiente_pieza(juego);
 }
-
 
 /*
    Function: juego_mover_pieza
@@ -506,7 +616,7 @@ void juego_nueva_pieza(Leds *leds, Juego *juego)
  */
 void juego_mover_pieza(Leds *leds, Juego *juego, char direccion)
 {
-    int x, y;
+    int x, y, game_over;
     x = pieza_get_x(&juego->pieza_actual);
     y = pieza_get_y(&juego->pieza_actual);
 
@@ -539,8 +649,14 @@ void juego_mover_pieza(Leds *leds, Juego *juego, char direccion)
             }
             else
             {
-                //Este es el caso que hay que poner una pieza nueva.
-                juego_nueva_pieza(leds,juego);
+                leds_pintar_pieza(leds, juego);
+                game_over = juego_game_over(juego);
+                if (!game_over)
+                {
+                    leds_borrar_filas_completadas(leds);
+                    juego_nueva_pieza(juego);
+                }
+
             }
             break;
         }
@@ -582,7 +698,6 @@ void juego_rotar_pieza(Leds *leds, Juego *juego)
     }
 }
 
-
 /*
    Function: juego_caida_timeout
 
@@ -608,8 +723,6 @@ void juego_caida_timeout(Leds *leds, Juego *juego, int tiempo_caida)
     }
 }
 
-
-
 /*
    Function: juego_rotar_pieza
 
@@ -624,6 +737,11 @@ void juego_caida_timeout(Leds *leds, Juego *juego, int tiempo_caida)
  */
 void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla)
 {
+    /*
+       Deshabilitamos y posteriormente habilitamos interrupciones para evitar
+       que se corrompan las variables globales. TODO: Implementar locks (mas elegante)
+     */
+    deshabilitar_interrupciones();
     switch (tecla)
     {
         case TECLA_ROTAR:
@@ -667,6 +785,7 @@ void juego_tecla_pulsada(Leds *leds, Juego *juego, char tecla)
             break;
         }
     }
+    habilitar_interrupciones();
 }
 
 

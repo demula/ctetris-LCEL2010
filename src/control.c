@@ -307,6 +307,11 @@ short int fila_a_puerto(short int fila_leds)
  */
 void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds)
 {
+    /*
+       Deshabilitamos y posteriormente habilitamos interrupciones para evitar
+       que se corrompan las variables globales. TODO: Implementar locks (mas elegante)
+     */
+    deshabilitar_interrupciones();
     short int columna_en_puerto = 0;
     short int fila_en_puerto = 0;
 
@@ -326,6 +331,7 @@ void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds)
     puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_FILA_LEDS;
     puerto->situacion_puerto += fila_en_puerto;
     set16_puertoS(puerto->situacion_puerto);
+    habilitar_interrupciones();
 }
 
 /*
