@@ -140,7 +140,7 @@ typedef struct
 
    Funciones contenidas en control.c para mas informacion acceder a ellas.
  */
-void menu(Estado *estado, Juego *juego, char tecla);
+void menu(Estado *estado, Leds *leds, Juego *juego, Resultados *resultados, char tecla);
 void estado_init(Estado *estado);
 void reloj_init(Reloj *reloj);
 void puerto_init(Puerto *puerto);

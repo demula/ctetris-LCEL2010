@@ -239,6 +239,19 @@ typedef struct
     Pieza pieza_actual;
 } Juego;
 
+/*
+   Struct: Juego
+
+   Contiene los resultados de la partida jugada (lineas completadas, puntuacion,
+   etc...)
+
+   lineas - Numero de lineas completadas.
+ */
+typedef struct
+{
+    int lineas;
+} Resultados;
+
 
 /*
    Functions: Declaracion de las funciones contenidas en juego.c

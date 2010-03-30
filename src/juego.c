@@ -165,6 +165,50 @@ void pieza_init(Pieza *pieza)
     posiciones_comienzo_init(pieza);
 }
 
+// ------------------------------------------------------------------ RESULTADOS
+
+/*
+   Function: resultados_init
+
+   Inicializa una estructura Resultados a 0.
+
+   Parameters:
+
+ *resultados - Puntero a la estructura Resultados que queremos inicializar.
+ */
+void resultados_init(Resultados *resultados)
+{
+    resultados->lineas = 0;
+}
+
+/*
+   Function: resultados_nueva_partida
+
+   Reinicia los campos necesarios de Resultados para una nueva partida.
+
+   Parameters:
+
+ *resultados - Puntero a la estructura Resultados que queremos inicializar.
+ */
+void resultados_nueva_partida(Resultados *resultados)
+{
+    resultados->lineas = 0;
+}
+
+/*
+   Function: resultados_linea_completada
+
+   Añade una linea completada a los resultados.
+
+   Parameters:
+
+ *resultados - Puntero a la estructura Resultados que queremos sumar la linea.
+ */
+void resultados_linea_completada(Resultados *resultados)
+{
+    resultados->lineas++;
+}
+
 
 // ------------------------------------------------------------------------ LEDS
 
@@ -434,8 +478,9 @@ void leds_borrar_filas_completadas(Leds *leds, Juego *juego)
     int fila;
     int numero_filas, fila_comienzo, fila_completa;
     numero_filas = 0;
+    fila_completa = 0;
 
-    for (fila = juego->pieza_actual.y; fila < ALTO_PIEZA + juego->pieza_actual.y; fila++)
+    for (fila = juego->pieza_actual.y; (fila < ALTO_PIEZA + juego->pieza_actual.y)&&(fila < NUM_FILAS_LED); fila++)
     {
         fila_completa = leds_fila_completa(leds, fila);
         if (fila_completa)
@@ -512,16 +557,36 @@ int juego_tiempo_caida_pieza(Juego *juego)
 {
     switch (juego->nivel_dificultad)
     {
-        case -1: return 0;
+        case -1:
+            return 0;
             break;
-        case 0: return VELOCIDAD_NIVEL_1;
+        case 0:
+            return VELOCIDAD_NIVEL_1;
             break;
-        case 1: return VELOCIDAD_NIVEL_2;
+        case 1:
+            return VELOCIDAD_NIVEL_2;
             break;
-        case 2: return VELOCIDAD_NIVEL_3;
+        case 2:
+            return VELOCIDAD_NIVEL_3;
             break;
     }
     return -1;
+}
+
+/*
+   Function: juego_nuevo_juego
+
+   Inicia una nueva partida.
+
+   Parameters:
+
+ *juego - Puntero a la estructura Juego que queremos inicializar.
+ */
+void juego_nuevo_juego(Leds *leds, Juego *juego, Resultados *resultados)
+{
+    juego_siguiente_pieza(juego);
+    resultados_nueva_partida(resultados);
+    leds_borrar_pantalla(leds);
 }
 
 /*
@@ -566,17 +631,24 @@ int juego_colision(Leds *leds, Juego *juego, int rotacion, int x_pos, int y_pos)
 
  *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
  */
-int juego_game_over(Juego *juego)
+int juego_comprueba_game_over(Juego *juego)
 {
-    int x;
+    int x, y;
     char pieza_ocupacion;
 
     for (x = 0; x < ANCHO_PIEZA; x++)
     {
-        pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x][DEATH_LINE];
-        if (pieza_ocupacion == 1)
+        if(juego->pieza_actual.y < 0)
         {
-            return 1;
+            for(y = 0; y < ALTO_PIEZA; y++)
+            {
+                if(juego->pieza_actual.y + y == DEATH_LINE)
+                pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x][y];
+                if (pieza_ocupacion == 1)
+                {
+                    return 1;
+                }
+            }
         }
     }
 
@@ -617,6 +689,7 @@ void juego_nueva_pieza(Juego *juego)
 void juego_mover_pieza(Leds *leds, Juego *juego, char direccion)
 {
     int x, y, game_over;
+    game_over = 0;
     x = pieza_get_x(&juego->pieza_actual);
     y = pieza_get_y(&juego->pieza_actual);
 
@@ -650,11 +723,16 @@ void juego_mover_pieza(Leds *leds, Juego *juego, char direccion)
             else
             {
                 leds_pintar_pieza(leds, juego);
-                game_over = juego_game_over(juego);
+                game_over = juego_comprueba_game_over(juego);
                 if (!game_over)
                 {
-                    leds_borrar_filas_completadas(leds);
+                    leds_borrar_filas_completadas(leds, juego);
                     juego_nueva_pieza(juego);
+                    game_over = 0;
+                }
+                else
+                {
+                    //juego_partida_terminada(leds, juego); estado->jugando = 0;!!!
                 }
 
             }

@@ -84,7 +84,7 @@ char tecla_pulsada(Puerto *puerto)
  *estado - Puntero a el estado global.
       tecla - char con el valor de la tecla pulsada.
  */
-void menu(Estado *estado, Juego *juego, char tecla)
+void menu(Estado *estado, Leds *leds, Juego *juego, Resultados *resultados, char tecla)
 {
     switch (tecla)
     {
@@ -120,7 +120,8 @@ void menu(Estado *estado, Juego *juego, char tecla)
             }
             else
             {
-                estado->jugando = 1; //TRUE
+            juego_nuevo_juego(leds, juego, resultados);
+            estado->jugando = 1; //TRUE
             }
         }
             break;

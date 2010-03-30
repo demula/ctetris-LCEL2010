@@ -43,7 +43,7 @@ Leds leds;
 Puerto puerto;
 Juego juego;
 //Melodia melodia;
-//Resultados resultados;
+Resultados resultados;
 
 
 // --------------------------------------------------------- RUTINAS DE ATENCION
@@ -127,6 +127,7 @@ void software_init(void)
     estado_init(&estado);
     puerto_init(&puerto);
     reloj_init(&reloj);
+    resultados_init(&resultados);
     leds_init(&leds);
     juego_init(&juego);
 }
@@ -175,7 +176,7 @@ void bucleMain(void)
         if (estado.jugando == FALSE)
         {
             tecla = tecla_pulsada(&puerto);
-            menu(&estado, &juego, tecla);
+            menu(&estado, &leds, &juego, &resultados, tecla);
         } else
         {
             tecla = tecla_pulsada(&puerto);

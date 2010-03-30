@@ -22,6 +22,9 @@
  */
 
 
+#ifndef _HARDWARE_CONF_C
+#define	_HARDWARE_CONF_C
+
 #include "m5272.h"
 #include "m5272lib.h"
 #include "hardware.h"
@@ -145,3 +148,5 @@ void interrupciones_init(void)
     ACCESO_A_MEMORIA_LONG(DIR_VTMR2) = (ULONG) _prep_TOUT2; // Escribimos la dirección de la función para TMR1
     habilitar_interrupciones();
 }
+
+#endif	/* _HARDWARE_CONF_C */
