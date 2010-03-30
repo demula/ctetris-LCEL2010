@@ -773,6 +773,10 @@ void juego_rotar_pieza(Leds *leds, Juego *juego)
     if (!hay_colision)
     {
         juego->pieza_actual.rotacion++;
+        if(juego->pieza_actual.rotacion == ROTACIONES)
+        {
+            juego->pieza_actual.rotacion = 0;
+        }
     }
 }
 
