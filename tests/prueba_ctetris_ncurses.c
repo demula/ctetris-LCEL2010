@@ -1,5 +1,5 @@
 /*
-   prueba_ctetris.c
+   prueba_ctetris_ncurses.c
 
    Archivo de prueba de algoritmos para el juego de ctetris.
 
@@ -26,13 +26,9 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <signal.h>
 #include <sys/time.h>
-#include <termios.h>
-#include <unistd.h>
-//#include <ncurses.h>
+#include <ncurses.h>
 
 #define FPS 24 //Frames Per Second
 #define REFRESH_MS 1000/FPS
@@ -42,8 +38,8 @@
 #define COLORES_RESULTADOS_TITULO 5
 #define W_ALTO_RESULTADOS 4
 #define W_ANCHO_RESULTADOS 20
-#define W_X_RESULTADOS 10
-#define W_Y_RESULTADOS 3
+#define W_X_RESULTADOS 1
+#define W_Y_RESULTADOS 1
 
 #define COLORES_LEDS 3
 #define W_ALTO_LEDS 8
@@ -74,12 +70,6 @@
 #define RET_OPTOACOPLADORES 1150
 #define RET_REBOTES 1150
 #define TRUE 1
-#define FALSE 0
-#define KEY_LEFT 'a'//"\0x14b"
-#define KEY_UP 'w'//"\0x148"
-#define KEY_DOWN 's'//"\0x150"
-#define KEY_RIGHT 'd'//"\0x14d"
-
 
 void set16_puertoS(unsigned short int valor)
 {
@@ -102,22 +92,19 @@ void retardo(int ms)
 }
 
 // --------------------------------------------------------------------- NCURSES
-//Funcion de pintado emulando output de ColdFire
+//Ventanas compartidas
+WINDOW *w_output;
+WINDOW *w_leds;
+WINDOW *w_resultados;
 
+//Funcion de pintado emulando output de ColdFire
 void output(char string[])
 {
-    static int linea_actual = 0;
-    int i = 0;
-    printf("\033[%i;%iH%s", W_Y_OUTPUT + linea_actual, W_X_OUTPUT, string);
-    while(string[i] != EOF && i < strlen(string))
-    {
-        if (string[i] == '\n')linea_actual++;
-        i++;
-    }
-    if (linea_actual == W_ALTO_OUTPUT)
-    {
-        linea_actual = 0;
-    }
+    attron(COLOR_PAIR(COLORES_OUTPUT));
+    wprintw(w_output, string);
+    wrefresh(w_output);
+    refresh();
+    attroff(COLOR_PAIR(COLORES_OUTPUT));
 }
 
 #include "../ctetris/src/control.c"
@@ -135,54 +122,77 @@ Resultados resultados;
 
 // ------------------------------------------------------------------- FUNCTIONS
 
-void msleep(unsigned long delay_ms)
+/*void msleep(unsigned long delay_ms)
 {
-    /*
     struct timespec req_ts;
     req_ts.tv_sec = delay_ms / 1000;
     req_ts.tv_nsec = (delay_ms % 1000) * 1000000L;
     while (nanosleep(&req_ts, NULL) == -1)
         continue;
-    */
-    usleep(delay_ms * 1000);
 
+}*/
+WINDOW *create_newwin(int height, int width, int starty, int startx)
+{	WINDOW *local_win;
+
+	local_win = newwin(height, width, starty, startx);
+	wrefresh(local_win);
+
+	return local_win;
 }
 
 void windows_init()
 {
-    printf("\nResultados:\n  lineas 0");
-}
+    w_output = create_newwin(W_ALTO_OUTPUT, W_ANCHO_OUTPUT, W_Y_OUTPUT, W_X_OUTPUT);
+    w_leds = create_newwin(W_ALTO_LEDS, W_ANCHO_LEDS, W_Y_LEDS, W_X_LEDS);
+    w_resultados = create_newwin(W_ALTO_RESULTADOS, W_ANCHO_RESULTADOS, W_Y_RESULTADOS, W_X_RESULTADOS);
 
-void w_clear()
-{
-    printf("\033[2J");
-    printf("\033[0;0H");
+    //Colores para las ditintas ventanas
+    //init_color(COLOR_RED, 700, 0, 0);
+    /* param 1     : color name
+     * param 2, 3, 4 : rgb content min = 0, max = 1000 */
+    
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(COLORES_OUTPUT, COLOR_BLUE, COLOR_BLACK);
+    init_pair(COLORES_LEDS, COLOR_RED, COLOR_BLACK);
+    init_pair(COLORES_RESULTADOS, COLOR_RED, COLOR_BLACK);
+    init_pair(COLORES_RESULTADOS_TITULO, COLOR_RED, COLOR_BLACK);
 }
 
 void w_leds_refresh(Leds *leds)
 {
     int x, y;
+    //mvwprintw(win, y, x, "%s", string);
 
+    attron(COLOR_PAIR(COLORES_LEDS));
+    wclear(w_leds);
     for (y = 0; y < NUM_FILAS_LED; y++)
     {
         for (x = 0; x < NUM_COLUMNAS_LED; x++)
         {
-            if (leds->pantalla[x][y] == 1) printf("\033[%i;%iH0", W_Y_LEDS + y, W_X_LEDS + x);
-            else printf("\033[%i;%iH·", W_Y_LEDS + y, W_X_LEDS + x);
+            if (leds->pantalla[x][y] == 1) mvwprintw(w_leds, y, x,"0");
+            else mvwprintw(w_leds, y, x, "'");
         }
     }
-    //printf("\033[Line;ColumnH");
+    wrefresh(w_leds);
+    //refresh();
+    attroff(COLOR_PAIR(COLORES_LEDS));
 }
 
 void w_resultados_refresh()
 {
-    printf("\033[%i;%iH%i", W_Y_RESULTADOS, W_X_RESULTADOS, resultados.lineas);
+    attron(COLOR_PAIR(COLORES_RESULTADOS));
+    wclear(w_resultados);
+    wprintw(w_resultados,"Resultados:\n  Lineas %i", resultados.lineas);
+    wrefresh(w_resultados);
+    refresh();
+    attroff(COLOR_PAIR(COLORES_RESULTADOS));
 }
 
 void pantalla_refresh(Leds *leds)
 {
     w_leds_refresh(leds);
     w_resultados_refresh();
+    //refresh();
 }
 
 void contador_timeout(int i)
@@ -211,24 +221,9 @@ void no_interrrupcion(int i)
 
 int main(int argc, char** argv)
 {
-    char tecla_pulsada;
-    int c;
-    int i = 0;
     struct itimerval req_ts;
-    struct termios t;
+    int tecla_pulsada;
 
-    //Setup del terminal
-    tcgetattr(STDIN_FILENO, &t);
-    t.c_lflag &= ~ICANON;//No espera a enter para meter la informacion
-    t.c_lflag &= ~ECHO;//No imprime el caracter en pantalla
-    tcsetattr(STDIN_FILENO, TCSANOW, &t);
-    /* No funcionan...
-    printf("\033f");//Esconder el cursor
-    printf("\033w");//Desactivar wrapping mode
-     */
-    w_clear();
-
-    //Setup de timer
     req_ts.it_interval.tv_sec = 0;
     req_ts.it_interval.tv_usec = 0;
     req_ts.it_value.tv_sec = REFRESH_MS / 1000;
@@ -236,22 +231,36 @@ int main(int argc, char** argv)
     signal(SIGALRM, contador_timeout);
     setitimer(ITIMER_REAL, &req_ts, 0);
 
-    //Setup de ctetris
     estado_init(&estado);
+    //estado.jugando = TRUE;
     leds_init(&leds);
     juego_init(&juego);
     resultados_init(&resultados);
 
-    //Setup de las posiciones dentro del terminal
+    initscr(); /* Start curses mode 		  */
+    curs_set(0); /* Cursor: 0 invisible, 1 normal, 2 muy visible */
+    if(has_colors() == FALSE)
+	{
+        endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+	start_color();			/* Start color 			*/
+    //cbreak();       /* Line buffering disabled, Pass on everty thing to me */
+    keypad(stdscr, TRUE); /* Inicializar el teclado */
+    noecho(); /* No pintar caracteres pulsados en la pantalla */
+    
+
+    //Inicia las ventas que vamos a usar con sus respectivas propiedades
     windows_init();
+    refresh(); /* Print it on to the real screen */
 
     //Inicio de ctetris
     output(TEXTO_BIENVENIDA);
     output(TEXTO_NIVELES_POSIBLES);
-    while (c = getchar())
+    while (TRUE)
     {
-        tecla_pulsada = (char) c;
-
+        tecla_pulsada = getch();
         if (estado.jugando == FALSE)
         {
             menu(&estado, &leds, &juego, &resultados, tecla_pulsada);
@@ -276,11 +285,14 @@ int main(int argc, char** argv)
                 case 'e':
                     //Para tener una salida "limpia" en el Netbeans...
                     signal(SIGALRM, no_interrrupcion);
-                    w_clear();
+                    clear();
+                    refresh();
+                    endwin(); /* End curses mode */
                     return EXIT_SUCCESS;
                     break;
             }
         }
     }
+    endwin();
     return EXIT_SUCCESS;
 }
