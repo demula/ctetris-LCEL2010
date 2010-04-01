@@ -180,7 +180,7 @@ void bucleMain(void)
         } else
         {
             tecla = tecla_pulsada(&puerto);
-            juego_tecla_pulsada(&leds, &juego, tecla);
+            juego_tecla_pulsada(&leds, &juego, &resultados, tecla);
         }
     }
 }
