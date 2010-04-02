@@ -415,7 +415,11 @@ void leds_actualiza_area_superior(Leds *leds, int fila_comienzo, int numero_fila
     char valor_led;
 
     //Cortamos y pegamos la parte superior
-    for (y = fila_comienzo; y > DEATH_LINE; y--)
+    for (y = fila_comienzo + numero_filas - 1; y > DEATH_LINE; y--)
+    /* BUG de error al borrar filas completadas solucionado
+     y = fila_comienzo + numero_filas - 1 --> ya que la fila de comienzo es la
+     primera por arriba y estamos empezando por la primera por abajo
+     */
     {
         for (x = 0; x < NUM_COLUMNAS_LED; x++)
         {
@@ -480,14 +484,14 @@ void leds_borrar_filas_completadas(Leds *leds, Juego *juego, Resultados *resulta
     numero_filas = 0;
     fila_completa = 0;
 
-    for (fila = juego->pieza_actual.y; (fila < ALTO_PIEZA + juego->pieza_actual.y)&&(fila < NUM_FILAS_LED); fila++)
+    for (fila = 0; (fila < ALTO_PIEZA) && (fila + juego->pieza_actual.y < NUM_FILAS_LED); fila++)
     {
-        fila_completa = leds_fila_completa(leds, fila);
+        fila_completa = leds_fila_completa(leds, fila + juego->pieza_actual.y);
         if (fila_completa)
         {
             if (!numero_filas)
             {
-                fila_comienzo = fila;
+                fila_comienzo = fila + juego->pieza_actual.y;
             }
             numero_filas++;
             resultados_linea_completada(resultados);
@@ -638,12 +642,12 @@ int juego_comprueba_game_over(Juego *juego)
 
     for (x = 0; x < ANCHO_PIEZA; x++)
     {
-        if(juego->pieza_actual.y < 0)
+        if (juego->pieza_actual.y < 0)
         {
-            for(y = 0; y < ALTO_PIEZA; y++)
+            for (y = 0; y < ALTO_PIEZA; y++)
             {
-                if(juego->pieza_actual.y + y == DEATH_LINE)
-                pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x][y];
+                if (juego->pieza_actual.y + y == DEATH_LINE)
+                    pieza_ocupacion = juego->pieza_actual.forma[(int) juego->pieza_actual.clase][juego->pieza_actual.rotacion][x][y];
                 if (pieza_ocupacion == 1)
                 {
                     return 1;
@@ -773,7 +777,7 @@ void juego_rotar_pieza(Leds *leds, Juego *juego)
     if (!hay_colision)
     {
         juego->pieza_actual.rotacion++;
-        if(juego->pieza_actual.rotacion == ROTACIONES)
+        if (juego->pieza_actual.rotacion == ROTACIONES)
         {
             juego->pieza_actual.rotacion = 0;
         }
