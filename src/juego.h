@@ -177,6 +177,11 @@
 #define VELOCIDAD_NIVEL_2 800
 #define VELOCIDAD_NIVEL_3 600
 
+#define TEXTO_GAME_OVER "GAME OVER\n"
+#define TEXTO_FILAS_COMPLETADAS "   Filas completadas  "
+#define TIEMPO_GAME_OVER 3000
+#define NUM_ITEMS_MENU 3
+
 /*
    Struct: Leds de la pantalla de juego
 
@@ -254,6 +259,22 @@ typedef struct
 
 
 /*
+   Struct: Estado del juego
+
+   Contiene todas las variables que hacen falta para definir el juego antes de
+   su comienzo.
+
+   nivel_dificultad - Numero de filas en la matriz de leds.
+   jugando - Indica si se esta jugando (1) o en los menus(0).
+   texto_menu - Numero de columnas en la matriz de leds.
+ */
+typedef struct
+{
+    char jugando;
+    char* texto_menu[NUM_ITEMS_MENU];
+} Estado;
+
+/*
    Functions: Declaracion de las funciones contenidas en juego.c
 
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
@@ -261,8 +282,8 @@ typedef struct
 void leds_init(Leds *leds);
 void leds_fila_a_int(Leds *leds, int columna, int *fila_leds);
 void juego_init(Juego *juego);
-void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultad, char tecla);
-void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, int tiempo_caida);
+void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, char tecla);
+void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, int tiempo_caida);
 int juego_tiempo_caida_pieza(Juego *juego);
 
 

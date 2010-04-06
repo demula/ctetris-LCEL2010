@@ -48,7 +48,6 @@
 #define TEXTO_COMENZAR_JUEGO ". Pulse A para comenzar la partida...\n"
 #define TEXTO_TECLA_ERRONEA "Tecla no valida"
 #define TEXTO_NO_NIVEL "No ha seleccionado ningun nivel.\n"
-#define NUM_ITEMS_MENU 3
 
 
 /*
@@ -86,23 +85,6 @@
 #define MASCARA_TECLADO 0xFFF0
 #define MASCARA_COLUMNA_LEDS 0xFF0F
 #define MASCARA_FILA_LEDS 0x00FF
-
-
-/*
-   Struct: Estado del juego
-  
-   Contiene todas las variables que hacen falta para definir el juego antes de
-   su comienzo.
-
-   nivel_dificultad - Numero de filas en la matriz de leds.
-   jugando - Indica si se esta jugando (1) o en los menus(0).
-   texto_menu - Numero de columnas en la matriz de leds.
- */
-typedef struct
-{
-    char jugando;
-    char* texto_menu[NUM_ITEMS_MENU];
-} Estado;
 
 
 /*

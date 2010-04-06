@@ -678,6 +678,19 @@ void juego_nueva_pieza(Juego *juego)
     juego_siguiente_pieza(juego);
 }
 
+void juego_partida_terminada (Leds *leds, Juego *juego, Resultados *resultados, Estado *estado)
+{
+    estado->jugando = 0;
+    output(TEXTO_GAME_OVER);
+    output(TEXTO_FILAS_COMPLETADAS);
+    outNum(10, resultados->lineas, SIN_SIGNO);
+    output("\n");
+    retardo(TIEMPO_GAME_OVER);
+    juego_init(juego);
+    leds_borrar_pantalla(leds);
+
+}
+
 /*
    Function: juego_mover_pieza
 
@@ -690,10 +703,9 @@ void juego_nueva_pieza(Juego *juego)
  *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
    direccion - Caracter con la direccion en la que queremos mover la pieza.
  */
-void juego_mover_pieza(Leds *leds, Juego *juego, Resultados *resultados, char direccion)
+void juego_mover_pieza(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, char direccion)
 {
     int x, y, game_over;
-    game_over = 0;
     x = pieza_get_x(&juego->pieza_actual);
     y = pieza_get_y(&juego->pieza_actual);
 
@@ -732,11 +744,10 @@ void juego_mover_pieza(Leds *leds, Juego *juego, Resultados *resultados, char di
                 {
                     leds_borrar_filas_completadas(leds, juego, resultados);
                     juego_nueva_pieza(juego);
-                    game_over = 0;
                 }
                 else
                 {
-                    //juego_partida_terminada(leds, juego); estado->jugando = 0;!!!
+                    juego_partida_terminada(leds,juego, resultados, estado);
                 }
 
             }
@@ -795,7 +806,7 @@ void juego_rotar_pieza(Leds *leds, Juego *juego)
  *juego - Puntero a la estructura Juego de donde accedemos a la pieza actual.
     tiempo_caida - Tiempo en milisegundos que tarda en caer la pieza una unidad.
  */
-void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, int tiempo_caida)
+void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, int tiempo_caida)
 {
     static int contador = 0;
     contador++;
@@ -803,7 +814,7 @@ void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, int t
     {
         contador = 0;
         leds_borrar_pieza(leds, juego);
-        juego_mover_pieza(leds, juego, resultados, ABAJO);
+        juego_mover_pieza(leds, juego, resultados, estado, ABAJO);
         leds_pintar_pieza(leds, juego);
 
     }
@@ -821,7 +832,7 @@ void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, int t
  *juego - Puntero a la estructura Juego de donde accedemos al nivel actual.
  * tecla - Tecla pulsada en el teclado matricial
  */
-void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultados, char tecla)
+void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, char tecla)
 {
     /*
        Deshabilitamos y posteriormente habilitamos interrupciones para evitar
@@ -840,28 +851,28 @@ void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultados, char 
         case TECLA_IZQUIERDA:
         {
             leds_borrar_pieza(leds, juego);
-            juego_mover_pieza(leds, juego, resultados, IZQUIERDA);
+            juego_mover_pieza(leds, juego, resultados, estado, IZQUIERDA);
             leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_ABAJO:
         {
             leds_borrar_pieza(leds, juego);
-            juego_mover_pieza(leds, juego, resultados, ABAJO);
+            juego_mover_pieza(leds, juego, resultados, estado, ABAJO);
             leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_DERECHA:
         {
             leds_borrar_pieza(leds, juego);
-            juego_mover_pieza(leds, juego, resultados, DERECHA);
+            juego_mover_pieza(leds, juego, resultados, estado, DERECHA);
             leds_pintar_pieza(leds, juego);
             break;
         }
         case TECLA_ARRIBA:
         {
             leds_borrar_pieza(leds, juego);
-            juego_mover_pieza(leds, juego, resultados, ARRIBA);
+            juego_mover_pieza(leds, juego, resultados, estado, ARRIBA);
             leds_pintar_pieza(leds, juego);
             break;
         }
