@@ -25,8 +25,6 @@
 #ifndef _HARDWARE_CONF_C
 #define	_HARDWARE_CONF_C
 
-#include "m5272.h"
-#include "m5272lib.h"
 #include "hardware.h"
 
 
@@ -41,7 +39,7 @@
  */
 void habilitar_interrupciones(void)
 {
-    mbar_writeLong(MCFSIM_ICR1, VALOR_ICR1);
+    mbar_writeLong(MCFSIM_ICR1, HABILITAR_INTERRUPCIONES);
 }
 
 /*
@@ -51,7 +49,7 @@ void habilitar_interrupciones(void)
  */
 void deshabilitar_interrupciones(void)
 {
-    mbar_writeLong(MCFSIM_ICR1, 0x88888888);
+    mbar_writeLong(MCFSIM_ICR1, DESHABILITAR_INTERRUPCIONES);
 }
 
 /*
@@ -100,8 +98,8 @@ void timer2_inter_atendida(void)
  */
 void timer0_init(void)
 {
-    mbar_writeShort(MCFSIM_TMR0, CONFIG_TIMER0);
-    mbar_writeShort(MCFSIM_TCN0, 0x0000); // Ponemos a 0 el contador del TIMER0
+    mbar_writeShort(MCFSIM_TMR0, CONFIG_TIMER0_APAGADO);
+    mbar_writeShort(MCFSIM_TCN0, BORRA_CONTADOR); // Ponemos a 0 el contador del TIMER0
     mbar_writeShort(MCFSIM_TRR0, REFERENCIA_TIMER0);
 }
 
@@ -116,7 +114,7 @@ void timer0_init(void)
 void timer1_init(void)
 {
     mbar_writeShort(MCFSIM_TMR1, CONFIG_TIMER1);
-    mbar_writeShort(MCFSIM_TCN1, 0x0000); // Ponemos a 0 el contador del TIMER0
+    mbar_writeShort(MCFSIM_TCN1, BORRA_CONTADOR);
     mbar_writeShort(MCFSIM_TRR1, REFERENCIA_TIMER1);
 }
 
@@ -131,7 +129,7 @@ void timer1_init(void)
 void timer2_init(void)
 {
     mbar_writeShort(MCFSIM_TMR2, CONFIG_TIMER2);
-    mbar_writeShort(MCFSIM_TCN2, 0x0000); // Ponemos a 0 el contador del TIMER0
+    mbar_writeShort(MCFSIM_TCN2, BORRA_CONTADOR);
     mbar_writeShort(MCFSIM_TRR2, REFERENCIA_TIMER2);
 }
 

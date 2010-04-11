@@ -86,7 +86,6 @@
 #define MASCARA_COLUMNA_LEDS 0xFF0F
 #define MASCARA_FILA_LEDS 0x00FF
 
-
 /*
    Struct: Relojes del juego
 
@@ -100,7 +99,6 @@ typedef struct
 {
     int nota;
 } Reloj;
-
 
 /*
    Struct: Relojes del juego

@@ -73,13 +73,13 @@
 #define NUM_COLS_TECLADO 4
 #define RET_OPTOACOPLADORES 1150
 #define RET_REBOTES 1150
+#define SIN_SIGNO 1	// Flag para las funciones outNum y outNumDec
 #define TRUE 1
 #define FALSE 0
 #define KEY_LEFT 'a'//"\0x14b"
 #define KEY_UP 'w'//"\0x148"
 #define KEY_DOWN 's'//"\0x150"
 #define KEY_RIGHT 'd'//"\0x14d"
-
 
 void set16_puertoS(unsigned short int valor)
 {
@@ -99,6 +99,7 @@ int lee_puertoE(void)
 
 void retardo(int ms)
 {
+    usleep(ms * 1000);
 }
 
 // --------------------------------------------------------------------- NCURSES
@@ -109,7 +110,7 @@ void output(char string[])
     static int linea_actual = 0;
     int i = 0;
     printf("\033[%i;%iH%s", W_Y_OUTPUT + linea_actual, W_X_OUTPUT, string);
-    while(string[i] != EOF && i < strlen(string))
+    while (string[i] != '\0') //&& i < strlen(string))
     {
         if (string[i] == '\n')linea_actual++;
         i++;
@@ -118,6 +119,13 @@ void output(char string[])
     {
         linea_actual = 0;
     }
+}
+
+void outNum(int base, int numero, int opciones)
+{
+    char numero_string [5];
+    sprintf(numero_string, "%i", numero);
+    output(numero_string);
 }
 
 #include "../ctetris/src/control.c"
@@ -143,7 +151,7 @@ void msleep(unsigned long delay_ms)
     req_ts.tv_nsec = (delay_ms % 1000) * 1000000L;
     while (nanosleep(&req_ts, NULL) == -1)
         continue;
-    */
+     */
     usleep(delay_ms * 1000);
 
 }
@@ -199,7 +207,7 @@ void contador_timeout(int i)
 
     if (estado.jugando == TRUE)
     {
-        juego_caida_timeout(&leds, &juego, &resultados, juego_tiempo_caida_pieza(&juego) * FPS / MS_A_S); //Tiempo en segundos
+        juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego) * FPS / MS_A_S); //Tiempo en segundos
         pantalla_refresh(&leds);
     }
 }
@@ -219,8 +227,8 @@ int main(int argc, char** argv)
 
     //Setup del terminal
     tcgetattr(STDIN_FILENO, &t);
-    t.c_lflag &= ~ICANON;//No espera a enter para meter la informacion
-    t.c_lflag &= ~ECHO;//No imprime el caracter en pantalla
+    t.c_lflag &= ~ICANON; //No espera a enter para meter la informacion
+    t.c_lflag &= ~ECHO; //No imprime el caracter en pantalla
     tcsetattr(STDIN_FILENO, TCSANOW, &t);
     /* No funcionan...
     printf("\033f");//Esconder el cursor
@@ -262,16 +270,16 @@ int main(int argc, char** argv)
             switch (tecla_pulsada)
             {
                 case KEY_LEFT:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_IZQUIERDA);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_IZQUIERDA);
                     break;
                 case KEY_DOWN:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_ABAJO);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ABAJO);
                     break;
                 case KEY_RIGHT:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_DERECHA);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_DERECHA);
                     break;
                 case KEY_UP:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_ROTAR);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ROTAR);
                     break;
                 case 'e':
                     //Para tener una salida "limpia" en el Netbeans...

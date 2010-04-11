@@ -9,7 +9,7 @@
       <itemPath>src/juego.h</itemPath>
       <itemPath>src/m5272.h</itemPath>
       <itemPath>src/m5272lib.h</itemPath>
-      <itemPath>src/macros.h</itemPath>
+      <itemPath>src/melodia.h</itemPath>
       <itemPath>src/sonido.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -34,6 +34,7 @@
       <itemPath>src/m5272gpio.c</itemPath>
       <itemPath>src/m5272lcd.c</itemPath>
       <itemPath>src/m5272lib.c</itemPath>
+      <itemPath>src/melodia.c</itemPath>
       <itemPath>src/sonido.c</itemPath>
       <itemPath>src/start.asg</itemPath>
     </logicalFolder>

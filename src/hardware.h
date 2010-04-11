@@ -25,18 +25,8 @@
 #ifndef _HARDWARE_CONF_H
 #define	_HARDWARE_CONF_H
 
-
-/*
-   Constants: Constantes varias del Motorola ColdFire 5272
-  
-   MCF_CLK - Frecuencia del reloj interno del Motorola ColdFire 5272
-   BORRA_CAP - Valor de borrado de interr. pendientes de toutn para TERn
-   BORRA_REF - Valor de borrado de interr. pendientes de toutn para TERn
- */
-#define	MCF_CLK 66000000
-#define BORRA_CAP 0x0001
-#define BORRA_REF 0x0002
-
+#include "m5272.h"
+#include "m5272lib.h"
 
 /*
    Constants: Configuración del hardware del teclado
@@ -108,6 +98,12 @@
 
     - TCAPn:
  */
+#define configurar_timer(ps,ce,om,ori,frr,clk,rst) ps*256+ce*64+om*32+ori*16+frr*8+clk*2+rst
+#define referencia_timer(frecuencia,preescalado,tipo_reloj) MCF_CLK/(frecuencia*(preescalado+1)*(tipo_reloj&2?16:1))
+//Valor de borrado de interr. pendientes de toutn para TERn
+#define BORRA_CAP 0x0001
+#define BORRA_REF 0x0002
+#define BORRA_CONTADOR 0x0000
 
 
 /*
@@ -119,7 +115,7 @@
 
    Para la configuracion de interrupciones periodicas cada 1ms (1KHz) del timer0
    necesitaremos colocar en el registro TMR0 los valores de:
-    - Preescalado (PS) -> Al maximo 0x4F
+    - Preescalado (PS) -> 0 Para tener maxima granularidad a la hora de escoger frecuencias
     - Captura de entrada (CE) -> 0 No lo usaremos para capturar nada
     - Modo de salida (OM) -> 1 Conmutamos salida en TOUT0
     - Habilita interrupciones (ORI) -> 1 Interrupciones al llegar a TRR0 habilitadas
@@ -134,23 +130,23 @@
    ORI_0 - Habilita interrupciones
    FRR_0 - Modo continuo/reinicio
    CLK_0 - Fuente de reloj
-   RST_0 - Habilita temporizador
-   CONFIG_TIMER0 - Valor con la configuracion a escribir en el registro TMR0
+   CONFIG_TIMER0_ENCENDIDO - Valor con la configuracion a escribir en el registro TMR0 para encenderlo
+   CONFIG_TIMER0_APAGADO - Valor con la configuracion a escribir en el registro TMR0 para apagado
    REFERENCIA_TIMER0 - Referencia para lanzar interrupciones a escribir en TRR0
 
    See also:<Timers>
  */
-#define FREC_INT0 1000
-#define PRIORIDAD_INT0 6
-#define PS_0 0x4F
+#define FREC_INT0 1000 //Indiferente
+#define PRIORIDAD_INT0 0 //No interrumpe en el sistema -- sonido
+#define PS_0 0x00
 #define CE_0 0
 #define OM_0 1
 #define ORI_0 1
 #define FRR_0 1
 #define CLK_0 2 //10 en binario
-#define RST_0 1
-#define CONFIG_TIMER0 PS_0*256+CE_0*64+OM_0*32+ORI_0*16+FRR_0*8+CLK_0*2+RST_0
-#define REFERENCIA_TIMER0 (MCF_CLK)/(FREC_INT0*(PS_0+1)*(CLK_0&2?16:1))//CLK_0&2?16:1 Si CLK_0 == 10
+#define CONFIG_TIMER0_ENCENDIDO configurar_timer(PS_0,CE_0,OM_0,ORI_0,FRR_0,CLK_0,1)
+#define CONFIG_TIMER0_APAGADO configurar_timer(PS_0,CE_0,OM_0,ORI_0,FRR_0,CLK_0,0)//PS_0*256+CE_0*64+OM_0*32+ORI_0*16+FRR_0*8+CLK_0*2+RST_0
+#define REFERENCIA_TIMER0 referencia_timer(FREC_INT0,PS_0,CLK_0) //MCF_CLK/(FREC_INT0*(PS_0+1)*(CLK_0&2?16:1))
 //entonces es el reloj interno/16 sino lo dejamos a 1
 
 /*
@@ -191,8 +187,8 @@
 #define FRR_1 1
 #define CLK_1 2 //10 en binario
 #define RST_1 1
-#define CONFIG_TIMER1 PS_1*256+CE_1*64+OM_1*32+ORI_1*16+FRR_1*8+CLK_1*2+RST_1
-#define REFERENCIA_TIMER1 (MCF_CLK)/(FREC_INT1*(PS_1+1)*(CLK_1&2?16:1))
+#define CONFIG_TIMER1 configurar_timer(PS_1,CE_1,OM_1,ORI_1,FRR_1,CLK_1,RST_1)//PS_1*256+CE_1*64+OM_1*32+ORI_1*16+FRR_1*8+CLK_1*2+RST_1
+#define REFERENCIA_TIMER1 referencia_timer(FREC_INT1,PS_1,CLK_1)//MCF_CLK/(FREC_INT1*(PS_1+1)*(CLK_1&2?16:1))
 
 
 /*
@@ -233,16 +229,17 @@
 #define FRR_2 1
 #define CLK_2 2 //10 en binario
 #define RST_2 1
-#define CONFIG_TIMER2 PS_2*256+CE_2*64+OM_2*32+ORI_2*16+FRR_2*8+CLK_2*2+RST_2
-#define REFERENCIA_TIMER2 (MCF_CLK)/(FREC_INT2*(PS_2+1)*(CLK_2&2?16:1))
+#define CONFIG_TIMER2 configurar_timer(PS_2,CE_2,OM_2,ORI_2,FRR_2,CLK_2,RST_2)//PS_2*256+CE_2*64+OM_2*32+ORI_2*16+FRR_2*8+CLK_2*2+RST_2
+#define REFERENCIA_TIMER2 referencia_timer(FREC_INT2,PS_2,CLK_2)//MCF_CLK/(FREC_INT2*(PS_2+1)*(CLK_2&2?16:1))
 
 
 /*
    Constants: Configuración de las interrupciones
 
-   VALOR_ICR1 - Valor inicial de registro de interrupciones ICR1
+   HABILITAR_INTERRUPCIONES - Valor inicial de registro de interrupciones ICR1
  */
-#define VALOR_ICR1 0x88888888+PRIORIDAD_INT0*4096+PRIORIDAD_INT1*256+PRIORIDAD_INT2*16
+#define HABILITAR_INTERRUPCIONES 0x88888888+PRIORIDAD_INT0*4096+PRIORIDAD_INT1*256+PRIORIDAD_INT2*16
+#define DESHABILITAR_INTERRUPCIONES 0x88888888
 
 
 /*

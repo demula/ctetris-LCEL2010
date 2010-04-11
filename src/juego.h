@@ -257,7 +257,6 @@ typedef struct
     int lineas;
 } Resultados;
 
-
 /*
    Struct: Estado del juego
 

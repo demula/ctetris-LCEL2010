@@ -65,13 +65,12 @@ char tecla_pulsada(Puerto *puerto)
                 {
                     while (lee_puertoE() & fila_mask); //Esperamos a que se suelte
                     retardo(RET_REBOTES); //Retardo antirrebotes
-                    return teclas[(int)fila][(int)columna]; //Devolvemos la tecla pulsada
+                    return teclas[(int) fila][(int) columna]; //Devolvemos la tecla pulsada
                 }
             }//Siguiente columna
         }// Exploración finalizada sin encontrar una tecla pulsada
     }//Reiniciamos exploración
 }
-
 
 /*
    Function: menu
@@ -113,15 +112,16 @@ void menu(Estado *estado, Leds *leds, Juego *juego, Resultados *resultados, char
         }
             break;
         case TECLA_COMIENZO:
-        {   if (juego->nivel_dificultad == -1)
+        {
+            if (juego->nivel_dificultad == -1)
             {
-            output(TEXTO_NO_NIVEL);
-            output(TEXTO_NIVELES_POSIBLES);
+                output(TEXTO_NO_NIVEL);
+                output(TEXTO_NIVELES_POSIBLES);
             }
             else
             {
-            juego_nuevo_juego(leds, juego, resultados);
-            estado->jugando = 1; //TRUE
+                juego_nuevo_juego(leds, juego, resultados);
+                estado->jugando = 1; //TRUE
             }
         }
             break;
@@ -176,6 +176,7 @@ void lcd_limpiar(void)
 
 
 // ------------------------------------------------------------------------ LEDS
+
 /*
    Function: refrescar_leds
 
@@ -210,6 +211,7 @@ void leds_refrescar(Puerto *puerto, Leds *leds)
 
 
 // ---------------------------------------------------------------------- ESTADO
+
 /*
    Function: estado_init
    Inicializa una estructura Estado con lo valores que se le dan.
@@ -228,6 +230,7 @@ void estado_init(Estado *estado)
 }
 
 // ----------------------------------------------------------------------- RELOJ
+
 /*
    Function: reloj_init
    Inicializa una estructura Reloj con valores a 0.
@@ -243,6 +246,7 @@ void reloj_init(Reloj *reloj)
 
 
 // ---------------------------------------------------------------------- PUERTO
+
 /*
    Function: puerto_init
    Inicializa una estructura Puerto con valores a 0.
@@ -322,7 +326,7 @@ void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds)
     columna_en_puerto = ~MASCARA_COLUMNA_LEDS & columna_en_puerto;
     //Ponemos los bits pertencientes a la columna a 0
     puerto->situacion_puerto = puerto->situacion_puerto & MASCARA_COLUMNA_LEDS;
-    puerto->situacion_puerto += columna_en_puerto ;
+    puerto->situacion_puerto += columna_en_puerto;
 
     //Colocamos la fila en su posicion correspondiente en el puerto de salida
     fila_en_puerto = fila_a_puerto(fila_leds);

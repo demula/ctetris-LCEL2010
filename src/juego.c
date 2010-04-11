@@ -416,10 +416,10 @@ void leds_actualiza_area_superior(Leds *leds, int fila_comienzo, int numero_fila
 
     //Cortamos y pegamos la parte superior
     for (y = fila_comienzo + numero_filas - 1; y > DEATH_LINE; y--)
-    /* BUG de error al borrar filas completadas solucionado
-     y = fila_comienzo + numero_filas - 1 --> ya que la fila de comienzo es la
-     primera por arriba y estamos empezando por la primera por abajo
-     */
+        /* BUG de error al borrar filas completadas solucionado
+         y = fila_comienzo + numero_filas - 1 --> ya que la fila de comienzo es la
+         primera por arriba y estamos empezando por la primera por abajo
+         */
     {
         for (x = 0; x < NUM_COLUMNAS_LED; x++)
         {
@@ -678,7 +678,7 @@ void juego_nueva_pieza(Juego *juego)
     juego_siguiente_pieza(juego);
 }
 
-void juego_partida_terminada (Leds *leds, Juego *juego, Resultados *resultados, Estado *estado)
+void juego_partida_terminada(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado)
 {
     estado->jugando = 0;
     output(TEXTO_GAME_OVER);
@@ -747,7 +747,7 @@ void juego_mover_pieza(Leds *leds, Juego *juego, Resultados *resultados, Estado 
                 }
                 else
                 {
-                    juego_partida_terminada(leds,juego, resultados, estado);
+                    juego_partida_terminada(leds, juego, resultados, estado);
                 }
 
             }

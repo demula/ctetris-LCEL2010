@@ -23,7 +23,7 @@
 
 #include "m5272lib.c"
 #include "control.c" //-->>control.h -->>juego.c -->>juego.h -->>hardware.c
-
+#include "melodia.c"
 
 
 // ---------------------------------------------------------- VARIABLES GLOBALES
@@ -42,7 +42,7 @@ Reloj reloj;
 Leds leds;
 Puerto puerto;
 Juego juego;
-//Melodia melodia;
+Melodia melodia;
 Resultados resultados;
 
 
@@ -95,6 +95,11 @@ void rutina_tout0(void)
 void rutina_tout1(void)
 {
     timer1_inter_atendida();
+    if (estado.jugando == TRUE)
+    {
+        melodia_play(&melodia);
+    }
+    
 }
 
 /*
@@ -177,7 +182,8 @@ void bucleMain(void)
         {
             tecla = tecla_pulsada(&puerto);
             menu(&estado, &leds, &juego, &resultados, tecla);
-        } else
+        }
+        else
         {
             tecla = tecla_pulsada(&puerto);
             juego_tecla_pulsada(&leds, &juego, &resultados, tecla);
