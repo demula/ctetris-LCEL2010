@@ -19,6 +19,7 @@
    Usted debería haber recibido una copia de la Licencia Pública General GNU
    junto a este programa; si no es así, escriba a la Free Software Foundation,
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
+ 
  */
 
 
@@ -26,7 +27,6 @@
 #define	_JUEGO_H
 
 #include "hardware.c"
-
 
 /*
    Constants: Valor de las teclas en el juego
@@ -37,6 +37,7 @@
    TECLA_DERECHA - Valor de la tecla del teclado matricial para mover derecha
    TECLA_ARRIBA - Valor de la tecla del teclado matricial para mover arriba
    TECLA_SALIDA - Valor de la tecla del teclado matricial para salir del programa
+
  */
 #define TECLA_ROTAR 'A'
 #define TECLA_IZQUIERDA '1'
@@ -45,7 +46,6 @@
 #define TECLA_ARRIBA '5' //Para pruebas
 #define TECLA_SALIDA '3' //Para pruebas
 
-
 /*
    Constants: Valor de las direciones en el juego (por legibilidad)
 
@@ -53,12 +53,12 @@
    IZQUIERDA - Valor del swicth como izquierda
    ABAJO - Valor del swicth como abajo
    DERECHA - Valor del swicth como derecha
+
  */
 #define ARRIBA 'U'
 #define IZQUIERDA 'L'
 #define ABAJO 'D'
 #define DERECHA 'R'
-
 
 /*
    Constants: Configuración del hardware del teclado
@@ -74,6 +74,7 @@
    PIEZA_J - Numero identificador para el switch de la pieza J
    PIEZA_S - Numero identificador para el switch de la pieza S
    PIEZA_Z - Numero identificador para el switch de la pieza Z
+
  */
 #define ANCHO_PIEZA 4
 #define ALTO_PIEZA 4
@@ -86,7 +87,6 @@
 #define PIEZA_J 4
 #define PIEZA_S 5
 #define PIEZA_Z 6
-
 
 /*
    Constants: Definiciones de los leds que ocupan cada pieza
@@ -111,6 +111,7 @@
    OCUPACION_J - Leds de ocupacion de la pieza J.
    OCUPACION_S - Leds de ocupacion de la pieza S.
    OCUPACION_Z - Leds de ocupacion de la pieza Z.
+
  */
 #define FORMA_O "1100,1100,0000,0000;1100,1100,0000,0000;1100,1100,0000,0000;1100,1100,0000,0000;"
 #define FORMA_I "0100,0100,0100,0100;0000,1111,0000,0000;0100,0100,0100,0100;0000,1111,0000,0000;"
@@ -119,7 +120,6 @@
 #define FORMA_J "0100,0100,1100,0000;0000,1110,0010,0000;0110,0100,0100,0000;1000,1110,0000,0000;"
 #define FORMA_S "0000,0110,1100,0000;1000,1100,0100,0000;0000,0110,1100,0000;1000,1100,0100,0000;"
 #define FORMA_Z "0000,1100,0110,0000;0010,0110,0100,0000;0000,1100,0110,0000;0010,0110,0100,0000;"
-
 
 /*
    Constants: Puntos de inicio de las piezas
@@ -138,6 +138,7 @@
    S_Y - Coordenada y inicial de la pieza S.
    Z_X - Coordenada x inicial de la pieza Z.
    Z_Y - Coordenada y inicial de la pieza Z.
+
  */
 #define O_X 1
 #define O_Y -2
@@ -160,11 +161,18 @@
    NUM_FILAS_LED - Numero de filas en la matriz de leds.
    NUM_COLUMNAS_LED - Numero de columnas en la matriz de leds.
    TASA_REFRESCO - Tiempo que permance encendida cada columna de leds.
+   DEATH_LINE - Linea en la que si una pieza ha colisionado y tiene partes sobre
+                ella nos da game over.
+   LED_ON - Valor del array leds que consideramos como encendido.
+   LED_OFF - Valor del array leds que consideramos como apagado.
+
  */
 #define NUM_FILAS_LED 8
 #define NUM_COLUMNAS_LED 4
 #define TASA_REFRESCO 10
 #define DEATH_LINE -1
+#define LED_ON 1
+#define LED_OFF 0
 
 /*
    Constants: Configuración de la velocidad de caida de las piezas segun nivel
@@ -172,15 +180,35 @@
    VELOCIDAD_NIVEL_1 - Velocidad de caida en ms de cada paso en la pantalla a nv1
    VELOCIDAD_NIVEL_2 - Velocidad de caida en ms de cada paso en la pantalla a nv2
    VELOCIDAD_NIVEL_3 - Velocidad de caida en ms de cada paso en la pantalla a nv3
+
  */
 #define VELOCIDAD_NIVEL_1 1000
 #define VELOCIDAD_NIVEL_2 800
 #define VELOCIDAD_NIVEL_3 600
 
+/*
+   Constants: Valores del nivel de dificultad
+
+   Valores que se le asignan al nivel de dificultad.
+
+ */
+#define NUM_NIVELES 3
+#define VALOR_NIVEL_1 0
+#define VALOR_NIVEL_2 1
+#define VALOR_NIVEL_3 2
+#define VALOR_NIVEL_NO_DEFINIDO -1
+
+/*
+   Constants: Configuración del game over y sus textos
+
+   TEXTO_GAME_OVER - Velocidad de caida en ms de cada paso en la pantalla a nv1
+   TEXTO_FILAS_COMPLETADAS - Velocidad de caida en ms de cada paso en la pantalla a nv2
+   TIEMPO_GAME_OVER - Tiempo en ms que se muestran los resultados en pantalla.
+
+ */
 #define TEXTO_GAME_OVER "GAME OVER\n"
 #define TEXTO_FILAS_COMPLETADAS "   Filas completadas  "
 #define TIEMPO_GAME_OVER 3000
-#define NUM_ITEMS_MENU 3
 
 /*
    Struct: Leds de la pantalla de juego
@@ -192,7 +220,7 @@
    Movida a juego.h para evitar importacion recursiva.
 
    pantalla - Matriz con la informacion de los leds encencidos.
-   columna_a_refrescar - Siguiente columna a refrescar.
+
  */
 typedef struct
 {
@@ -210,7 +238,11 @@ typedef struct
    x - Posicion horizontal.
    y - Poscicion vertical.
    rotacion - rotacion en la que esta la pieza.
-   ocupacion - leds que ocupan las piezas.
+   x_comienzo - Array con las posiciones x iniciales de cada pieza (i=clase).
+   y_comienzo - Array con las posiciones y iniciales de cada pieza (i=clase).
+   forma - Array multidimensional que contiene la forma de cada clase de pieza
+           con sus rotaciones.
+
  */
 typedef struct
 {
@@ -231,11 +263,9 @@ typedef struct
    rotacion.
 
    nivel_dificultad - Nivel de dificultad al que esta el juego.
-   clase_pieza_siguiente - Identificacion del tipo de la pieza siguiente en el juego.
-   x - Posicion horizontal.
-   y - Poscicion vertical.
-   rotacion - rotacion en la que esta la pieza.
-   ocupacion - leds que ocupan las piezas.
+   clase_pieza_siguiente - Identificacion del tipo de la pieza siguiente.
+   pieza _actual - Estructura Pieza para uso del juego.
+
  */
 typedef struct
 {
@@ -251,6 +281,7 @@ typedef struct
    etc...)
 
    lineas - Numero de lineas completadas.
+ 
  */
 typedef struct
 {
@@ -263,28 +294,107 @@ typedef struct
    Contiene todas las variables que hacen falta para definir el juego antes de
    su comienzo.
 
-   nivel_dificultad - Numero de filas en la matriz de leds.
    jugando - Indica si se esta jugando (1) o en los menus(0).
    texto_menu - Numero de columnas en la matriz de leds.
+
  */
 typedef struct
 {
     char jugando;
-    char* texto_menu[NUM_ITEMS_MENU];
+    char* texto_menu[NUM_NIVELES];
 } Estado;
 
 /*
-   Functions: Declaracion de las funciones contenidas en juego.c
+   Functions: Prototipos de las funciones contenidas en juego.c
 
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
- */
-void leds_init(Leds *leds);
-void leds_fila_a_int(Leds *leds, int columna, int *fila_leds);
-void juego_init(Juego *juego);
-void juego_tecla_pulsada(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, char tecla);
-void juego_caida_timeout(Leds *leds, Juego *juego, Resultados *resultados, Estado *estado, int tiempo_caida);
-int juego_tiempo_caida_pieza(Juego *juego);
 
+ */
+// ----------------------------------------------------------------------- PIEZA
+void pieza_init(Pieza *p_pieza);
+void pieza_set_posicion(Pieza *p_pieza, int x, int y);
+int pieza_get_x(Pieza *p_pieza);
+int pieza_get_y(Pieza *p_pieza);
+void rellena_array_forma
+(
+    char forma[NUM_CLASES][ROTACIONES][ANCHO_PIEZA][ALTO_PIEZA],
+    char origen[],
+    char clase
+    );
+void forma_init(Pieza *p_pieza);
+void posiciones_comienzo_init(Pieza *p_pieza);
+// ------------------------------------------------------------------ RESULTADOS
+void resultados_init(Resultados *p_resultados);
+void resultados_nueva_partida(Resultados *p_resultados);
+void resultados_linea_completada(Resultados *p_resultados);
+// ------------------------------------------------------------------------ LEDS
+void leds_init(Leds *p_leds);
+void leds_borrar_pantalla(Leds *p_leds);
+void leds_fila_a_int(Leds *p_leds, int columna, int *fila_leds);
+char leds_get_posicion(Leds *p_leds, int x, int y);
+void leds_set_posicion(Leds *p_leds, int x, int y, int valor);
+void leds_pintar_pieza(Leds *p_leds, Juego *p_juego);
+void leds_borrar_pieza(Leds *p_leds, Juego *p_juego);
+void leds_actualiza_area_superior
+(
+    Leds *p_leds,
+    int fila_comienzo,
+    int numero_filas
+    );
+int leds_fila_completa(Leds *p_leds, int fila);
+void leds_borrar_filas_completadas
+(
+    Leds *p_leds,
+    Juego *p_juego,
+    Resultados *p_resultados
+    );
+// ----------------------------------------------------------------------- JUEGO
+void juego_init(Juego *p_juego);
+void juego_siguiente_pieza(Juego *p_juego);
+int juego_tiempo_caida_pieza(Juego *p_juego);
+void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados);
+int juego_colision
+(
+    Leds *p_leds,
+    Juego *p_juego,
+    int rotacion,
+    int x_pos,
+    int y_pos
+    );
+int juego_comprueba_game_over(Juego *juego);
+void juego_nueva_pieza(Juego *p_juego);
+void juego_partida_terminada
+(
+    Leds *leds,
+    Juego *juego,
+    Resultados *resultados,
+    Estado *estado
+    );
+void juego_mover_pieza
+(
+    Leds *p_leds,
+    Juego *p_juego,
+    Resultados *p_resultados,
+    Estado *p_estado,
+    char direccion
+    );
+void juego_rotar_pieza(Leds *p_leds, Juego *p_juego);
+void juego_caida_timeout
+(
+    Leds *p_leds,
+    Juego *p_juego,
+    Resultados *p_resultados,
+    Estado *p_estado,
+    int tiempo_caida
+    );
+void juego_tecla_pulsada
+(
+    Leds *p_leds,
+    Juego *p_juego,
+    Resultados *p_resultados,
+    Estado *p_estado,
+    char tecla
+    );
 
 #endif	/* _JUEGO_H */
 

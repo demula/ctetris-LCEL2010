@@ -19,10 +19,11 @@
    Usted debería haber recibido una copia de la Licencia Pública General GNU
    junto a este programa; si no es así, escriba a la Free Software Foundation,
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
+ 
  */
 
 #include "m5272lib.c"
-#include "control.c" //-->>control.h -->>juego.c -->>juego.h -->>hardware.c
+#include "control.c"
 #include "melodia.c"
 
 
@@ -31,14 +32,13 @@
    Variables: Variables globales
 
    estado - Contiene todo lo referente al estado del juego.
-   relojes - Contadores varios para todos los usos que requieran temporización.
    leds - Informacion de la pantalla de leds
    pieza - Informacion de la pieza que esta en juego
    melodia - Informacion de la melodia y de la nota que actualmente esta sonando
    resultados - lineas completadas y puntos obtenidos
+
  */
 Estado estado;
-Reloj reloj;
 Leds leds;
 Puerto puerto;
 Juego juego;
@@ -53,6 +53,7 @@ Resultados resultados;
    
    Definición de rutinas de atención a las interrupciones del sistema.
    Es necesario definirlas aunque estén vacías.
+
  */
 void rutina_int1(void)
 {
@@ -78,7 +79,12 @@ void rutina_tout3(void)
    Function: rutina_tout0
 
    Rutina de atencion para la generacion de una onda cuadrada a la frecuencia de
-   la nota que queremos. (Tiene maxima prioridad en el sistema -- 6)
+   la nota que queremos. (Tiene maxima prioridad en el sistema 6)
+
+   NO ES NECESARIA YA QUE LA FRECUENCIA DE LA NOTA SE CONFIGURA EN EL TMR0 Y NO
+   PRECISA DE NINGUNA RUTINA DE ATENCION PARA EL FUNCIONAMIENTO CORRECTO DE LA
+   MISMA.
+
  */
 void rutina_tout0(void)
 {
@@ -90,7 +96,8 @@ void rutina_tout0(void)
 
    Rutina de atencion que se encarga de la actualizacion de la fisica del juego.
    Consiste en la caida de la pieza y actualizaciones del juego como juego
-   perdido o linea completada. (Segunda en prioridad en el sistema -- 5)
+   perdido o linea completada. (Segunda en prioridad en el sistema -- 5).
+
  */
 void rutina_tout1(void)
 {
@@ -99,14 +106,18 @@ void rutina_tout1(void)
     {
         melodia_play(&melodia);
     }
-    
+
 }
 
 /*
    Function: rutina_tout2
 
-   Rutina de atencion para el pintando y refresco de la pantalla de leds. (Tiene
-   la minima prioridad en el sistema -- 4)
+   Rutina de atencion para el pintando y refresco de la pantalla de leds y de la 
+   actualizacion de la fisica del juego.
+ 
+   Consiste en la caida de la pieza y actualizaciones del juego como juego
+   perdido o linea completada. (Tiene la minima prioridad en el sistema -- 4).
+
  */
 void rutina_tout2(void)
 {
@@ -125,13 +136,12 @@ void rutina_tout2(void)
    Function: software_init
    
    Función que inicializa todos los objetos/variables del software.
-   Definida en start.asg
+
  */
 void software_init(void)
 {
     estado_init(&estado);
     puerto_init(&puerto);
-    reloj_init(&reloj);
     resultados_init(&resultados);
     leds_init(&leds);
     juego_init(&juego);
@@ -141,7 +151,7 @@ void software_init(void)
    Function: hardware_init
    
    Función que inicializa las interrupciones y los puertos.
-   Definida en start.asg
+
  */
 void hardware_init(void)
 {
@@ -155,7 +165,9 @@ void hardware_init(void)
 /*
    Function: __init
   
-   Función por defecto de inicialización global del sistema.
+   Función por defecto de inicialización global del sistema. Definida en
+   start.asg.
+
  */
 void __init(void)
 {
@@ -170,6 +182,7 @@ void __init(void)
    Function: bucleMain
    
    Bucle principal del programa.
+
  */
 void bucleMain(void)
 {

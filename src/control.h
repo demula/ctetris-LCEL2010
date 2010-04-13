@@ -19,8 +19,8 @@
    Usted debería haber recibido una copia de la Licencia Pública General GNU
    junto a este programa; si no es así, escriba a la Free Software Foundation,
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
- */
 
+ */
 
 #ifndef _CONTROL_H
 #define	_CONTROL_H
@@ -28,44 +28,39 @@
 #include "juego.c"
 #include "m5272lcd.c"
 
-
 /*
    Constants: Textos de los menus del juego
 
-   TEXTO_BIENVENIDA - Texto a poner en el inicio del juego o al equivocarse de
-                      tecla al elegir nivel
-   TEXTO_NIVEL_1 - Texto para elegir el nivel 1
-   TEXTO_NIVEL_2 - Texto para elegir el nivel 2
-   TEXTO_NIVEL_3 - Texto para elegir el nivel 3
-   NUM_NIVELES_MENU - Numero de niveles elegibles en el menu (ojo funcion menu())
+   Cadenas de texto que se muestran al encender el juego para la seleccion de
+   dificultad y que son visibles en la pantalla del ordenador.
+
  */
 #define TEXTO_BIENVENIDA "Bienvenido a ColdtrixTM:\n"
+#define TEXTO_NIVELES_POSIBLES "Por favor pulse: (1) Facil, (4) Medio, (7) Dificil\n"
+#define TEXTO_NIVEL_SELECCIONADO "Nivel seleccionado: "
 #define TEXTO_NIVEL_1 "Facil"
 #define TEXTO_NIVEL_2 "Medio"
 #define TEXTO_NIVEL_3 "Dificil"
-#define TEXTO_NIVELES_POSIBLES "Por favor pulse: (1) Facil, (4) Medio, (7) Dificil\n"
-#define TEXTO_NIVEL_SELECCIONADO "Nivel seleccionado: "
+#define TEXTO_NO_NIVEL "No ha seleccionado ningun nivel.\n"
 #define TEXTO_COMENZAR_JUEGO ". Pulse A para comenzar la partida...\n"
 #define TEXTO_TECLA_ERRONEA "Tecla no valida"
-#define TEXTO_NO_NIVEL "No ha seleccionado ningun nivel.\n"
-
 
 /*
-   Constants: Valor de las teclas de los menus del juego
+   Constants: Teclado matricial
 
-   TECLA_COMIENZO - Valor de la tecla del teclao matricial para comenzar el juego
-   TECLA_NIVEL_1 - Valor de la tecla del teclao matricial para nivel 1
-   TECLA_NIVEL_2 - Valor de la tecla del teclao matricial para nivel 2
-   TECLA_NIVEL_3 - Valor de la tecla del teclao matricial para nivel 3
+   Valor de las teclas del teclado matricial de la placa entrenadora para la
+   eleccion de nivel en el juego.
+
  */
 #define TECLA_COMIENZO 'A'
 #define TECLA_NIVEL_1 '1'
 #define TECLA_NIVEL_2 '4'
 #define TECLA_NIVEL_3 '7'
 
-
 /*
    Constants: Constantes de uso para el puerto de salida
+  
+   Estas constantes configuran el objeto Puerto encargado de manejar la salida.
 
    EXCITACION - Valor de excitacion de un bit de salida
    POS_TECLADO - Posicion del bit menos significativo del teclado
@@ -77,6 +72,7 @@
                         salida asociados a la columna de leds (mascara AND...)
    MASCARA_FILA_LEDS - Mascara para asegurarse que solo se tocan los bits de 
                         salida asociados a la fila de leds (mascara AND...)
+
  */
 #define EXCITACION 0x0001
 #define POS_TECLADO 0
@@ -87,50 +83,40 @@
 #define MASCARA_FILA_LEDS 0x00FF
 
 /*
-   Struct: Relojes del juego
+   Struct: Puerto
 
-   Contiene todos que se usan en el juego.
+   Esta estructura tiene guardado el valor del puerto de salida en cada momento 
+   ya que este no puede ser leido.
 
-   columna_led - Tiempo de refresco por columna MENOS tiempo que lleva escitada 
-                la columna en ms.
-   nota - Cuenta atras de tiempo que lleva sonando una nota.
- */
-typedef struct
-{
-    int nota;
-} Reloj;
+   Para la modificacion de esta estructura (y puerto de salida) se debe hacer
+   exclusivamente con los metodos facilitados de el objeto Puerto.
 
-/*
-   Struct: Relojes del juego
+   situacion_puerto - Valor actual del puerto de salida.
 
-   Contiene todos que se usan en el juego.
-
-   columna_led - Tiempo que lleva escitada la columna en ms.
-   refresco - Tiempo de refresco que queremos en la pantalla lcd.
-   nota - Tiempo que lleva una nota sonando.
  */
 typedef struct
 {
     short int situacion_puerto;
 } Puerto;
 
-
 /*
-   Functions: Declaracion de las funciones contenidas en control.c
+   Functions: Prototipos de las funciones contenidas en control.c
 
    Funciones contenidas en control.c para mas informacion acceder a ellas.
- */
-void menu(Estado *estado, Leds *leds, Juego *juego, Resultados *resultados, char tecla);
-void estado_init(Estado *estado);
-void reloj_init(Reloj *reloj);
-void puerto_init(Puerto *puerto);
-void puerto_excita_columna(Puerto *puerto, char columna, int fila_leds);
-void puerto_excita_teclado(Puerto *puerto, char columna);
-void leds_refrescar(Puerto *puerto, Leds *leds);
-//void lcd_init(void);
-//void lcd_imprimir(char* mensaje);
-//void lcd_limpiar(void);
 
+ */
+char tecla_pulsada(Puerto *p_puerto);
+void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultados, char tecla);
+void leds_refrescar(Puerto *p_puerto, Leds *p_leds);
+void estado_init(Estado *p_estado);
+void puerto_init(Puerto *p_puerto);
+short int columna_a_puerto(char columna);
+short int fila_a_puerto(short int fila_leds);
+void puerto_excita_columna(Puerto *p_puerto, char columna, int fila_leds);
+void puerto_excita_teclado(Puerto *p_puerto, char columna);
+//void lcd_init(void);
+//void lcd_imprimir(char* p_mensaje);
+//void lcd_limpiar(void);
 
 #endif	/* _CONTROL_H */
 

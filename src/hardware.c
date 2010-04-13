@@ -1,7 +1,7 @@
 /*
    hardware.c
-   Configuracion del hardware par ctetris para Motorola Coldfire 5242 sobre la plataforma de desarrollo
-   ENT2004CF.
+   Configuracion del hardware par ctetris para Motorola Coldfire 5242 sobre la 
+   plataforma de desarrollo ENT2004CF.
 
    Copyright (C) 2010 Jorge Bravo Jimenez fbravos45@gmail.com
    Copyright (C) 2010 Jesus de Mula Cano demula@gmail.com
@@ -19,23 +19,22 @@
    Usted debería haber recibido una copia de la Licencia Pública General GNU
    junto a este programa; si no es así, escriba a la Free Software Foundation,
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
+ 
  */
-
 
 #ifndef _HARDWARE_CONF_C
 #define	_HARDWARE_CONF_C
 
 #include "hardware.h"
 
-
 // -------------------------------------------------------------- INTERRUPCIONES
-
 /*
    Function: habilitar_interrupciones
 
    Habilita las interrupciones definidas en la configuracion de VALOR_ICR1.
 
    See also:<Configuración de las interrupciones>
+
  */
 void habilitar_interrupciones(void)
 {
@@ -46,6 +45,7 @@ void habilitar_interrupciones(void)
    Function: deshabilitar_interrupciones
 
    Deshabilita todas las interrupciones de registro de configuracion ICR1.
+
  */
 void deshabilitar_interrupciones(void)
 {
@@ -57,6 +57,7 @@ void deshabilitar_interrupciones(void)
 
    Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
    se atiende una interrupcion de timer 0.
+
  */
 void timer0_inter_atendida(void)
 {
@@ -68,6 +69,7 @@ void timer0_inter_atendida(void)
 
    Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
    se atiende una interrupcion de timer 1.
+
  */
 void timer1_inter_atendida(void)
 {
@@ -79,15 +81,14 @@ void timer1_inter_atendida(void)
 
    Permite que se vuelva a activar la interrupcion. Hay que llamarla cada vez que
    se atiende una interrupcion de timer 2.
+ 
  */
 void timer2_inter_atendida(void)
 {
     mbar_writeShort(MCFSIM_TER2, BORRA_REF);
 }
 
-
 // ------------------------------------------------------------ INICIALIZACIONES
-
 /*
    Function: timer0_init
 
@@ -95,6 +96,7 @@ void timer2_inter_atendida(void)
    constantes.
 
    See also:<Configuración del timer0><CONFIG_TIMER0><REFERENCIA_TIMER0>
+
  */
 void timer0_init(void)
 {
@@ -110,6 +112,7 @@ void timer0_init(void)
    constantes.
 
    See also:<Configuración del timer1><CONFIG_TIMER1><REFERENCIA_TIMER1>
+ 
  */
 void timer1_init(void)
 {
@@ -125,6 +128,7 @@ void timer1_init(void)
    constantes.
 
    See also:<Configuración del timer1><CONFIG_TIMER1><REFERENCIA_TIMER1>
+
  */
 void timer2_init(void)
 {
@@ -137,6 +141,7 @@ void timer2_init(void)
    Function: interrupciones_init
 
    Inicializa la tabla de vectores de atencion a rutinas
+ 
  */
 void interrupciones_init(void)
 {

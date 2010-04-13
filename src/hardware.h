@@ -19,8 +19,8 @@
    Usted debería haber recibido una copia de la Licencia Pública General GNU
    junto a este programa; si no es así, escriba a la Free Software Foundation,
    Inc. 675 Mass Ave, Cambridge, MA 02139, EEUU.
- */
 
+ */
 
 #ifndef _HARDWARE_CONF_H
 #define	_HARDWARE_CONF_H
@@ -28,19 +28,23 @@
 #include "m5272.h"
 #include "m5272lib.h"
 
+//Definicion de verdadero y falso para evitar numeros magicos
+#define TRUE 1 //cualquier cosa distinta de 0 es verdadera
+#define FALSE 0
+
 /*
-   Constants: Configuración del hardware del teclado
+   Constants: Configuración del hardware del teclado matricial
 
    NUM_FILAS - Número de filas en el teclado matricial.
    NUM_COLS - Número de columnas en el teclado matricial
    RET_OPTOACOPLADORES - Tiempo de espera por el retardo de los optoacopladores ~50us
    RET_REBOTES - Retardo antirrebotes cuando se lee una tecla
+
  */
 #define NUM_FILAS_TECLADO 4
 #define NUM_COLS_TECLADO 4
 #define RET_OPTOACOPLADORES 1150
 #define RET_REBOTES 1150
-
 
 /*
    Constants: Configuración del hardware interno del ColdFire
@@ -52,12 +56,12 @@
    DIR_VTMR0 - Dirección del vector de TMR0
    DIR_VTMR1 - Dirección del vector de TMR1
    DIR_VTMR2 - Dirección del vector de TMR2
+
  */
 #define V_BASE 0x40 //Posicion tipica de la interrupciones de usuario
 #define DIR_VTMR0 4*(V_BASE+5)
 #define DIR_VTMR1 4*(V_BASE+6)
 #define DIR_VTMR2 4*(V_BASE+7)
-
 
 /*
    Documentacion: Timers
@@ -97,6 +101,13 @@
         - El resto de los bits deben estar a cero (reservados)
 
     - TCAPn:
+
+   configurar_timer - Funcion que devuelve el valor de configuracion del TMRn
+   referencia_timer - Funcion que devuelve el valor de configuracion del TRRn
+   BORRA_CAP - Valor necesario para borrar CAP en el TERn
+   BORRA_REF - Valor necesario para borrar REF en el TERn
+   BORRA_CONTADOR - Valor inicial para el borrado del contador TCNn
+
  */
 #define configurar_timer(ps,ce,om,ori,frr,clk,rst) ps*256+ce*64+om*32+ori*16+frr*8+clk*2+rst
 #define referencia_timer(frecuencia,preescalado,tipo_reloj) MCF_CLK/(frecuencia*(preescalado+1)*(tipo_reloj&2?16:1))
@@ -105,7 +116,6 @@
 #define BORRA_REF 0x0002
 #define BORRA_CONTADOR 0x0000
 
-
 /*
    Constants: Configuración del timer0
 
@@ -113,8 +123,6 @@
    del juego. La configuracion inicial no es importante ya que andaremos
    cambiandola segun cada nota de la cancion y su duracion.
 
-   Para la configuracion de interrupciones periodicas cada 1ms (1KHz) del timer0
-   necesitaremos colocar en el registro TMR0 los valores de:
     - Preescalado (PS) -> 0 Para tener maxima granularidad a la hora de escoger frecuencias
     - Captura de entrada (CE) -> 0 No lo usaremos para capturar nada
     - Modo de salida (OM) -> 1 Conmutamos salida en TOUT0
@@ -124,6 +132,7 @@
     - Habilita temporizador (RST) -> 1 Activa el contador
 
    FREC_INT0 - Frecuencia a la que queremos que se produzcan las interrupciones
+   PRIORIDAD_INT0 - Nivel de prioridad de interrupcion de la CPU
    PS_0 - Preescalado
    CE_0 - Captura de entrada
    OM_0 - Modo de salida
@@ -135,6 +144,7 @@
    REFERENCIA_TIMER0 - Referencia para lanzar interrupciones a escribir en TRR0
 
    See also:<Timers>
+
  */
 #define FREC_INT0 1000 //Indiferente
 #define PRIORIDAD_INT0 0 //No interrumpe en el sistema -- sonido
@@ -153,7 +163,11 @@
    Constants: Configuración del timer1
 
    Este temporizador los usaremos para generar interrupciones periodicas para
-   reproducir la melodia deñ juego.
+   reproducir la melodia del juego.
+
+   En esta caso lo usaremos para contar el tiempo que suena cada nota y en de
+   que se halla cumplido la rutina de atencion se encargara de cambiar a la
+   frencuencia de la siguiente nota en el timer0.
 
    Para la configuracion de interrupciones periodicas cada 1ms (1KHz) del timer1
    necesitaremos colocar en el registro TMR1 los valores de:
@@ -165,7 +179,12 @@
     - Fuente de reloj (CLK) -> 0b10 Reloj del sitema 66 MHz dividido entre 16
     - Habilita temporizador (RST) -> 1 Activa el contador
 
+   Ademas necesitamos que tenga una prioridad de interrpucion medio/alta para
+   que otros procesos del sistema no deforme el sonido saliente. Luego
+   configuramos el nivel de interrupcion a 5 (de los 7 posibles).
+
    FREC_INT1 - Frecuencia a la que queremos que se produzcan las interrupciones
+   PRIORIDAD_INT1 - Nivel de prioridad de interrupcion de la CPU
    PS_1 - Preescalado
    CE_1 - Captura de entrada
    OM_1 - Modo de salida
@@ -177,6 +196,7 @@
    REFERENCIA_TIMER1 - Referencia para lanzar interrupciones a escribir en TRR1
 
    See also:<Timers>
+
  */
 #define FREC_INT1 1000
 #define PRIORIDAD_INT1 5
@@ -189,7 +209,6 @@
 #define RST_1 1
 #define CONFIG_TIMER1 configurar_timer(PS_1,CE_1,OM_1,ORI_1,FRR_1,CLK_1,RST_1)//PS_1*256+CE_1*64+OM_1*32+ORI_1*16+FRR_1*8+CLK_1*2+RST_1
 #define REFERENCIA_TIMER1 referencia_timer(FREC_INT1,PS_1,CLK_1)//MCF_CLK/(FREC_INT1*(PS_1+1)*(CLK_1&2?16:1))
-
 
 /*
    Constants: Configuración del timer2
@@ -207,7 +226,11 @@
     - Fuente de reloj (CLK) -> 0b10 Reloj del sitema 66 MHz dividido entre 16
     - Habilita temporizador (RST) -> 1 Activa el contador
 
+   Ya que este proceso tiene menos urgencia que la reproduccion del sonido le
+   asignamos un nivel de prioridad inferior 4 (sobre 7).
+
    FREC_INT2 - Frecuencia a la que queremos que se produzcan las interrupciones
+   PRIORIDAD_INT2 - Nivel de prioridad de interrupcion de la CPU
    PS_2 - Preescalado
    CE_2 - Captura de entrada
    OM_2 - Modo de salida
@@ -219,6 +242,7 @@
    REFERENCIA_TIMER2 - Referencia para lanzar interrupciones a escribir en TRR2
 
    See also:<Timers>
+
  */
 #define FREC_INT2 1000
 #define PRIORIDAD_INT2 4
@@ -232,32 +256,30 @@
 #define CONFIG_TIMER2 configurar_timer(PS_2,CE_2,OM_2,ORI_2,FRR_2,CLK_2,RST_2)//PS_2*256+CE_2*64+OM_2*32+ORI_2*16+FRR_2*8+CLK_2*2+RST_2
 #define REFERENCIA_TIMER2 referencia_timer(FREC_INT2,PS_2,CLK_2)//MCF_CLK/(FREC_INT2*(PS_2+1)*(CLK_2&2?16:1))
 
-
 /*
    Constants: Configuración de las interrupciones
 
    HABILITAR_INTERRUPCIONES - Valor inicial de registro de interrupciones ICR1
+   DESHABILITAR_INTERRUPCIONES - Valor para deshabilitar todas las interrupciones en el ICR1
+
  */
 #define HABILITAR_INTERRUPCIONES 0x88888888+PRIORIDAD_INT0*4096+PRIORIDAD_INT1*256+PRIORIDAD_INT2*16
 #define DESHABILITAR_INTERRUPCIONES 0x88888888
-
 
 /*
    Functions: Declaracion de las funciones contenidas en hardware_conf.c
 
    Funciones contenidas en hardware_conf.c para mas informacion acceder a ellas.
+
  */
-// -------------------------------------------------------------- INTERRUPCIONES
 void habilitar_interrupciones(void);
 void deshabilitar_interrupciones(void);
 void timer0_inter_atendida(void);
 void timer1_inter_atendida(void);
 void timer2_inter_atendida(void);
-// ------------------------------------------------------------ INICIALIZACIONES
 void timer0_init(void);
 void timer1_init(void);
 void timer2_init(void);
 void interrupciones_init(void);
-
 
 #endif	/* _HARDWARE_CONF_H */
