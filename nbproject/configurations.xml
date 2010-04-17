@@ -10,7 +10,6 @@
       <itemPath>src/m5272.h</itemPath>
       <itemPath>src/m5272lib.h</itemPath>
       <itemPath>src/melodia.h</itemPath>
-      <itemPath>src/sonido.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -23,6 +22,7 @@
         <itemPath>tests/README</itemPath>
         <itemPath>tests/prueba_juego.c</itemPath>
         <itemPath>tests/prueba_leds.c</itemPath>
+        <itemPath>tests/prueba_melodia.c</itemPath>
         <itemPath>tests/prueba_pieza.c</itemPath>
         <itemPath>tests/prueba_puerto.c</itemPath>
       </logicalFolder>
@@ -35,7 +35,6 @@
       <itemPath>src/m5272lcd.c</itemPath>
       <itemPath>src/m5272lib.c</itemPath>
       <itemPath>src/melodia.c</itemPath>
-      <itemPath>src/sonido.c</itemPath>
       <itemPath>src/start.asg</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

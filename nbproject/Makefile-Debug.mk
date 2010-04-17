@@ -36,9 +36,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/m5272lib.o \
 	${OBJECTDIR}/tests/prueba_leds.o \
 	${OBJECTDIR}/tests/prueba_puerto.o \
+	${OBJECTDIR}/tests/prueba_melodia.o \
 	${OBJECTDIR}/src/melodia.o \
 	${OBJECTDIR}/tests/prueba_juego.o \
-	${OBJECTDIR}/src/sonido.o \
 	${OBJECTDIR}/src/m5272gpio.o \
 	${OBJECTDIR}/src/m5272lcd.o \
 	${OBJECTDIR}/src/control.o \
@@ -95,6 +95,11 @@ ${OBJECTDIR}/tests/prueba_puerto.o: nbproject/Makefile-${CND_CONF}.mk tests/prue
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_puerto.o tests/prueba_puerto.c
 
+${OBJECTDIR}/tests/prueba_melodia.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_melodia.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_melodia.o tests/prueba_melodia.c
+
 ${OBJECTDIR}/src/melodia.o: nbproject/Makefile-${CND_CONF}.mk src/melodia.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -104,11 +109,6 @@ ${OBJECTDIR}/tests/prueba_juego.o: nbproject/Makefile-${CND_CONF}.mk tests/prueb
 	${MKDIR} -p ${OBJECTDIR}/tests
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_juego.o tests/prueba_juego.c
-
-${OBJECTDIR}/src/sonido.o: nbproject/Makefile-${CND_CONF}.mk src/sonido.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sonido.o src/sonido.c
 
 ${OBJECTDIR}/src/m5272gpio.o: nbproject/Makefile-${CND_CONF}.mk src/m5272gpio.c 
 	${MKDIR} -p ${OBJECTDIR}/src
