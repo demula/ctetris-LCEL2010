@@ -23,6 +23,7 @@
  */
 
 #include "control.h"
+#include "hardware.h"
 
 /*
    Function: tecla_pulsada
@@ -316,7 +317,7 @@ void puerto_excita_columna(Puerto *p_puerto, char columna, int fila_leds)
        Deshabilitamos y posteriormente habilitamos interrupciones para evitar
        que se corrompan las variables globales. TODO: Implementar locks (mas elegante)
      */
-    deshabilitar_interrupciones();
+    //deshabilitar_interrupciones();
     short int columna_en_puerto = 0;
     short int fila_en_puerto = 0;
 
@@ -336,7 +337,7 @@ void puerto_excita_columna(Puerto *p_puerto, char columna, int fila_leds)
     p_puerto->situacion_puerto = p_puerto->situacion_puerto & MASCARA_FILA_LEDS;
     p_puerto->situacion_puerto += fila_en_puerto;
     set16_puertoS(p_puerto->situacion_puerto);
-    habilitar_interrupciones();
+    //habilitar_interrupciones();
 }
 
 /*

@@ -25,8 +25,10 @@
 #ifndef _CONTROL_H
 #define	_CONTROL_H
 
-#include "juego.c"
-#include "m5272lcd.c"
+//#include "juego.c"
+//#include "m5272lcd.c"
+#include "juego.h"
+
 
 /*
    Constants: Textos de los menus del juego

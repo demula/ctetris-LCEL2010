@@ -26,7 +26,8 @@
 #ifndef _JUEGO_H
 #define	_JUEGO_H
 
-#include "hardware.c"
+//#include "hardware.c"
+#include "hardware.h"
 
 /*
    Constants: Valor de las teclas en el juego

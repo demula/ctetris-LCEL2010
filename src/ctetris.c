@@ -22,7 +22,10 @@
  
  */
 
+#include "m5272lcd.c"
 #include "m5272lib.c"
+#include "hardware.c"
+#include "juego.c"
 #include "control.c"
 #include "melodia.c"
 
@@ -104,7 +107,7 @@ void rutina_tout1(void)
     timer1_inter_atendida();
     if (estado.jugando == TRUE)
     {
-        melodia_play(&melodia);
+        melodia_play(&melodia,0);
     }
 }
 
@@ -124,7 +127,7 @@ void rutina_tout2(void)
     if (estado.jugando == TRUE)
     {
         leds_refrescar(&puerto, &leds);
-        juego_caida_timeout(&leds, &juego, juego_tiempo_caida_pieza(&juego));
+        juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego));
     }
 }
 
@@ -198,7 +201,7 @@ void bucleMain(void)
         else
         {
             tecla = tecla_pulsada(&puerto);
-            juego_tecla_pulsada(&leds, &juego, &resultados, tecla);
+            juego_tecla_pulsada(&leds, &juego, &resultados, &estado, tecla);
         }
     }
 }
