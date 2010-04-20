@@ -36,34 +36,40 @@
 static int r_trr0 = 0;
 static int r_tmr0 = 0;
 
-#define mbar_writeShort(dir,x) if (dir == MCFSIM_TRR0) r_trr0 = x;if (dir == MCFSIM_TMR0) r_tmr0 = x
-
+#define mbar_writeShort(dir,x) if (dir == MCFSIM_TRR0) r_trr0 = x;\
+                                if (dir == MCFSIM_TMR0) r_tmr0 = x
 
 // ---------------------------------------------------------------------- HEADER
-#include "../ctetris/src/melodia.c"
-
+#include "../src/melodia.c"
 
 // ------------------------------------------------------------ SETUPS & RESULTS
-//Setup leds_fila_a_int
+#define PRUEBA_EXITO 0
+#define PRUEBA_FALLO 1
 
-//Salida leds_fila_a_int
+//Salida prueba_melodia_stop
+#define SALIDA_STOP_TMR0 0x003C
+#define SALIDA_STOP_TRR0 0
 
-//Setup leds_get_posicion
-
-//Salidas leds_get_posicion
-
-// --------------------------------------------------------------------- GLOBALS
-/*
-   Esta parte solo es necesaria si necesitamos que se guarden los valores entre
-   tests.
+//init 0x4F3D); TMR0: PS=0x50-1 CE=00 OM=1 ORI=1 FRR=1 CLK=10 RST=1
+//stop 0x003C); TMR0: PS=0x00 CE=00 OM=1 ORI=1 FRR=1 CLK=10 RST=0
+/*repr freq
+ trr0 = ((MCF_CLK) / 16) / (2 * frecuenciaNotaActual);
+        mbar_writeShort(MCFSIM_TRR0, trr0);   //Fijamos la cuenta final del contador
+        mbar_writeShort(MCFSIM_TMR0, 0x003D); //TMR0: PS=0x00 CE=00 OM=1 ORI=1 FRR=1 CLK=10 RST=1
  */
-//Leds leds;
-//Juego juego;
+//Setup prueba_melodia_set_frecuencia
+#define FREC_880 880
+#define FREC_1319 1319
+#define FREC_415 415
+#define FREC_1760 1760
+#define FREC_0 0
 
-
-// --------------------------------------------------------------------- TARGETS
-/* Ya incluidos en juego.c */
-
+//Salida prueba_melodia_set_frecuencia
+#define SALIDA_SET_TMR0 0x003D
+#define SALIDA_SET_880_TRR0 0x0927
+#define SALIDA_SET_1319_TRR0 0x061B
+#define SALIDA_SET_415_TRR0 0x1369
+#define SALIDA_SET_1760_TRR0 0x0493
 
 // --------------------------------------------------------------------- HELPERS
 
@@ -92,7 +98,7 @@ int prueba_melodia_init()
         printf("%i, ", melodia.frecuencia[posicion]);
         if (melodia.frecuencia[posicion] != frecuencias_temp[posicion])
         {
-            return 1;
+            return PRUEBA_FALLO;
         }
         if (posicion % 10 == 9)
         {
@@ -107,7 +113,7 @@ int prueba_melodia_init()
         printf("%i, ", melodia.tiempo[posicion]);
         if (melodia.tiempo[posicion] != tiempos_temp[posicion])
         {
-            return 1;
+            return PRUEBA_FALLO;
         }
         if (posicion % 10 == 9)
         {
@@ -115,23 +121,53 @@ int prueba_melodia_init()
         }
     }
     printf("\n");
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_melodia_stop()
 {
     melodia_stop();
     printf("    Prueba de melodia_stop():\n");
-    printf("        Valor del TRR0 %i\n", r_trr0);
-    printf("        Valor del TMR0 %i\n", r_tmr0);
-
-    return 0;
+    printf("        Valor del TRR0 %i, debe ser %i.\n", r_trr0, SALIDA_STOP_TRR0);
+    if (r_trr0 != SALIDA_STOP_TRR0) return PRUEBA_FALLO;
+    printf("        Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_STOP_TMR0);
+    if (r_tmr0 != SALIDA_STOP_TMR0) return PRUEBA_FALLO;
+    return PRUEBA_EXITO;
 }
 
 int prueba_melodia_set_frecuencia()
 {
-    //melodia_set_frecuencia(int frecuencia);
-    return 0;
+    printf("    Prueba de prueba_melodia_set_frecuencia():\n");
+    melodia_set_frecuencia(FREC_880);
+    printf("        Freciencia %i\n", FREC_880);
+    printf("            Valor del TRR0 %i, debe ser %i.\n", r_trr0, SALIDA_SET_880_TRR0);
+    if (r_trr0 != SALIDA_SET_880_TRR0) return PRUEBA_FALLO;
+    printf("            Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_SET_TMR0);
+    if (r_tmr0 != SALIDA_SET_TMR0) return PRUEBA_FALLO;
+    melodia_set_frecuencia(FREC_1319);
+    printf("        Freciencia %i\n", FREC_1319);
+    printf("            Valor del TRR0 %i, debe ser %i.\n", r_trr0, SALIDA_SET_1319_TRR0);
+    if (r_trr0 != SALIDA_SET_1319_TRR0) return PRUEBA_FALLO;
+    printf("            Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_SET_TMR0);
+    if (r_tmr0 != SALIDA_SET_TMR0) return PRUEBA_FALLO;
+    melodia_set_frecuencia(FREC_415);
+    printf("        Freciencia %i\n", FREC_415);
+    printf("            Valor del TRR0 %i, debe ser %i.\n", r_trr0, SALIDA_SET_415_TRR0);
+    if (r_trr0 != SALIDA_SET_415_TRR0) return PRUEBA_FALLO;
+    printf("            Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_SET_TMR0);
+    if (r_tmr0 != SALIDA_SET_TMR0) return PRUEBA_FALLO;
+    melodia_set_frecuencia(FREC_1760);
+    printf("        Freciencia %i\n", FREC_1760);
+    printf("            Valor del TRR0 %i, debe ser %i.\n", r_trr0, SALIDA_SET_1760_TRR0);
+    if (r_trr0 != SALIDA_SET_1760_TRR0) return PRUEBA_FALLO;
+    printf("            Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_SET_TMR0);
+    if (r_tmr0 != SALIDA_SET_TMR0) return PRUEBA_FALLO;
+    melodia_set_frecuencia(FREC_0);
+    printf("        Freciencia %i\n", FREC_0);
+    printf("            Valor del TRR0 %i, indiferente.\n", r_trr0);
+    printf("            Valor del TMR0 %i, debe ser %i.\n", r_tmr0, SALIDA_STOP_TMR0);
+    if (r_tmr0 != SALIDA_STOP_TMR0) return PRUEBA_FALLO;
+    return PRUEBA_EXITO;
 }
 
 int prueba_melodia_play()
@@ -143,8 +179,28 @@ int prueba_melodia_play()
         beep(p_melodia->frecuencia[nota],p_melodia->tiempo[nota]);
     }
      */
-    //melodia_play(Melodia *p_melodia, char reset);
-    return 0;
+    Melodia melodia;
+    int nota;
+    int tiempo_nota;
+    int tiempo_total_nota;
+
+    printf("    Prueba de prueba_melodia_play():  (TMR0, TRR0)\n        ");
+    melodia_init(&melodia);
+    for (nota = 0; nota < NUMERO_TOTAL_NOTAS + 2; nota++)//2 notas de mas para ver bucle
+    {
+        tiempo_total_nota = melodia.tiempo[nota % NUMERO_TOTAL_NOTAS];
+        for (tiempo_nota = 0; tiempo_nota < tiempo_total_nota; tiempo_nota++)
+        {
+            melodia_play(&melodia, FALSE); //Se tiene que llamar cada ms de la nota
+        }
+        printf("(%i, %i), ", r_tmr0, r_trr0);
+        if (nota % 6 == 5)
+        {
+            printf("\n        ");
+        }
+    }
+    printf("\n");
+    return PRUEBA_EXITO;
 }
 
 // ------------------------------------------------------------------------ MAIN
@@ -193,8 +249,6 @@ int main(int argc, char** argv)
     {
         printf("FAIL prueba_melodia_play\n");
     }
-
-
 
     if (!(p_melodia_init || p_melodia_play || p_melodia_stop || p_melodia_set_frecuencia))
     {

@@ -26,15 +26,55 @@
 
 /* Omitimos las librerias del Coldfire */
 #define __M5272LCD_C__
+#define __M5272LIB_H__
+#define	m5272_h
+#define	_HARDWARE_CONF_C
 
 // ---------------------------------------------------------------------- HEADER
 /* Declaramos las funciones usadas de las libs del Coldfire para que se queje */
-void set16_puertoS(unsigned short int valor){}
-void output(char string[]){}
+#define TRUE 1 //cualquier cosa distinta de 0 es verdadera
+#define FALSE 0
+#define SIN_SIGNO 1
+#define NUM_FILAS_TECLADO 4
+#define NUM_COLS_TECLADO 4
+#define RET_OPTOACOPLADORES 1150
+#define RET_REBOTES 1150
+
+void habilitar_interrupciones(void)
+{
+}
+
+void deshabilitar_interrupciones(void)
+{
+}
+
+void outNum(int base, long num, char opciones)
+{
+}
+
+void retardo(int microsegundos)
+{
+}
+
+char lee_puertoE(void)
+{
+}
+
+void set16_puertoS(unsigned short int valor)
+{
+}
+
+void output(char string[])
+{
+}
+
 #include "../src/control.c"
 
 
 // ------------------------------------------------------------ SETUPS & RESULTS
+#define PRUEBA_EXITO 0
+#define PRUEBA_FALLO 1
+
 //Salidas prueba_init
 #define SALIDA_PRUEBA_INIT_SITUACION_PUERTO 0
 
@@ -80,13 +120,14 @@ void output(char string[]){}
 
 
 // ----------------------------------------------------------------------- TESTS
+
 int prueba_puerto_init()
 {
     Puerto puerto;
     puerto_init(&puerto);
-    printf("    Valor de inicial de situacion puerto = %i\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_INIT_SITUACION_PUERTO) return 1;
-    return 0;
+    printf("    Valor de inicial de situacion puerto = %i\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_INIT_SITUACION_PUERTO) return PRUEBA_FALLO;
+    return PRUEBA_EXITO;
 }
 
 int prueba_columna_a_puerto()
@@ -94,22 +135,22 @@ int prueba_columna_a_puerto()
     short int columna_0, columna_1, columna_2, columna_3;
 
     columna_0 = columna_a_puerto(0);
-    printf("    Valor de salida columna 0 = %i\n",columna_0);
-    if (columna_0 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_0) return 1;
+    printf("    Valor de salida columna 0 = %i\n", columna_0);
+    if (columna_0 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_0) return PRUEBA_FALLO;
 
     columna_1 = columna_a_puerto(1);
-    printf("    Valor de salida columna 1 = %i\n",columna_1);
-    if (columna_1 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_1) return 1;
+    printf("    Valor de salida columna 1 = %i\n", columna_1);
+    if (columna_1 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_1) return PRUEBA_FALLO;
 
     columna_2 = columna_a_puerto(2);
-    printf("    Valor de salida columna 2 = %i\n",columna_2);
-    if (columna_2 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_2) return 1;
+    printf("    Valor de salida columna 2 = %i\n", columna_2);
+    if (columna_2 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_2) return PRUEBA_FALLO;
 
     columna_3 = columna_a_puerto(3);
-    printf("    Valor de salida columna 3 = %i\n",columna_3);
-    if (columna_3 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_3) return 1;
+    printf("    Valor de salida columna 3 = %i\n", columna_3);
+    if (columna_3 != SALIDA_PRUEBA_COLUMNA_A_PUERTO_COL_3) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_fila_a_puerto()
@@ -117,22 +158,22 @@ int prueba_fila_a_puerto()
     short int fila_0, fila_1, fila_2, fila_3;
 
     fila_0 = fila_a_puerto(FILA_DE_PRUEBA_1);
-    printf("    Valor de salida fila prueba 1 = %u\n",fila_0);
-    if (fila_0 != SALIDA_PRUEBA_FILA_A_PUERTO_1) return 1;
+    printf("    Valor de salida fila prueba 1 = %u\n", fila_0);
+    if (fila_0 != SALIDA_PRUEBA_FILA_A_PUERTO_1) return PRUEBA_FALLO;
 
     fila_1 = fila_a_puerto(FILA_DE_PRUEBA_2);
-    printf("    Valor de salida fila prueba 2 = %u\n",fila_1);
-    if (fila_1 != SALIDA_PRUEBA_FILA_A_PUERTO_2) return 1;
+    printf("    Valor de salida fila prueba 2 = %u\n", fila_1);
+    if (fila_1 != SALIDA_PRUEBA_FILA_A_PUERTO_2) return PRUEBA_FALLO;
 
     fila_2 = fila_a_puerto(FILA_DE_PRUEBA_3);
-    printf("    Valor de salida fila prueba 3 = %u\n",fila_2);
-    if (fila_2 != SALIDA_PRUEBA_FILA_A_PUERTO_3) return 1;
+    printf("    Valor de salida fila prueba 3 = %u\n", fila_2);
+    if (fila_2 != SALIDA_PRUEBA_FILA_A_PUERTO_3) return PRUEBA_FALLO;
 
     fila_3 = fila_a_puerto(FILA_DE_PRUEBA_4);
-    printf("    Valor de salida fila prueba 4 = %u\n",fila_3);
-    if (fila_3 != SALIDA_PRUEBA_FILA_A_PUERTO_4) return 1;
+    printf("    Valor de salida fila prueba 4 = %u\n", fila_3);
+    if (fila_3 != SALIDA_PRUEBA_FILA_A_PUERTO_4) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_puerto_excita_columna()
@@ -144,22 +185,22 @@ int prueba_puerto_excita_columna()
     puerto.situacion_puerto = 1;
 
     puerto_excita_columna(&puerto, 0, FILA_DE_PRUEBA_1);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_1) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_1) return PRUEBA_FALLO;
 
     puerto_excita_columna(&puerto, 1, FILA_DE_PRUEBA_2);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_2) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_2) return PRUEBA_FALLO;
 
     puerto_excita_columna(&puerto, 2, FILA_DE_PRUEBA_3);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_3) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_3) return PRUEBA_FALLO;
 
     puerto_excita_columna(&puerto, 3, FILA_DE_PRUEBA_4);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_4) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_COLUMNA_4) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_puerto_excita_teclado()
@@ -171,46 +212,82 @@ int prueba_puerto_excita_teclado()
     puerto.situacion_puerto = 0x00000F10;
 
     puerto_excita_teclado(&puerto, 1);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_0) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_0) return PRUEBA_FALLO;
 
     puerto_excita_teclado(&puerto, 2);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_1) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_1) return PRUEBA_FALLO;
 
     puerto_excita_teclado(&puerto, 4);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_2) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_2) return PRUEBA_FALLO;
 
     puerto_excita_teclado(&puerto, 8);
-    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n",puerto.situacion_puerto);
-    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_3) return 1;
+    printf("    Valor de salida puerto.situacion_puerto prueba 1 = %u\n", puerto.situacion_puerto);
+    if (puerto.situacion_puerto != SALIDA_PRUEBA_PUERTO_EXCITA_TECLADO_3) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 // ------------------------------------------------------------------------ MAIN
+
 int main(int argc, char** argv)
 {
     int p_puerto_init, p_columna_a_puerto, p_fila_a_puerto, p_prueba_puerto_excita_columna, p_prueba_puerto_excita_teclado;
     printf("Comienzo de pruebas del objeto Puerto:\n");
 
     p_puerto_init = prueba_puerto_init();
-    if (!p_puerto_init) {printf("Pasa prueba_init\n");} else { printf("FAIL prueba_init\n");}
+    if (!p_puerto_init)
+    {
+        printf("Pasa prueba_init\n");
+    }
+    else
+    {
+        printf("FAIL prueba_init\n");
+    }
 
     p_columna_a_puerto = prueba_columna_a_puerto();
-    if (!p_columna_a_puerto) {printf("Pasa prueba_columna_a_puerto\n");} else { printf("FAIL prueba_columna_a_puerto\n");}
+    if (!p_columna_a_puerto)
+    {
+        printf("Pasa prueba_columna_a_puerto\n");
+    }
+    else
+    {
+        printf("FAIL prueba_columna_a_puerto\n");
+    }
 
     p_fila_a_puerto = prueba_fila_a_puerto();
-    if (!p_fila_a_puerto) {printf("Pasa prueba_fila_a_puerto\n");} else { printf("FAIL prueba_fila_a_puerto\n");}
+    if (!p_fila_a_puerto)
+    {
+        printf("Pasa prueba_fila_a_puerto\n");
+    }
+    else
+    {
+        printf("FAIL prueba_fila_a_puerto\n");
+    }
 
     p_prueba_puerto_excita_columna = prueba_puerto_excita_columna();
-    if (!p_prueba_puerto_excita_columna) {printf("Pasa prueba_puerto_excita_columna\n");} else { printf("FAIL prueba_puerto_excita_columna\n");}
+    if (!p_prueba_puerto_excita_columna)
+    {
+        printf("Pasa prueba_puerto_excita_columna\n");
+    }
+    else
+    {
+        printf("FAIL prueba_puerto_excita_columna\n");
+    }
 
     p_prueba_puerto_excita_teclado = prueba_puerto_excita_teclado();
-    if (!p_prueba_puerto_excita_teclado) {printf("Pasa prueba_puerto_excita_teclado\n");} else { printf("FAIL prueba_puerto_excita_teclado\n");}
+    if (!p_prueba_puerto_excita_teclado)
+    {
+        printf("Pasa prueba_puerto_excita_teclado\n");
+    }
+    else
+    {
+        printf("FAIL prueba_puerto_excita_teclado\n");
+    }
 
-    if(!(p_puerto_init || p_columna_a_puerto || p_fila_a_puerto || p_prueba_puerto_excita_columna || p_prueba_puerto_excita_teclado))
+    if (!(p_puerto_init || p_columna_a_puerto || p_fila_a_puerto || p_prueba_puerto_excita_columna || p_prueba_puerto_excita_teclado))
     {
         printf("\nTODAS LAS PRUEBAS SE HAN PASADO CON EXITO.\n");
     }

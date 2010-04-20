@@ -1073,5 +1073,3 @@ void juego_tecla_pulsada
     }
     habilitar_interrupciones();
 }
-
-

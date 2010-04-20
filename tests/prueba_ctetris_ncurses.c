@@ -100,11 +100,9 @@ WINDOW *w_resultados;
 //Funcion de pintado emulando output de ColdFire
 void output(char string[])
 {
-    attron(COLOR_PAIR(COLORES_OUTPUT));
     wprintw(w_output, string);
     wrefresh(w_output);
     refresh();
-    attroff(COLOR_PAIR(COLORES_OUTPUT));
 }
 
 #include "../ctetris/src/control.c"

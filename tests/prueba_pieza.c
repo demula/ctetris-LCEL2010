@@ -25,14 +25,56 @@
 #include <stdlib.h>
 
 /* Omitimos las librerias del Coldfire */
+#define __M5272LCD_C__
 #define __M5272LIB_H__
 #define	m5272_h
+#define	_HARDWARE_CONF_C
 
 // ---------------------------------------------------------------------- HEADER
+/* Declaramos las funciones usadas de las libs del Coldfire para que se queje */
+#define TRUE 1 //cualquier cosa distinta de 0 es verdadera
+#define FALSE 0
+#define SIN_SIGNO 1
+#define NUM_FILAS_TECLADO 4
+#define NUM_COLS_TECLADO 4
+#define RET_OPTOACOPLADORES 1150
+#define RET_REBOTES 1150
+
+void habilitar_interrupciones(void)
+{
+}
+
+void deshabilitar_interrupciones(void)
+{
+}
+
+void outNum(int base, long num, char opciones)
+{
+}
+
+void retardo(int microsegundos)
+{
+}
+
+char lee_puertoE(void)
+{
+}
+
+void set16_puertoS(unsigned short int valor)
+{
+}
+
+void output(char string[])
+{
+}
+
 #include "../src/juego.c"
 
 
 // ------------------------------------------------------------ SETUPS & RESULTS
+#define PRUEBA_EXITO 0
+#define PRUEBA_FALLO 1
+
 //Setup excita_teclado
 #define ROTACION_PRUEBA_RELLENA_ARRAY_FORMA 2
 #define FORMA_PRUEBA_RELLENA_ARRAY_FORMA "0100,0110,0100,0000;0100,1110,0000,0000;0100,1100,0100,0000;0000,1110,0100,0000;"
@@ -86,12 +128,12 @@ int prueba_rellena_array_forma()
             //Restamos 48 para que coincida con el caracter
             if (forma[2][ROTACION_PRUEBA_RELLENA_ARRAY_FORMA][x][y] != (salida_esperada[y*ANCHO_PIEZA + x] - 48))
             {
-                return 1;
+                return PRUEBA_FALLO;
             }
         }
         printf("\n");
     }
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 void prueba_pieza_init()

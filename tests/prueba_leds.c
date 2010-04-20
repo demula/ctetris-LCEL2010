@@ -25,14 +25,55 @@
 #include <stdlib.h>
 
 /* Omitimos las librerias del Coldfire */
+#define __M5272LCD_C__
 #define __M5272LIB_H__
 #define	m5272_h
+#define	_HARDWARE_CONF_C
 
 // ---------------------------------------------------------------------- HEADER
+/* Declaramos las funciones usadas de las libs del Coldfire para que se queje */
+#define TRUE 1 //cualquier cosa distinta de 0 es verdadera
+#define FALSE 0
+#define SIN_SIGNO 1
+#define NUM_FILAS_TECLADO 4
+#define NUM_COLS_TECLADO 4
+#define RET_OPTOACOPLADORES 1150
+#define RET_REBOTES 1150
+
+void habilitar_interrupciones(void)
+{
+}
+
+void deshabilitar_interrupciones(void)
+{
+}
+
+void outNum(int base, long num, char opciones)
+{
+}
+
+void retardo(int microsegundos)
+{
+}
+
+char lee_puertoE(void)
+{
+}
+
+void set16_puertoS(unsigned short int valor)
+{
+}
+
+void output(char string[])
+{
+}
 #include "../src/juego.c"
 
 
 // ------------------------------------------------------------ SETUPS & RESULTS
+#define PRUEBA_EXITO 0
+#define PRUEBA_FALLO 1
+
 //Setup leds_fila_a_int
 #define COLUMNA_PRUEBA_LEDS_FILA_A_INT 2
 #define FILA_PRUEBA_LEDS_FILA_A_INT "01001001"
@@ -123,10 +164,10 @@ int prueba_leds_init()
     {
         for (y = 0; y < NUM_FILAS_LED; y++)
         {
-            if (leds.pantalla[x][y] != 0) return 1;
+            if (leds.pantalla[x][y] != 0) return PRUEBA_FALLO;
         }
     }
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_borrar_pantalla()
@@ -146,10 +187,10 @@ int prueba_leds_borrar_pantalla()
     {
         for (y = 0; y < NUM_FILAS_LED; y++)
         {
-            if (leds.pantalla[x][y] != 0) return 1;
+            if (leds.pantalla[x][y] != 0) return PRUEBA_FALLO;
         }
     }
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_fila_a_int()
@@ -174,9 +215,9 @@ int prueba_leds_fila_a_int()
 
     printf("    Valor de la salida para leds_fila_a_int: %i\n", salida);
 
-    if (salida != SALIDA_PRUEBA_LEDS_FILA_A_INT) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_FILA_A_INT) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_get_posicion()
@@ -199,44 +240,44 @@ int prueba_leds_get_posicion()
     printf("%i, ", XP1_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP1_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_0_m1) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_0_m1) return PRUEBA_FALLO;
 
     salida = leds_get_posicion(&leds, XP2_PRUEBA_LEDS_GET_POSICION, YP2_PRUEBA_LEDS_GET_POSICION);
     printf("    Valor de la salida para leds_get_posicion en ");
     printf("%i, ", XP2_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP2_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_m1_0) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_m1_0) return PRUEBA_FALLO;
 
     salida = leds_get_posicion(&leds, XP3_PRUEBA_LEDS_GET_POSICION, YP3_PRUEBA_LEDS_GET_POSICION);
     printf("    Valor de la salida para leds_get_posicion en ");
     printf("%i, ", XP3_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP3_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_4_4) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_4_4) return PRUEBA_FALLO;
 
     salida = leds_get_posicion(&leds, XP4_PRUEBA_LEDS_GET_POSICION, YP4_PRUEBA_LEDS_GET_POSICION);
     printf("    Valor de la salida para leds_get_posicion en ");
     printf("%i, ", XP4_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP4_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_0_8) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_0_8) return PRUEBA_FALLO;
 
     salida = leds_get_posicion(&leds, XP5_PRUEBA_LEDS_GET_POSICION, YP5_PRUEBA_LEDS_GET_POSICION);
     printf("    Valor de la salida para leds_get_posicion en ");
     printf("%i, ", XP5_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP5_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_2_1) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_2_1) return PRUEBA_FALLO;
 
     salida = leds_get_posicion(&leds, XP6_PRUEBA_LEDS_GET_POSICION, YP6_PRUEBA_LEDS_GET_POSICION);
     printf("    Valor de la salida para leds_get_posicion en ");
     printf("%i, ", XP6_PRUEBA_LEDS_GET_POSICION);
     printf("%i es: ", YP6_PRUEBA_LEDS_GET_POSICION);
     printf("%i\n", salida);
-    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_2_6) return 1;
+    if (salida != SALIDA_PRUEBA_LEDS_GET_POSICION_2_6) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_set_posicion()
@@ -259,7 +300,7 @@ int prueba_leds_set_posicion()
     leds_set_posicion(&leds, 1, 5, 1);
     leds_set_posicion(&leds, 2, 5, 1);
     leds_set_posicion(&leds, 3, 5, 1);
-    
+
     printf("    Valor de la pantalla despues de leds_set_posicion un cuadrado hueco:\n");
     print_pantalla(&leds);
 
@@ -275,7 +316,7 @@ int prueba_leds_set_posicion()
     printf("    Valor de la pantalla despues de leds_set_posicion una linea dentro y fuera de la pantalla:\n");
     print_pantalla(&leds);
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_pintar_pieza()
@@ -342,7 +383,7 @@ int prueba_leds_pintar_pieza()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_borrar_pieza()
@@ -442,12 +483,12 @@ int prueba_leds_borrar_pieza()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_leds_borrar_filas_completadas()
 {
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 

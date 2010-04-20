@@ -39,6 +39,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/tests/prueba_melodia.o \
 	${OBJECTDIR}/src/melodia.o \
 	${OBJECTDIR}/tests/prueba_juego.o \
+	${OBJECTDIR}/tests/prueba_ctetris_ncurses.o \
+	${OBJECTDIR}/tests/prueba_ctetris.o \
 	${OBJECTDIR}/src/m5272gpio.o \
 	${OBJECTDIR}/src/m5272lcd.o \
 	${OBJECTDIR}/src/control.o \
@@ -109,6 +111,16 @@ ${OBJECTDIR}/tests/prueba_juego.o: nbproject/Makefile-${CND_CONF}.mk tests/prueb
 	${MKDIR} -p ${OBJECTDIR}/tests
 	${RM} $@.d
 	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_juego.o tests/prueba_juego.c
+
+${OBJECTDIR}/tests/prueba_ctetris_ncurses.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_ctetris_ncurses.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_ctetris_ncurses.o tests/prueba_ctetris_ncurses.c
+
+${OBJECTDIR}/tests/prueba_ctetris.o: nbproject/Makefile-${CND_CONF}.mk tests/prueba_ctetris.c 
+	${MKDIR} -p ${OBJECTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests/prueba_ctetris.o tests/prueba_ctetris.c
 
 ${OBJECTDIR}/src/m5272gpio.o: nbproject/Makefile-${CND_CONF}.mk src/m5272gpio.c 
 	${MKDIR} -p ${OBJECTDIR}/src

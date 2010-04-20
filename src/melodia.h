@@ -30,6 +30,9 @@
 #define PARAR_TIMER configurar_timer(PS_0,CE_0,OM_0,ORI_0,FRR_0,CLK_0,0)
 #define CONFIG_TIMER0 configurar_timer(PS_0,CE_0,OM_0,ORI_0,FRR_0,CLK_0,1) //0x003C
 #define NUMERO_TOTAL_NOTAS 55
+#define NOTA_RESET -1
+//La frecuencia es el doble porque la salida conmuta y queremos una onda cuadrada
+#define ONDA_CUADRADA 2
 
 /*
  * TABLA 1 del enunciado con las frecuencias de las notas

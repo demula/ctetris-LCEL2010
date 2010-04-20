@@ -128,7 +128,7 @@ void outNum(int base, int numero, int opciones)
     output(numero_string);
 }
 
-#include "../ctetris/src/control.c"
+#include "../src/control.c"
 
 
 // --------------------------------------------------------------------- GLOBALS

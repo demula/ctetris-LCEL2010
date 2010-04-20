@@ -27,12 +27,65 @@
 /* Omitimos las librerias del Coldfire */
 #define __M5272LIB_H__
 #define	m5272_h
+#define __M5272LCD_C__
+#define	_HARDWARE_CONF_H
+#define	_HARDWARE_CONF_C
+
 
 // ---------------------------------------------------------------------- HEADER
-#include "../src/juego.c"
+/* Declaramos las funciones usadas de las libs del Coldfire para que se queje */
+#define NUM_FILAS_TECLADO 4
+#define NUM_COLS_TECLADO 4
+#define RET_OPTOACOPLADORES 1150
+#define RET_REBOTES 1150
+#define SIN_SIGNO 1	// Flag para las funciones outNum y outNumDec
+#define TRUE 1
+#define FALSE 0
+#define KEY_LEFT 'a'//"\0x14b"
+#define KEY_UP 'w'//"\0x148"
+#define KEY_DOWN 's'//"\0x150"
+#define KEY_RIGHT 'd'//"\0x14d"
+
+void set16_puertoS(unsigned short int valor)
+{
+}
+
+void habilitar_interrupciones(void)
+{
+}
+
+void deshabilitar_interrupciones(void)
+{
+}
+
+int lee_puertoE(void)
+{
+}
+
+void retardo(int ms)
+{
+    usleep(ms * 1000);
+}
+
+void output(char string[])
+{
+    printf("%s", string);
+}
+
+void outNum(int base, int numero, int opciones)
+{
+    char numero_string [5];
+    sprintf(numero_string, "%i", numero);
+    output(numero_string);
+}
+
+#include "../src/control.c"
 
 
 // ------------------------------------------------------------ SETUPS & RESULTS
+#define PRUEBA_EXITO 0
+#define PRUEBA_FALLO 1
+
 //Setup juego_colision
 #define COLUMNA_PRUEBA_LEDS_FILA_A_INT 2
 #define FILA_PRUEBA_LEDS_FILA_A_INT "01001001"
@@ -129,7 +182,7 @@ int prueba_juego_colision()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
     printf("    Valor de la salida para juego_colision pared izquierda: %i\n",salida);
-    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_PARED) return 1;
+    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_PARED) return PRUEBA_FALLO;
 
 
     //Colision por la parte de abajo de la pieza
@@ -165,7 +218,7 @@ int prueba_juego_colision()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
     printf("    Valor de la salida para juego_colision parte de abajo: %i\n",salida);
-    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_ABAJO) return 1;
+    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_ABAJO) return PRUEBA_FALLO;
 
 
     //Colision por una esquina intermedia de la pieza
@@ -201,7 +254,7 @@ int prueba_juego_colision()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
     printf("    Valor de la salida para juego_colision esquina intermedia: %i\n",salida);
-    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_INTERMEDIA) return 1;
+    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_INTERMEDIA) return PRUEBA_FALLO;
 
     //Sin colision
     juego.pieza_actual.clase = 1;
@@ -231,9 +284,9 @@ int prueba_juego_colision()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
     printf("    Valor de la salida para juego_colision sin colision: %i\n",salida);
-    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_SIN) return 1;
+    if (salida != SALIDA_PRUEBA_JUEGO_COLISION_SIN) return PRUEBA_FALLO;
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_juego_mover_pieza()
@@ -241,8 +294,12 @@ int prueba_juego_mover_pieza()
     //Setup general
     Juego juego;
     Leds leds;
+    Resultados resultados;
+    Estado estado;
     juego_init(&juego);
     leds_init(&leds);
+    resultados_init(&resultados);
+    estado_init(&estado);
 
     //Con posibilidad de movimiento
     juego.pieza_actual.clase = 4;
@@ -256,11 +313,11 @@ int prueba_juego_mover_pieza()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_mover_pieza(&leds, &juego, IZQUIERDA);
+    juego_mover_pieza(&leds, &juego, &resultados, &estado, IZQUIERDA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
-    
+
     //Contra la pared
     juego.pieza_actual.clase = 4;
     juego.pieza_actual.rotacion = 2;
@@ -273,7 +330,7 @@ int prueba_juego_mover_pieza()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_mover_pieza(&leds, &juego, DERECHA);
+    juego_mover_pieza(&leds, &juego, &resultados, &estado, DERECHA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
@@ -294,7 +351,7 @@ int prueba_juego_mover_pieza()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_mover_pieza(&leds, &juego, DERECHA);
+    juego_mover_pieza(&leds, &juego, &resultados, &estado, DERECHA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
@@ -316,11 +373,11 @@ int prueba_juego_mover_pieza()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_mover_pieza(&leds, &juego, DERECHA);
+    juego_mover_pieza(&leds, &juego, &resultados, &estado, DERECHA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_juego_rotar_pieza()
@@ -389,7 +446,7 @@ int prueba_juego_rotar_pieza()
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 int prueba_juego_tecla_pulsada()
@@ -397,8 +454,12 @@ int prueba_juego_tecla_pulsada()
     //Setup general
     Juego juego;
     Leds leds;
+    Resultados resultados;
+    Estado estado;
     juego_init(&juego);
     leds_init(&leds);
+    resultados_init(&resultados);
+    estado_init(&estado);
 
     //DERECHA
     juego.pieza_actual.clase = 4;
@@ -411,7 +472,7 @@ int prueba_juego_tecla_pulsada()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_tecla_pulsada(&leds, &juego, TECLA_DERECHA);
+    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_DERECHA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
@@ -428,7 +489,7 @@ int prueba_juego_tecla_pulsada()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_tecla_pulsada(&leds, &juego, TECLA_IZQUIERDA);
+    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_IZQUIERDA);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
@@ -445,7 +506,7 @@ int prueba_juego_tecla_pulsada()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de mover la pieza\n");
-    juego_tecla_pulsada(&leds, &juego, TECLA_ABAJO);
+    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ABAJO);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
@@ -462,12 +523,12 @@ int prueba_juego_tecla_pulsada()
     print_pantalla(&leds);
     leds_borrar_pieza(&leds,&juego);
     printf("        Pantalla despues de rotar la pieza\n");
-    juego_tecla_pulsada(&leds, &juego, TECLA_ROTAR);
+    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ROTAR);
     leds_pintar_pieza(&leds, &juego);
     print_pantalla(&leds);
     leds_borrar_pantalla(&leds);
 
-    return 0;
+    return PRUEBA_EXITO;
 }
 
 

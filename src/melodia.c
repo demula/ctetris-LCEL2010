@@ -3,7 +3,7 @@
    Melodia de ctetris para Motorola Coldfire 5242 sobre la plataforma de
    desarrollo ENT2004CF.
 
-   Copyright (C) 2010 Jorge Bravo Jimenez fbravos45@gmail.com
+   Copyright (C) 2010 Jorge Bravo Jimenez fbravos45@igmail.com
    Copyright (C) 2010 Jesus de Mula Cano demula@gmail.com
 
    License:
@@ -22,8 +22,8 @@
 
  */
 
-#ifndef _MELODIA_C
-#define	_MELODIA_C
+//#ifndef _MELODIA_C
+//#define	_MELODIA_C
 
 #include "melodia.h"
 
@@ -79,12 +79,12 @@ void melodia_init(Melodia *p_melodia)
 void melodia_play(Melodia *p_melodia, char reset)
 {
     static int tiempo_nota = 0;
-    static int nota_actual = -1;
+    static int nota_actual = NOTA_RESET;
 
     if (reset)
     {
         tiempo_nota = 0;
-        nota_actual = -1;
+        nota_actual = NOTA_RESET;
     }
 
     if (tiempo_nota == 0)
@@ -125,8 +125,7 @@ void melodia_set_frecuencia(int frecuencia)
 {
     if (frecuencia)
     {
-        //La frecuencia es el doble porque la salida conmuta y queremos una onda cuadrada (2 conmutaciones)
-        mbar_writeShort(MCFSIM_TRR0, referencia_timer(2 * frecuencia, PS_0, CLK_0));
+        mbar_writeShort(MCFSIM_TRR0, referencia_timer(ONDA_CUADRADA * frecuencia, PS_0, CLK_0));
         mbar_writeShort(MCFSIM_TMR0, CONFIG_TIMER0_ENCENDIDO);
     }
     else
@@ -135,5 +134,5 @@ void melodia_set_frecuencia(int frecuencia)
     }
 }
 
-#endif	/* _MELODIA_C */
+//#endif	/* _MELODIA_C */
 
