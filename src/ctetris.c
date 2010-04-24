@@ -107,7 +107,7 @@ void rutina_tout1(void)
     timer1_inter_atendida();
     if (estado.jugando == TRUE)
     {
-        melodia_play(&melodia,0);
+        melodia_play(&melodia,FALSE);
     }
 }
 
@@ -126,6 +126,7 @@ void rutina_tout2(void)
     timer2_inter_atendida();
     if (estado.jugando == TRUE)
     {
+        resultados_ms_transcurrido(&resultados);
         leds_refrescar(&puerto, &leds);
         juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego));
     }

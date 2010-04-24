@@ -225,6 +225,9 @@ void pieza_init(Pieza *p_pieza)
 void resultados_init(Resultados *p_resultados)
 {
     p_resultados->lineas = 0;
+    p_resultados->tiempo_partida = 0;
+    p_resultados->tetris_conseguidos = 0;
+    p_resultados->puntuacion = 0;
 }
 
 /*
@@ -240,6 +243,9 @@ void resultados_init(Resultados *p_resultados)
 void resultados_nueva_partida(Resultados *p_resultados)
 {
     p_resultados->lineas = 0;
+    p_resultados->tiempo_partida = 0;
+    p_resultados->tetris_conseguidos = 0;
+    p_resultados->puntuacion = 0;
 }
 
 /*
@@ -255,6 +261,61 @@ void resultados_nueva_partida(Resultados *p_resultados)
 void resultados_linea_completada(Resultados *p_resultados)
 {
     p_resultados->lineas++;
+}
+
+/*
+   Function: resultados_ms_transcurrido
+
+   Añade un milisegundo al tiempo transcurrido de la partida.
+
+   Parameters:
+
+      p_resultados - Puntero a estructura Resultados que queremos sumar el ms.
+
+ */
+void resultados_ms_transcurrido(Resultados *p_resultados)
+{
+    p_resultados->tiempo_partida++;
+}
+
+/*
+   Function: resultados_tetris_conseguido
+
+   Añade una "tetris" a los resultados.
+
+   Parameters:
+
+      p_resultados - Puntero a estructura Resultados que queremos sumar el tetris.
+
+ */
+void resultados_tetris_conseguido(Resultados *p_resultados)
+{
+    p_resultados->tetris_conseguidos++;
+}
+
+/*
+   Function: resultados_actualizar_puntuacion
+
+   Actualiza la puntuacion dependiendo del numero de lineas completadas (ya que
+   suman distinto) y del nivel en que se despejen las lineas.
+
+   Cada linea completada en el nivel 1 vale 10 puntos. Tenemos un multiplicador
+   por nivel y otro por numero de lineas conseguidas. Quedando la formula tal
+   que asi:
+
+        Puntuacion = [Nivel*Mul_Nivel*Puntiacion_base*Num_lineas]*
+                            (Mul_Lineas*Num_lineas)
+
+   Parameters:
+
+      p_resultados - Puntero a estructura Resultados que queremos sumar la linea.
+      lineas - Numero de lineas conseguidas.
+      nivel - Nivel actual
+
+ */
+void resultados_actualizar_puntuacion(Resultados *p_resultados, int lineas, int nivel)
+{
+    p_resultados->puntuacion += nivel*MULTIPLICADOR_NIVEL*PUNTUACION_BASE_LINEA*lineas*MULTIPLICADOR_LINEAS*lineas;
 }
 
 // ------------------------------------------------------------------------ LEDS
@@ -593,6 +654,16 @@ void leds_borrar_filas_completadas
             resultados_linea_completada(p_resultados);
         }
     }
+    //numero_filas da bug , usando otra variable va bien TODO:
+    if (numero_filas % TETRIS == 0 && numero_filas != 0)
+    {
+        resultados_tetris_conseguido(p_resultados);
+    }
+
+    //Actualizamos el estado del juego
+    resultados_actualizar_puntuacion(p_resultados,
+        numero_filas,
+        p_juego->nivel_dificultad);
     leds_actualiza_area_superior(p_leds, fila_comienzo, numero_filas);
 }
 
@@ -686,6 +757,8 @@ void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados)
 {
     juego_siguiente_pieza(p_juego);
     resultados_nueva_partida(p_resultados);
+    //p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;//da bug
+    //pieza_init(&p_juego->pieza_actual);
     leds_borrar_pantalla(p_leds);
 }
 
@@ -832,12 +905,23 @@ void juego_partida_terminada
     estado->jugando = FALSE;
     output(TEXTO_GAME_OVER);
     output(TEXTO_FILAS_COMPLETADAS);
-    outNum(10, resultados->lineas, SIN_SIGNO);
+    outNum(BASE_10, resultados->lineas, SIN_SIGNO);
+    output("\n");
+    output(TEXTO_DURACION_PARTIDA);
+    outNum(BASE_10, resultados->tiempo_partida*MS_A_S, SIN_SIGNO);//TODO ms a s
+    output(TEXTO_SEGUNDOS);
+    output("\n");
+    output(TEXTO_TETRIS_CONSEGUIDOS);
+    outNum(BASE_10, resultados->tetris_conseguidos, SIN_SIGNO);
+    output("\n");
+    output(TEXTO_FILAS_MINUTO);
+    outNum(BASE_10, resultados->tetris_conseguidos*MS_A_MIN/resultados->tiempo_partida, SIN_SIGNO);
+    output("\n");
+    output(TEXTO_PUNTUACION_FINAL);
+    outNum(BASE_10, resultados->puntuacion, SIN_SIGNO);
     output("\n");
     retardo(TIEMPO_GAME_OVER);
-    juego_init(juego);
-    leds_borrar_pantalla(leds);
-
+    juego_nuevo_juego(leds,juego,resultados);
 }
 
 /*

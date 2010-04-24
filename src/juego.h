@@ -200,6 +200,15 @@
 #define VALOR_NIVEL_NO_DEFINIDO -1
 
 /*
+   Constants: Valores para puntuacion y resultados
+
+ */
+#define PUNTUACION_BASE_LINEA 10
+#define MULTIPLICADOR_NIVEL 1
+#define MULTIPLICADOR_LINEAS 1
+#define TETRIS 4
+
+/*
    Constants: Configuración del game over y sus textos
 
    TEXTO_GAME_OVER - Velocidad de caida en ms de cada paso en la pantalla a nv1
@@ -209,6 +218,14 @@
  */
 #define TEXTO_GAME_OVER "GAME OVER\n"
 #define TEXTO_FILAS_COMPLETADAS "   Filas completadas  "
+#define TEXTO_DURACION_PARTIDA "   Duracion de la partida  "
+#define TEXTO_SEGUNDOS " segundos"
+#define TEXTO_FILAS_MINUTO "   Filas por minuto  "
+#define TEXTO_TETRIS_CONSEGUIDOS "   Tetris conseguidos  "
+#define TEXTO_PUNTUACION_FINAL "   Puntuacion final  "
+#define BASE_10 10
+#define MS_A_S 1000
+#define MS_A_MIN 60000
 #define TIEMPO_GAME_OVER 3000
 
 /*
@@ -282,11 +299,17 @@ typedef struct
    etc...)
 
    lineas - Numero de lineas completadas.
+   tiempo_partida - Duracion de la partida en ms
+   tetris_conseguidos - Numero de veces que se ha conseguido despejar 4 filas a la vez
+   puntuacion - Numero de puntos obtenidos en la partida.
  
  */
 typedef struct
 {
     int lineas;
+    int tiempo_partida;
+    int tetris_conseguidos;
+    int puntuacion;
 } Resultados;
 
 /*
