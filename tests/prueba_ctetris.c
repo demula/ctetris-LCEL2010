@@ -206,6 +206,7 @@ void contador_timeout(int i)
     signal(SIGALRM, contador_timeout);
     setitimer(ITIMER_REAL, &req_ts, 0);
 
+    random_pieza(NUM_CLASES,TRUE);
     if (estado.jugando == TRUE)
     {
         resultados_ms_transcurrido(&resultados);

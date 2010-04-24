@@ -334,6 +334,8 @@ typedef struct
    Funciones contenidas en juego.c para mas informacion acceder a ellas.
 
  */
+// ---------------------------------------------------------------------- RAMDOM
+char ramdom(char rango, char update);
 // ----------------------------------------------------------------------- PIEZA
 void pieza_init(Pieza *p_pieza);
 void pieza_set_posicion(Pieza *p_pieza, int x, int y);

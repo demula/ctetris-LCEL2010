@@ -22,7 +22,32 @@
 
  */
 
+#include <stdlib.h>
+
 #include "juego.h"
+
+// ---------------------------------------------------------------------- RAMDOM
+char random_pieza(char rango, char update)
+{
+    static char valor_base_menor = 0;
+    static char valor_base_mayor = 0;
+
+    if (update == TRUE)
+    {
+        valor_base_menor++;
+        if (valor_base_menor == rango)
+        {
+            valor_base_mayor++;
+            if (valor_base_mayor == rango)
+            {
+                valor_base_mayor = 0;
+            }
+            valor_base_menor = 0;
+        }
+    }
+
+    return (valor_base_mayor+valor_base_menor) % rango;
+}
 
 // ----------------------------------------------------------------------- PIEZA
 
@@ -202,7 +227,7 @@ void posiciones_comienzo_init(Pieza *p_pieza)
  */
 void pieza_init(Pieza *p_pieza)
 {
-    p_pieza->clase = PIEZA_O; //Notice the equal to and the comma
+    p_pieza->clase = random_pieza(NUM_CLASES,FALSE); //Notice the equal to and the comma
     p_pieza->rotacion = 0;
     p_pieza->x = O_X;
     p_pieza->y = O_Y;
@@ -682,7 +707,7 @@ void leds_borrar_filas_completadas
 void juego_init(Juego *p_juego)
 {
     p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;
-    p_juego->clase_pieza_siguiente = PIEZA_I;
+    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES,FALSE);
     pieza_init(&p_juego->pieza_actual);
 }
 
@@ -699,10 +724,7 @@ void juego_init(Juego *p_juego)
  */
 void juego_siguiente_pieza(Juego *p_juego)
 {
-    char siguiente_pieza = p_juego->pieza_actual.clase;
-    siguiente_pieza++;
-    if (siguiente_pieza == NUM_CLASES) siguiente_pieza = 0;
-    p_juego->clase_pieza_siguiente = siguiente_pieza;
+    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES,FALSE);
 }
 
 /*
@@ -755,6 +777,7 @@ int juego_tiempo_caida_pieza(Juego *p_juego)
  */
 void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados)
 {
+    p_juego->pieza_actual.clase = random_pieza(NUM_CLASES,FALSE);
     juego_siguiente_pieza(p_juego);
     resultados_nueva_partida(p_resultados);
     //p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;//da bug

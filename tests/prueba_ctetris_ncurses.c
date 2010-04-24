@@ -114,8 +114,8 @@ void outNum(int base, int numero, int opciones)
     wrefresh(w_output);
 }
 
-#include "../ctetris/src/control.c"
-#include "../ctetris/src/juego.c"
+#include "../src/control.c"
+#include "../src/juego.c"
 
 
 // --------------------------------------------------------------------- GLOBALS
@@ -233,6 +233,7 @@ void contador_timeout(int i)
     signal(SIGALRM, contador_timeout);
     setitimer(ITIMER_REAL, &req_ts, 0);
 
+    random_pieza(NUM_CLASES,TRUE);
     if (estado.jugando == TRUE)
     {
         resultados_ms_transcurrido(&resultados);
@@ -272,7 +273,7 @@ int main(int argc, char** argv)
     if(has_colors() == FALSE)
 	{
         endwin();
-		printf("Your terminal does not support color\n");
+		printf("Tu terminal no soporta color.\n");
 		exit(1);
 	}
 	start_color();			/* Start color 			*/

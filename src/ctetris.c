@@ -124,6 +124,7 @@ void rutina_tout1(void)
 void rutina_tout2(void)
 {
     timer2_inter_atendida();
+    random_pieza(NUM_CLASES,TRUE);
     if (estado.jugando == TRUE)
     {
         resultados_ms_transcurrido(&resultados);
