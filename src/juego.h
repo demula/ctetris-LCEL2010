@@ -178,14 +178,14 @@
 /*
    Constants: Configuración de la velocidad de caida de las piezas segun nivel
 
-   VELOCIDAD_NIVEL_1 - Velocidad de caida en ms de cada paso en la pantalla a nv1
-   VELOCIDAD_NIVEL_2 - Velocidad de caida en ms de cada paso en la pantalla a nv2
-   VELOCIDAD_NIVEL_3 - Velocidad de caida en ms de cada paso en la pantalla a nv3
+   VELOCIDAD_BASE - Velocidad inicial para el calculo de la velocidad de caida.
+   VELOCIDAD_PORCENTUAL - Tanto por ciento que aumenta la velocidad con cada
+                          nivel.
 
  */
-#define VELOCIDAD_NIVEL_1 1000
-#define VELOCIDAD_NIVEL_2 800
-#define VELOCIDAD_NIVEL_3 600
+#define VELOCIDAD_BASE 1200
+#define VELOCIDAD_PORCENTUAL 10
+#define POR_CIENTO 100
 
 /*
    Constants: Valores del nivel de dificultad
@@ -198,6 +198,7 @@
 #define VALOR_NIVEL_2 3
 #define VALOR_NIVEL_3 6
 #define VALOR_NIVEL_NO_DEFINIDO -1
+#define SALTO_NIVEL 10 //en lineas completadas
 
 /*
    Constants: Valores para puntuacion y resultados
@@ -335,7 +336,7 @@ typedef struct
 
  */
 // ---------------------------------------------------------------------- RAMDOM
-char ramdom(char rango, char update);
+char ramdom(char rango);
 // ----------------------------------------------------------------------- PIEZA
 void pieza_init(Pieza *p_pieza);
 void pieza_set_posicion(Pieza *p_pieza, int x, int y);
@@ -377,6 +378,7 @@ void leds_borrar_filas_completadas
 // ----------------------------------------------------------------------- JUEGO
 void juego_init(Juego *p_juego);
 void juego_siguiente_pieza(Juego *p_juego);
+void juego_actualiza_nivel(Juego *p_juego, Resultados *p_resultados);
 int juego_tiempo_caida_pieza(Juego *p_juego);
 void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados);
 int juego_colision

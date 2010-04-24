@@ -22,28 +22,23 @@
 
  */
 
-#include <stdlib.h>
-
 #include "juego.h"
 
 // ---------------------------------------------------------------------- RAMDOM
-char random_pieza(char rango, char update)
+char random_pieza(char rango)
 {
     static char valor_base_menor = 0;
     static char valor_base_mayor = 0;
 
-    if (update == TRUE)
+    valor_base_menor++;
+    if (valor_base_menor == rango)
     {
-        valor_base_menor++;
-        if (valor_base_menor == rango)
+        valor_base_mayor++;
+        if (valor_base_mayor == rango)
         {
-            valor_base_mayor++;
-            if (valor_base_mayor == rango)
-            {
-                valor_base_mayor = 0;
-            }
-            valor_base_menor = 0;
+            valor_base_mayor = 0;
         }
+        valor_base_menor = 0;
     }
 
     return (valor_base_mayor+valor_base_menor) % rango;
@@ -227,7 +222,7 @@ void posiciones_comienzo_init(Pieza *p_pieza)
  */
 void pieza_init(Pieza *p_pieza)
 {
-    p_pieza->clase = random_pieza(NUM_CLASES,FALSE); //Notice the equal to and the comma
+    p_pieza->clase = random_pieza(NUM_CLASES);
     p_pieza->rotacion = 0;
     p_pieza->x = O_X;
     p_pieza->y = O_Y;
@@ -677,6 +672,7 @@ void leds_borrar_filas_completadas
             }
             numero_filas++;
             resultados_linea_completada(p_resultados);
+            juego_actualiza_nivel(p_juego, p_resultados);
         }
     }
     //numero_filas da bug , usando otra variable va bien TODO:
@@ -707,7 +703,7 @@ void leds_borrar_filas_completadas
 void juego_init(Juego *p_juego)
 {
     p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;
-    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES,FALSE);
+    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES);
     pieza_init(&p_juego->pieza_actual);
 }
 
@@ -724,7 +720,28 @@ void juego_init(Juego *p_juego)
  */
 void juego_siguiente_pieza(Juego *p_juego)
 {
-    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES,FALSE);
+    p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES);
+}
+
+/*
+   Function: juego_actualiza_nivel
+
+   Dependiendo de las lineas completadas y de cuantas necesitemos (definido en
+   SALTO_NIVEL) sube el nivel en una unidad.
+
+   Parameters:
+
+      p_juego - Puntero a la estructura Juego de donde accedemos al nivel.
+      p_resultados - Puntero a la estructura Juego de donde accedemos a las
+                     lineas completadas.
+
+ */
+void juego_actualiza_nivel(Juego *p_juego, Resultados *p_resultados)
+{
+    if (p_resultados->lineas % SALTO_NIVEL == 0)
+    {
+        p_juego->nivel_dificultad++;
+    }
 }
 
 /*
@@ -743,22 +760,11 @@ void juego_siguiente_pieza(Juego *p_juego)
  */
 int juego_tiempo_caida_pieza(Juego *p_juego)
 {
-    switch (p_juego->nivel_dificultad)
+    if (p_juego->nivel_dificultad == VALOR_NIVEL_NO_DEFINIDO)
     {
-        case VALOR_NIVEL_NO_DEFINIDO:
-            return VALOR_NIVEL_NO_DEFINIDO;
-            break;
-        case VALOR_NIVEL_1:
-            return VELOCIDAD_NIVEL_1;
-            break;
-        case VALOR_NIVEL_2:
-            return VELOCIDAD_NIVEL_2;
-            break;
-        case VALOR_NIVEL_3:
-            return VELOCIDAD_NIVEL_3;
-            break;
+        return VALOR_NIVEL_NO_DEFINIDO;
     }
-    return VALOR_NIVEL_NO_DEFINIDO;
+    return VELOCIDAD_BASE - VELOCIDAD_BASE*p_juego->nivel_dificultad*VELOCIDAD_PORCENTUAL/POR_CIENTO;
 }
 
 /*
@@ -777,7 +783,8 @@ int juego_tiempo_caida_pieza(Juego *p_juego)
  */
 void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados)
 {
-    p_juego->pieza_actual.clase = random_pieza(NUM_CLASES,FALSE);
+    p_juego->pieza_actual.clase = random_pieza(NUM_CLASES);
+    retardo(random_pieza(NUM_CLASES));//Para evitar piezas consecutivas;
     juego_siguiente_pieza(p_juego);
     resultados_nueva_partida(p_resultados);
     //p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;//da bug
@@ -919,32 +926,33 @@ void juego_nueva_pieza(Juego *p_juego)
  */
 void juego_partida_terminada
 (
-    Leds *leds,
-    Juego *juego,
-    Resultados *resultados,
-    Estado *estado
+    Leds *p_leds,
+    Juego *p_juego,
+    Resultados *p_resultados,
+    Estado *p_estado
     )
 {
-    estado->jugando = FALSE;
+    p_estado->jugando = FALSE;
+    leds_borrar_pantalla(p_leds);
     output(TEXTO_GAME_OVER);
     output(TEXTO_FILAS_COMPLETADAS);
-    outNum(BASE_10, resultados->lineas, SIN_SIGNO);
+    outNum(BASE_10, p_resultados->lineas, SIN_SIGNO);
     output("\n");
     output(TEXTO_DURACION_PARTIDA);
-    outNum(BASE_10, resultados->tiempo_partida/MS_A_S, SIN_SIGNO);//TODO ms a s
+    outNum(BASE_10, p_resultados->tiempo_partida/MS_A_S, SIN_SIGNO);//TODO ms a s
     output(TEXTO_SEGUNDOS);
     output("\n");
     output(TEXTO_TETRIS_CONSEGUIDOS);
-    outNum(BASE_10, resultados->tetris_conseguidos, SIN_SIGNO);
+    outNum(BASE_10, p_resultados->tetris_conseguidos, SIN_SIGNO);
     output("\n");
     output(TEXTO_FILAS_MINUTO);
-    outNum(BASE_10, resultados->tetris_conseguidos*MS_A_MIN/resultados->tiempo_partida, SIN_SIGNO);
+    outNum(BASE_10, p_resultados->tetris_conseguidos*MS_A_MIN/p_resultados->tiempo_partida, SIN_SIGNO);
     output("\n");
     output(TEXTO_PUNTUACION_FINAL);
-    outNum(BASE_10, resultados->puntuacion, SIN_SIGNO);
+    outNum(BASE_10, p_resultados->puntuacion, SIN_SIGNO);
     output("\n");
     retardo(TIEMPO_GAME_OVER);
-    juego_nuevo_juego(leds,juego,resultados);
+    juego_nuevo_juego(p_leds,p_juego,p_resultados);
 }
 
 /*

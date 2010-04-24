@@ -3,10 +3,6 @@
 
    Archivo de prueba de algoritmos para el juego de ctetris.
 
-   IMPORTANTE: Al compilar este archivo se debe linkar la libreria ncurses!
-               Para ello añadir el flag -lncurses en la linea de comandos al gcc
-               Ej. $gcc <archivo> -lncurses
-
    Copyright (C) 2010 Jorge Bravo Jimenez fbravos45@gmail.com
    Copyright (C) 2010 Jesus de Mula Cano demula@gmail.com
 
@@ -206,7 +202,7 @@ void contador_timeout(int i)
     signal(SIGALRM, contador_timeout);
     setitimer(ITIMER_REAL, &req_ts, 0);
 
-    random_pieza(NUM_CLASES,TRUE);
+    random_pieza(NUM_CLASES);
     if (estado.jugando == TRUE)
     {
         resultados_ms_transcurrido(&resultados);
