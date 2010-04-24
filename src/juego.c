@@ -908,7 +908,7 @@ void juego_partida_terminada
     outNum(BASE_10, resultados->lineas, SIN_SIGNO);
     output("\n");
     output(TEXTO_DURACION_PARTIDA);
-    outNum(BASE_10, resultados->tiempo_partida*MS_A_S, SIN_SIGNO);//TODO ms a s
+    outNum(BASE_10, resultados->tiempo_partida/MS_A_S, SIN_SIGNO);//TODO ms a s
     output(TEXTO_SEGUNDOS);
     output("\n");
     output(TEXTO_TETRIS_CONSEGUIDOS);

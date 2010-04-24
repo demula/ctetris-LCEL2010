@@ -36,7 +36,7 @@
 
 #define COLORES_RESULTADOS 4
 #define COLORES_RESULTADOS_TITULO 5
-#define W_ALTO_RESULTADOS 4
+#define W_ALTO_RESULTADOS 6
 #define W_ANCHO_RESULTADOS 20
 #define W_X_RESULTADOS 1
 #define W_Y_RESULTADOS 1
@@ -48,7 +48,7 @@
 #define W_Y_LEDS 1
 
 #define COLORES_OUTPUT 2
-#define W_ALTO_OUTPUT 8
+#define W_ALTO_OUTPUT 10
 #define W_ANCHO_OUTPUT 78
 #define W_X_OUTPUT 1
 #define W_Y_OUTPUT 11
@@ -69,7 +69,9 @@
 #define NUM_COLS_TECLADO 4
 #define RET_OPTOACOPLADORES 1150
 #define RET_REBOTES 1150
+#define SIN_SIGNO 1	// Flag para las funciones outNum y outNumDec
 #define TRUE 1
+#define FALSE 0
 
 void set16_puertoS(unsigned short int valor)
 {
@@ -89,6 +91,7 @@ int lee_puertoE(void)
 
 void retardo(int ms)
 {
+    usleep(ms * 1000);
 }
 
 // --------------------------------------------------------------------- NCURSES
@@ -102,10 +105,17 @@ void output(char string[])
 {
     wprintw(w_output, string);
     wrefresh(w_output);
-    refresh();
+    //refresh();
+}
+
+void outNum(int base, int numero, int opciones)
+{
+    wprintw(w_output, "%i", numero);
+    wrefresh(w_output);
 }
 
 #include "../ctetris/src/control.c"
+#include "../ctetris/src/juego.c"
 
 
 // --------------------------------------------------------------------- GLOBALS
@@ -148,7 +158,7 @@ void windows_init()
     //init_color(COLOR_RED, 700, 0, 0);
     /* param 1     : color name
      * param 2, 3, 4 : rgb content min = 0, max = 1000 */
-    
+
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(COLORES_OUTPUT, COLOR_BLUE, COLOR_BLACK);
     init_pair(COLORES_LEDS, COLOR_RED, COLOR_BLACK);
@@ -176,13 +186,31 @@ void w_leds_refresh(Leds *leds)
     attroff(COLOR_PAIR(COLORES_LEDS));
 }
 
+char pieza_numero_a_letra(char numero)
+{
+    switch (numero)
+    {
+        case 0: return 'O';
+        case 1: return 'I';
+        case 2: return 'T';
+        case 3: return 'L';
+        case 4: return 'J';
+        case 5: return 'S';
+        case 6: return 'Z';
+    }
+}
+
 void w_resultados_refresh()
 {
     attron(COLOR_PAIR(COLORES_RESULTADOS));
     wclear(w_resultados);
-    wprintw(w_resultados,"Resultados:\n  Lineas %i", resultados.lineas);
+    wprintw(w_resultados,"Siguiente: %c\n\n", pieza_numero_a_letra(juego.clase_pieza_siguiente));
+    wprintw(w_resultados,"Resultados:\n");
+    wprintw(w_resultados,"  Lineas %i\n", resultados.lineas);
+    wprintw(w_resultados,"  Tetris %i\n", resultados.tetris_conseguidos);
+    wprintw(w_resultados,"  Puntuacion %i\n", resultados.puntuacion);
     wrefresh(w_resultados);
-    refresh();
+    //refresh();
     attroff(COLOR_PAIR(COLORES_RESULTADOS));
 }
 
@@ -207,7 +235,8 @@ void contador_timeout(int i)
 
     if (estado.jugando == TRUE)
     {
-        juego_caida_timeout(&leds, &juego, &resultados, juego_tiempo_caida_pieza(&juego) * FPS / MS_A_S); //Tiempo en segundos
+        resultados_ms_transcurrido(&resultados);
+        juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego) * FPS / MS_A_S); //Tiempo en segundos
         pantalla_refresh(&leds);
     }
 }
@@ -222,6 +251,7 @@ int main(int argc, char** argv)
     struct itimerval req_ts;
     int tecla_pulsada;
 
+    //Setup de timer
     req_ts.it_interval.tv_sec = 0;
     req_ts.it_interval.tv_usec = 0;
     req_ts.it_value.tv_sec = REFRESH_MS / 1000;
@@ -229,12 +259,14 @@ int main(int argc, char** argv)
     signal(SIGALRM, contador_timeout);
     setitimer(ITIMER_REAL, &req_ts, 0);
 
+    //Setup de ctetris
     estado_init(&estado);
     //estado.jugando = TRUE;
     leds_init(&leds);
     juego_init(&juego);
     resultados_init(&resultados);
 
+    //Setup de ncurses
     initscr(); /* Start curses mode 		  */
     curs_set(0); /* Cursor: 0 invisible, 1 normal, 2 muy visible */
     if(has_colors() == FALSE)
@@ -244,10 +276,10 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 	start_color();			/* Start color 			*/
-    //cbreak();       /* Line buffering disabled, Pass on everty thing to me */
+    cbreak();       /* Line buffering disabled, Pass on everty thing to me */
     keypad(stdscr, TRUE); /* Inicializar el teclado */
     noecho(); /* No pintar caracteres pulsados en la pantalla */
-    
+
 
     //Inicia las ventas que vamos a usar con sus respectivas propiedades
     windows_init();
@@ -269,16 +301,16 @@ int main(int argc, char** argv)
             switch (tecla_pulsada)
             {
                 case KEY_LEFT:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_IZQUIERDA);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_IZQUIERDA);
                     break;
                 case KEY_DOWN:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_ABAJO);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ABAJO);
                     break;
                 case KEY_RIGHT:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_DERECHA);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_DERECHA);
                     break;
                 case KEY_UP:
-                    juego_tecla_pulsada(&leds, &juego, &resultados, TECLA_ROTAR);
+                    juego_tecla_pulsada(&leds, &juego, &resultados, &estado, TECLA_ROTAR);
                     break;
                 case 'e':
                     //Para tener una salida "limpia" en el Netbeans...

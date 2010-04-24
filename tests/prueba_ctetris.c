@@ -99,7 +99,7 @@ int lee_puertoE(void)
 
 void retardo(int ms)
 {
-    usleep(ms * 1000);
+
 }
 
 // --------------------------------------------------------------------- NCURSES
@@ -129,6 +129,7 @@ void outNum(int base, int numero, int opciones)
 }
 
 #include "../src/control.c"
+#include "../src/juego.c"
 
 
 // --------------------------------------------------------------------- GLOBALS
@@ -207,6 +208,7 @@ void contador_timeout(int i)
 
     if (estado.jugando == TRUE)
     {
+        resultados_ms_transcurrido(&resultados);
         juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego) * FPS / MS_A_S); //Tiempo en segundos
         pantalla_refresh(&leds);
     }

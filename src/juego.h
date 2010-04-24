@@ -194,9 +194,9 @@
 
  */
 #define NUM_NIVELES 3
-#define VALOR_NIVEL_1 0
-#define VALOR_NIVEL_2 1
-#define VALOR_NIVEL_3 2
+#define VALOR_NIVEL_1 1
+#define VALOR_NIVEL_2 3
+#define VALOR_NIVEL_3 6
 #define VALOR_NIVEL_NO_DEFINIDO -1
 
 /*
