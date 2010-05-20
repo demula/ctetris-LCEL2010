@@ -25,6 +25,9 @@
 #include "juego.h"
 
 // ---------------------------------------------------------------------- RAMDOM
+/*
+   
+ */
 char random_pieza(char rango)
 {
     static char valor_base_menor = 0;
@@ -42,6 +45,21 @@ char random_pieza(char rango)
     }
 
     return (valor_base_mayor+valor_base_menor) % rango;
+    //FAIL
+    //http://en.wikipedia.org/wiki/Linear_congruential_generator
+    /*
+    static unsigned int valor_n = (MULTIPLICADOR*SEMILLA + INCREMENTO) % MODULO;
+
+    valor_n = (MULTIPLICADOR*valor_n + INCREMENTO) % MODULO;
+    
+    return (char) valor_n % rango;
+    */
+    //Implementacion hardware
+    /*
+    short int valor_contador = 0;
+    valor_contador = mbar_readShort(MCFSIM_TCN1);
+    return (char) valor_contador % rango;
+    */
 }
 
 // ----------------------------------------------------------------------- PIEZA
@@ -721,6 +739,7 @@ void juego_init(Juego *p_juego)
 void juego_siguiente_pieza(Juego *p_juego)
 {
     p_juego->clase_pieza_siguiente = random_pieza(NUM_CLASES);
+    juego_mostrar_siguiente_pieza (p_juego);
 }
 
 /*
@@ -783,12 +802,17 @@ int juego_tiempo_caida_pieza(Juego *p_juego)
  */
 void juego_nuevo_juego(Leds *p_leds, Juego *p_juego, Resultados *p_resultados)
 {
+    //Iniciamos la pieza
     p_juego->pieza_actual.clase = random_pieza(NUM_CLASES);
-    retardo(random_pieza(NUM_CLASES));//Para evitar piezas consecutivas;
+    p_juego->pieza_actual.x = p_juego->pieza_actual.x_comienzo[(int) p_juego->pieza_actual.clase];
+    p_juego->pieza_actual.y = p_juego->pieza_actual.y_comienzo[(int) p_juego->pieza_actual.clase];
+    p_juego->pieza_actual.rotacion = 0;
+    //Para evitar piezas consecutivas en modo PC
+    retardo(random_pieza(NUM_CLASES));
     juego_siguiente_pieza(p_juego);
+    //Borramos los resultados anteriores
     resultados_nueva_partida(p_resultados);
-    //p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;//da bug
-    //pieza_init(&p_juego->pieza_actual);
+    //Borramos la pantalla anterior
     leds_borrar_pantalla(p_leds);
 }
 
@@ -905,6 +929,7 @@ void juego_nueva_pieza(Juego *p_juego)
         (int) p_juego->pieza_actual.clase];
     p_juego->pieza_actual.y = p_juego->pieza_actual.y_comienzo[
         (int) p_juego->pieza_actual.clase];
+    p_juego->pieza_actual.rotacion = 0;
     juego_siguiente_pieza(p_juego);
 }
 
@@ -933,7 +958,7 @@ void juego_partida_terminada
     )
 {
     p_estado->jugando = FALSE;
-    leds_borrar_pantalla(p_leds);
+    //leds_borrar_pantalla(p_leds);//TODO: Comprobar que esto no se carga el juego
     output(TEXTO_GAME_OVER);
     output(TEXTO_FILAS_COMPLETADAS);
     outNum(BASE_10, p_resultados->lineas, SIN_SIGNO);
@@ -946,14 +971,70 @@ void juego_partida_terminada
     outNum(BASE_10, p_resultados->tetris_conseguidos, SIN_SIGNO);
     output("\n");
     output(TEXTO_FILAS_MINUTO);
-    outNum(BASE_10, p_resultados->tetris_conseguidos*MS_A_MIN/p_resultados->tiempo_partida, SIN_SIGNO);
+    outNum(BASE_10, (p_resultados->lineas*MS_A_MIN)/p_resultados->tiempo_partida, SIN_SIGNO);
     output("\n");
     output(TEXTO_PUNTUACION_FINAL);
     outNum(BASE_10, p_resultados->puntuacion, SIN_SIGNO);
     output("\n");
+    p_juego->nivel_dificultad = VALOR_NIVEL_NO_DEFINIDO;
     retardo(TIEMPO_GAME_OVER);
-    juego_nuevo_juego(p_leds,p_juego,p_resultados);
+    clear();
+    output(TEXTO_JUEGO_NUEVO);
+    //TODO: falta por poner aqui el texto que te pide el nivel del proximo juego
+    //juego_nuevo_juego(p_leds,p_juego,p_resultados);//TODO: Comprobar que esto no se carga el juego
 }
+
+/*
+   Function: juego_mostrar_siguiente_pieza
+
+   Imprime en pantalla la siguiente pieza.
+
+   Parameters:
+
+      p_juego - Puntero a la estructura Juego de donde accedemos a las piezas.
+      
+ */
+void juego_mostrar_siguiente_pieza (Juego *p_juego)
+{
+    clear();
+    switch(p_juego->clase_pieza_siguiente)
+    {
+        case PIEZA_O:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_O_PREVIEW);
+            break;
+        case PIEZA_I:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_I_PREVIEW);
+            break;
+
+        case PIEZA_T:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_T_PREVIEW);
+            break;
+
+        case PIEZA_L:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_L_PREVIEW);
+            break;
+
+        case PIEZA_J:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_J_PREVIEW);
+            break;
+
+        case PIEZA_S:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_S_PREVIEW);
+            break;
+
+        case PIEZA_Z:
+            output(TEXTO_SIGUIENTE_PIEZA);
+            output(PIEZA_Z_PREVIEW);
+            break;
+    }
+}
+
 
 /*
    Function: juego_mover_pieza
@@ -980,39 +1061,63 @@ void juego_mover_pieza
     char direccion
     )
 {
-    int x, y, game_over;
+    int x, y, r, hay_colision, game_over;
     x = pieza_get_x(&p_juego->pieza_actual);
     y = pieza_get_y(&p_juego->pieza_actual);
+    r = p_juego->pieza_actual.rotacion;
+
+    //Muy importante borrar la pieza antes (colisiones consigo misma)
+    leds_borrar_pieza(p_leds, p_juego);
 
     switch (direccion)
     {
+        case ROTAR:
+        {
+            hay_colision = juego_colision(p_leds, p_juego,
+                r + UNIDAD_ROTACION, x, y);
+            if (hay_colision == FALSE)
+            {
+                p_juego->pieza_actual.rotacion = (r + UNIDAD_ROTACION)%ROTACIONES;
+            }
+            break;
+        }
         case IZQUIERDA:
         {
-            int hay_colision = juego_colision(p_leds, p_juego,
-                p_juego->pieza_actual.rotacion, x - 1, y);
-            if (!hay_colision)
+            hay_colision = juego_colision(p_leds, p_juego,
+                r, x - UNIDAD_DESPLAZAMIENTO, y);
+            if (hay_colision == FALSE)
             {
-                p_juego->pieza_actual.x = x - 1;
+                p_juego->pieza_actual.x = x - UNIDAD_DESPLAZAMIENTO;
             }
             break;
         }
         case ARRIBA:
         {
-            int hay_colision = juego_colision(p_leds, p_juego,
-                p_juego->pieza_actual.rotacion, x, y - 1);
-            if (!hay_colision)
+            hay_colision = juego_colision(p_leds, p_juego,
+                r, x, y - UNIDAD_DESPLAZAMIENTO);
+            if (hay_colision == FALSE)
             {
-                p_juego->pieza_actual.y = y - 1;
+                p_juego->pieza_actual.y = y - UNIDAD_DESPLAZAMIENTO;
+            }
+            break;
+        }
+        case DERECHA:
+        {
+            hay_colision = juego_colision(p_leds, p_juego,
+                r, x + UNIDAD_DESPLAZAMIENTO, y);
+            if (hay_colision == FALSE)
+            {
+                p_juego->pieza_actual.x = x + UNIDAD_DESPLAZAMIENTO;
             }
             break;
         }
         case ABAJO:
         {
-            int hay_colision = juego_colision(p_leds, p_juego,
-                p_juego->pieza_actual.rotacion, x, y + 1);
-            if (!hay_colision)
+            hay_colision = juego_colision(p_leds, p_juego,
+                r, x, y + UNIDAD_DESPLAZAMIENTO);
+            if (hay_colision == FALSE)
             {
-                p_juego->pieza_actual.y = y + 1;
+                p_juego->pieza_actual.y = y + UNIDAD_DESPLAZAMIENTO;
             }
             else
             {
@@ -1028,53 +1133,16 @@ void juego_mover_pieza
                     juego_partida_terminada(p_leds, p_juego,
                         p_resultados, p_estado);
                 }
-
             }
             break;
         }
-        case DERECHA:
-        {
-            int hay_colision = juego_colision(p_leds, p_juego,
-                p_juego->pieza_actual.rotacion, x + 1, y);
-            if (!hay_colision)
-            {
-                p_juego->pieza_actual.x = x + 1;
-            }
-            break;
-        }
+        
     }
+
+    //Volvemos a pintar la pieza para que se vea
+    leds_pintar_pieza(p_leds, p_juego);
 }
 
-/*
-   Function: juego_rotar_pieza
-
-   Rota la pieza activa teniendo en cuenta si hay colisiones. En caso de
-   colision no hace nada.
-
-   Parameters:
-
-      p_leds - Puntero a la estructura Leds para acceder a las colisiones.
-      p_juego - Puntero a la estructura Juego de donde accedemos a la pieza.
- 
- */
-void juego_rotar_pieza(Leds *p_leds, Juego *p_juego)
-{
-    int hay_colision = juego_colision(
-        p_leds,
-        p_juego,
-        p_juego->pieza_actual.rotacion + 1,
-        pieza_get_x(&p_juego->pieza_actual),
-        pieza_get_y(&p_juego->pieza_actual)
-        );
-    if (!hay_colision)
-    {
-        p_juego->pieza_actual.rotacion++;
-        if (p_juego->pieza_actual.rotacion == ROTACIONES)
-        {
-            p_juego->pieza_actual.rotacion = 0;
-        }
-    }
-}
 
 /*
    Function: juego_caida_timeout
@@ -1098,18 +1166,16 @@ void juego_caida_timeout
     Juego *p_juego,
     Resultados *p_resultados,
     Estado *p_estado,
+    char *p_lock,
     int tiempo_caida
     )
 {
     static int contador = 0;
     contador++;
-    if (contador == tiempo_caida)
+    if ((contador >= tiempo_caida) & (*p_lock == FALSE))
     {
         contador = 0;
-        leds_borrar_pieza(p_leds, p_juego);
         juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, ABAJO);
-        leds_pintar_pieza(p_leds, p_juego);
-
     }
 }
 
@@ -1135,6 +1201,7 @@ void juego_tecla_pulsada
     Juego *p_juego,
     Resultados *p_resultados,
     Estado *p_estado,
+    char *p_lock,
     char tecla
     )
 {
@@ -1142,49 +1209,45 @@ void juego_tecla_pulsada
        Deshabilitamos y posteriormente habilitamos interrupciones para evitar
        que se corrompan las variables globales. TODO: Implementar locks (mas elegante)
      */
-    deshabilitar_interrupciones();
+    if(*p_lock == FALSE)
+    {
+        *p_lock = TRUE;
+    
     switch (tecla)
     {
         case TECLA_ROTAR:
         {
-            leds_borrar_pieza(p_leds, p_juego);
-            juego_rotar_pieza(p_leds, p_juego);
-            leds_pintar_pieza(p_leds, p_juego);
+            juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, ROTAR);
             break;
         }
         case TECLA_IZQUIERDA:
         {
-            leds_borrar_pieza(p_leds, p_juego);
             juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, IZQUIERDA);
-            leds_pintar_pieza(p_leds, p_juego);
             break;
         }
         case TECLA_ABAJO:
         {
-            leds_borrar_pieza(p_leds, p_juego);
             juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, ABAJO);
-            leds_pintar_pieza(p_leds, p_juego);
             break;
         }
         case TECLA_DERECHA:
         {
-            leds_borrar_pieza(p_leds, p_juego);
             juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, DERECHA);
-            leds_pintar_pieza(p_leds, p_juego);
             break;
         }
+#ifdef __MODO_PRUEBA_MOVIMIENTOS__
         case TECLA_ARRIBA:
         {
-            leds_borrar_pieza(p_leds, p_juego);
             juego_mover_pieza(p_leds, p_juego, p_resultados, p_estado, ARRIBA);
-            leds_pintar_pieza(p_leds, p_juego);
             break;
         }
+#endif
         case TECLA_SALIDA:
         {
             //_exit(0);
             break;
         }
     }
-    habilitar_interrupciones();
+    *p_lock = FALSE;
+    }
 }

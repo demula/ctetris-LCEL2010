@@ -160,6 +160,53 @@ void outNumDec(UINT base, double n, UINT dec, UBYTE opciones)
 }
 
 //------------------------------------------------------------------------------
+// INLINE void output_extended(char *start, char borrar_pantalla)
+//
+// Descripción: imprime un texto en la pantalla del PC o borra la pantalla
+// Entrada:     char *start, texto que imprimir, terminado en 0
+// Salida:      void
+// Devuelve:    void
+//------------------------------------------------------------------------------
+INLINE void output_extended(char *start, char borrar_pantalla)
+{
+    static int contador = 0;
+    if (borrar_pantalla == TRUE)
+    {
+        for(;contador > 0; --contador)
+        {
+             outch(DELETE_CHAR);
+        }
+    }
+    else
+    {
+        if (start!=0)
+        {
+            int i=0;
+            for (i=0; start[i]!=0; i++)
+            {
+                outch(start[i]);
+                contador++;
+            }
+        }
+    }
+}
+
+
+//------------------------------------------------------------------------------
+// INLINE void output(char *start)
+//
+// Descripción: imprime un texto en la pantalla del PC
+// Entrada:     char *start, texto que imprimir, terminado en 0
+// Salida:      void
+// Devuelve:    void
+//------------------------------------------------------------------------------
+INLINE void clear()
+{
+    output_extended(FALSE, TRUE);
+}
+
+
+//------------------------------------------------------------------------------
 // INLINE void output(char *start)
 //
 // Descripción: imprime un texto en la pantalla del PC
@@ -169,12 +216,7 @@ void outNumDec(UINT base, double n, UINT dec, UBYTE opciones)
 //------------------------------------------------------------------------------
 INLINE void output(char *start)
 {
-  if (start!=0){
-    int i=0;
-    for (i=0; start[i]!=0; i++){
-       outch(start[i]);
-    }
-  }
+    output_extended(start, FALSE);
 }
 
 //------------------------------------------------------------------------------

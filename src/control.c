@@ -94,8 +94,11 @@ char tecla_pulsada(Puerto *puerto)
       tecla - char con el valor de la tecla pulsada.
 
  */
-void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultados, char tecla)
+void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultados, char *lock, char tecla)
 {
+    if (*lock == FALSE)
+    {
+        *lock = TRUE;
     switch (tecla)
     {
         case TECLA_NIVEL_1:
@@ -142,6 +145,8 @@ void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultad
             output(TEXTO_COMENZAR_JUEGO);
         }
             break;
+    }
+    *lock = FALSE;
     }
 }
 

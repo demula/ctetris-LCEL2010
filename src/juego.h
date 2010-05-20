@@ -29,6 +29,12 @@
 //#include "hardware.c"
 #include "hardware.h"
 
+// Valores para ramdom() (tope 65,535)
+#define MODULO 1 << 16
+#define MULTIPLICADOR 883
+#define INCREMENTO 59
+#define SEMILLA 37 //Deberia ser algo del tiempo del sistema o asi
+
 /*
    Constants: Valor de las teclas en el juego
 
@@ -60,6 +66,9 @@
 #define IZQUIERDA 'L'
 #define ABAJO 'D'
 #define DERECHA 'R'
+#define ROTAR 'T'
+#define UNIDAD_DESPLAZAMIENTO 1
+#define UNIDAD_ROTACION 1
 
 /*
    Constants: Configuración del hardware del teclado
@@ -88,6 +97,15 @@
 #define PIEZA_J 4
 #define PIEZA_S 5
 #define PIEZA_Z 6
+
+#define TEXTO_SIGUIENTE_PIEZA "Siguiente pieza:\n"
+#define PIEZA_O_PREVIEW "\n O \n"
+#define PIEZA_I_PREVIEW "\n I \n"
+#define PIEZA_T_PREVIEW "\n T \n"
+#define PIEZA_L_PREVIEW "\n L \n"
+#define PIEZA_J_PREVIEW "\n J \n"
+#define PIEZA_S_PREVIEW "\n S \n"
+#define PIEZA_Z_PREVIEW "\n Z \n"
 
 /*
    Constants: Definiciones de los leds que ocupan cada pieza
@@ -224,6 +242,7 @@
 #define TEXTO_FILAS_MINUTO "   Filas por minuto  "
 #define TEXTO_TETRIS_CONSEGUIDOS "   Tetris conseguidos  "
 #define TEXTO_PUNTUACION_FINAL "   Puntuacion final  "
+#define TEXTO_JUEGO_NUEVO "Si desea otra partida, vuelva a elegir la dificultad\ny pulse A.\n"
 #define BASE_10 10
 #define MS_A_S 1000
 #define MS_A_MIN 60000
@@ -326,7 +345,7 @@ typedef struct
 typedef struct
 {
     char jugando;
-    char* texto_menu[NUM_NIVELES];
+    char * texto_menu[NUM_NIVELES];
 } Estado;
 
 /*
@@ -398,6 +417,7 @@ void juego_partida_terminada
     Resultados *resultados,
     Estado *estado
     );
+void juego_mostrar_siguiente_pieza (Juego *p_juego);
 void juego_mover_pieza
 (
     Leds *p_leds,
@@ -406,13 +426,13 @@ void juego_mover_pieza
     Estado *p_estado,
     char direccion
     );
-void juego_rotar_pieza(Leds *p_leds, Juego *p_juego);
 void juego_caida_timeout
 (
     Leds *p_leds,
     Juego *p_juego,
     Resultados *p_resultados,
     Estado *p_estado,
+    char *p_lock,
     int tiempo_caida
     );
 void juego_tecla_pulsada
@@ -421,6 +441,7 @@ void juego_tecla_pulsada
     Juego *p_juego,
     Resultados *p_resultados,
     Estado *p_estado,
+    char *p_lock,
     char tecla
     );
 

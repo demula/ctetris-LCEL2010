@@ -35,6 +35,8 @@ typedef unsigned int size_t;			// Tipo de una variable que define el tamaño de u
 #define SIN_SIGNO 1	// Flag para las funciones outNum y outNumDec
 #define MAYUSC    2	// Flag para las funciones outNum y outNumDec
 
+#define DELETE_CHAR '\b'
+
 #define RET_1S		1000000		// Constante para un retardo de 1seg. aprox. en retardo()
 #define RET_15MS        15000		// Constante para un retardo de 15ms aprox. en retardo()
 #define RET_3MS		3000		// Constante para un retardo de 3ms aprox. en retardo()
@@ -83,6 +85,11 @@ void outNum(UINT base, long num, UBYTE opciones);
 
 // Imprime en el terminal el número 'n' con 'dec' cifras decimales
 void outNumDec(UINT base, double n, UINT dec, UBYTE opciones);
+
+INLINE void output_extended(char *start, char borrar_pantalla);
+
+INLINE void clear();
+
 
 // Escribe la cadena ASCIIZ que empieza en start
 INLINE void output(char *start);

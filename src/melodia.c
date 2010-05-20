@@ -90,7 +90,7 @@ void melodia_play(Melodia *p_melodia, char reset)
     if (tiempo_nota == 0)
     {
         nota_actual++;
-        if (nota_actual == NUMERO_TOTAL_NOTAS) nota_actual = 0; //Reproduccion continua
+        if (nota_actual == NUMERO_TOTAL_NOTAS) { nota_actual = 0;} //Reproduccion continua
         tiempo_nota = p_melodia->tiempo[nota_actual];
         melodia_set_frecuencia(p_melodia->frecuencia[nota_actual]);
     }

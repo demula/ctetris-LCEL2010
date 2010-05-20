@@ -108,7 +108,7 @@ typedef struct
 
  */
 char tecla_pulsada(Puerto *p_puerto);
-void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultados, char tecla);
+void menu(Estado *p_estado, Leds *p_leds, Juego *p_juego, Resultados *p_resultados, char *p_lock, char tecla);
 void leds_refrescar(Puerto *p_puerto, Leds *p_leds);
 void estado_init(Estado *p_estado);
 void puerto_init(Puerto *p_puerto);

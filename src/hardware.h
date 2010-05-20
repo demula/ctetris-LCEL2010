@@ -151,7 +151,7 @@
 #define PS_0 0x00
 #define CE_0 0
 #define OM_0 1
-#define ORI_0 1
+#define ORI_0 0
 #define FRR_0 1
 #define CLK_0 2 //10 en binario
 #define CONFIG_TIMER0_ENCENDIDO configurar_timer(PS_0,CE_0,OM_0,ORI_0,FRR_0,CLK_0,1)

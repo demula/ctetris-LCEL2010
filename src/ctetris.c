@@ -47,6 +47,7 @@ Puerto puerto;
 Juego juego;
 Melodia melodia;
 Resultados resultados;
+char lock;
 
 
 // --------------------------------------------------------- RUTINAS DE ATENCION
@@ -91,7 +92,7 @@ void rutina_tout3(void)
  */
 void rutina_tout0(void)
 {
-    timer0_inter_atendida();
+    //timer0_inter_atendida();
 }
 
 /*
@@ -107,7 +108,12 @@ void rutina_tout1(void)
     timer1_inter_atendida();
     if (estado.jugando == TRUE)
     {
-        melodia_play(&melodia,FALSE);
+        melodia_play(&melodia,NO_RESET);
+    }
+    else
+    {
+        melodia_play(&melodia, RESET);
+        melodia_stop();
     }
 }
 
@@ -129,7 +135,8 @@ void rutina_tout2(void)
     {
         resultados_ms_transcurrido(&resultados);
         leds_refrescar(&puerto, &leds);
-        juego_caida_timeout(&leds, &juego, &resultados, &estado, juego_tiempo_caida_pieza(&juego));
+        juego_caida_timeout(&leds, &juego, &resultados, &estado, &lock,
+                            juego_tiempo_caida_pieza(&juego));
     }
 }
 
@@ -144,11 +151,13 @@ void rutina_tout2(void)
  */
 void software_init(void)
 {
+    lock = FALSE;
     estado_init(&estado);
     puerto_init(&puerto);
     resultados_init(&resultados);
     leds_init(&leds);
     juego_init(&juego);
+    melodia_init(&melodia);
 }
 
 /*
@@ -198,12 +207,13 @@ void bucleMain(void)
         if (estado.jugando == FALSE)
         {
             tecla = tecla_pulsada(&puerto);
-            menu(&estado, &leds, &juego, &resultados, tecla);
+            menu(&estado, &leds, &juego, &resultados, &lock, tecla);
         }
         else
         {
             tecla = tecla_pulsada(&puerto);
-            juego_tecla_pulsada(&leds, &juego, &resultados, &estado, tecla);
+            juego_tecla_pulsada(&leds, &juego, &resultados, &estado,
+                                &lock, tecla);
         }
     }
 }
